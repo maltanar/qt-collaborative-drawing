@@ -1,0 +1,92 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QPushButton>
+#include <QTextEdit>
+#include <wtloginmessage.h>
+#include <wtloginresponsemessage.h>
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+
+    //TODO Used for testing, remove later.
+    QPushButton *quit = new QPushButton(tr("Quit"), this);
+    quit->setGeometry(10,130,50,50);
+    btn = new QPushButton(tr("merhaaaaba"), this);
+    btn->setGeometry(10,70,50,50);
+    QPushButton *listen = new QPushButton(tr("Listen"), this);
+    tb = new QLineEdit(this);
+    tb->setGeometry(70,10,100,100);
+    listen->setGeometry(10,10,50,50);
+
+    connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
+    connect(listen, SIGNAL(clicked()), this, SLOT(startListening()));
+    connect(btn, SIGNAL(clicked()), this, SLOT(yoksunsenaslinda()));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::yoksunsenaslinda()
+{
+    QByteArray datagram;
+    WTLoginMessage *msg = new WTLoginMessage();
+    msg->setUsername(tb->text());
+    datagram = msg->serialize();
+    qWarning("%s\n",datagram.constData());
+    server.writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, 12345);
+}
+
+void MainWindow::startListening()
+{
+    client.bind(12345, QUdpSocket::ShareAddress);
+    connect(&client, SIGNAL(readyRead()),
+            this, SLOT(dataArrived()));
+
+}
+
+void MainWindow::gotNewConnection()
+{
+    qWarning() << "new connection" << endl;
+}
+
+void MainWindow::dataArrived()
+{
+    QByteArray *datagram = new QByteArray();
+    while(client.hasPendingDatagrams())
+    {
+
+        datagram->resize(client.pendingDatagramSize());
+        client.readDatagram(datagram->data(), datagram->size());
+
+    }
+
+    if (datagram->startsWith("WTC1LOGINREQ")) {
+        WTLoginMessage loginMessage;
+        loginMessage.deserialize(datagram);
+        tb->setText(loginMessage.getUsername());
+
+        WTLoginResponseMessage loginResponse;
+
+        loginResponse.setResult(1);
+        qWarning("merhaba");
+        loginResponse.setInfomsg("Successful");
+        qWarning("merhaba2");
+        QByteArray responseDatagram = loginResponse.serialize();
+        qWarning("merhaba3");
+        server.writeDatagram(responseDatagram.data(), responseDatagram.size(), QHostAddress::Broadcast, 12345);
+        qWarning("merhaba4");
+    } else if (datagram->startsWith("WTC1LOGINRES")) {
+        WTLoginResponseMessage loginResponse;
+        loginResponse.deserialize(datagram);
+        tb->setText(loginResponse.getInfomsg());
+
+    }
+
+
+}
