@@ -16,13 +16,17 @@ SOURCES += main.cpp\
     wtloginresponsemessage.cpp \
     wtrequestmessage.cpp \
     wtloginmessage.cpp \
-    wtsessionlistrequest.cpp
+    wtsessionlistrequest.cpp \
+    wtsessionstaterequest.cpp \
+    messagetransceiver.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
     wtloginresponsemessage.h \
     wtrequestmessage.h \
     wtloginmessage.h \
-    wtsessionlistrequest.h
+    wtsessionlistrequest.h \
+    wtsessionstaterequest.h \
+    messagetransceiver.h
 
 FORMS    += mainwindow.ui
