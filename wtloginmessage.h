@@ -1,26 +1,17 @@
 #ifndef WTLOGINMESSAGE_H
 #define WTLOGINMESSAGE_H
 
-#include <wtmessage.h>
+#include "wtrequestmessage.h"
 
-class WTLoginMessage : public WTMessage
+class WTLoginMessage : public WTRequestMessage
 {
     Q_OBJECT
-
 public:
-    WTLoginMessage()
-    {
-        command = "LOGINREQ";
-    }
-    ~WTLoginMessage() {}
+    explicit WTLoginMessage(QObject *parent = 0);
 
-    QByteArray serialize();
-    void deserialize(QByteArray *data);
-    void setUsername(QString username);
-    QString getUsername();
+signals:
 
-private:
-    QString username;
+public slots:
 
 };
 

@@ -13,14 +13,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     wtmessage.cpp \
-    wtloginmessage.cpp \
     wtloginresponsemessage.cpp \
+    wtrequestmessage.cpp \
+    wtloginmessage.cpp \
     wtsessionlistrequest.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
-    wtloginmessage.h \
     wtloginresponsemessage.h \
+    wtrequestmessage.h \
+    wtloginmessage.h \
     wtsessionlistrequest.h
 
 FORMS    += mainwindow.ui
