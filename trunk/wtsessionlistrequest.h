@@ -1,24 +1,18 @@
 #ifndef WTSESSIONLISTREQUEST_H
 #define WTSESSIONLISTREQUEST_H
 
-#include <wtmessage.h>
+#include "wtrequestmessage.h"
 
-class WTSessionListRequest : public WTMessage
+class WTSessionListRequest : public WTRequestMessage
 {
+    Q_OBJECT
 public:
-    WTSessionListRequest()
-    {
-        command = "SESSLREQ";
-    }
+    explicit WTSessionListRequest(QObject *parent = 0);
 
-    QByteArray serialize();
-    void deserialize(QByteArray *data);
-    void setUsername(QString username);
-    QString getUsername();
+signals:
 
+public slots:
 
-private:
-    QString username;
 };
 
 #endif // WTSESSIONLISTREQUEST_H
