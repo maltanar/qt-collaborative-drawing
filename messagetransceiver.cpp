@@ -74,7 +74,9 @@ void MessageTransceiver::newConnection()
         newSocket = mServer->nextPendingConnection();
         qWarning() << "adding new remote-initiated connection to" << newSocket->peerAddress().toString();
         mOpenConnections.insert(newSocket->peerAddress().toString(), newSocket);
+        // connect signals for newly arrived connection
         connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataArrived()));
+        connect(newSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     }
 }
 
