@@ -74,6 +74,7 @@ void MessageTransceiver::newConnection()
         newSocket = mServer->nextPendingConnection();
         qWarning() << "adding new remote-initiated connection to" << newSocket->peerAddress().toString();
         mOpenConnections.insert(newSocket->peerAddress().toString(), newSocket);
+        connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataArrived()));
     }
 }
 
@@ -86,6 +87,7 @@ void MessageTransceiver::connected()
         qWarning() << "adding new local-initiated connection to" << destination;
         // insert new tcp socket into the list of open connections
         mOpenConnections.insert(destination, newConnection);
+        connect(newConnection, SIGNAL(readyRead()), this, SLOT(dataArrived()));
     }
 }
 
