@@ -7,6 +7,8 @@
 #include <QLineEdit>
 #include <QtNetwork>
 
+#include "messagetransceiver.h"
+
 namespace Ui {
     class MainWindow;
 }
@@ -25,12 +27,23 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    MessageTransceiver mt;
 
 public slots:
     void yoksunsenaslinda();
     void dataArrived();
     void gotNewConnection();
     void startListening();
+
+    void gotNewData(QString origin, QByteArray data);
+
+signals:
+    void connectToHost(QString addr);
+    void sendData(QString addr, QByteArray data);
+
+private slots:
+    void on_sendData_clicked();
+    void on_connectToHost_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -5,10 +5,9 @@
 #include <QtNetwork>
 #include <QHash>
 #include <QString>
+#include <QByteArray>
 
-#include "wtmessage.h"
-
-#define     COLLABORATION_TCP_PORT      45454
+#define     TRANSCEIVER_TCP_PORT      45454
 
 class MessageTransceiver : public QThread
 {
@@ -17,23 +16,22 @@ public:
     explicit MessageTransceiver(QObject *parent = 0);
     void run();
 
-    void addDestinationEntry(QString destination, QString hostname);
-    QString resolveDestination(QString destination);
-    void removeDestinationEntry(QString destination);
-
 protected:
     QHash<QString, QTcpSocket *> mOpenConnections;
     QTcpServer * mServer;
-    QHash<QString, QString> mDestinationEntries;
 
 signals:
+    void newData(QString origin, QByteArray data);
 
 public slots:
     void connectTo(QString destination);
-    void sendMessage(QString destination, WTMessage msg);
+    void sendMessage(QString destination, QByteArray msg);
 
 private slots:
     void newConnection();
+    void connected();
+    void disconnected();
+    void dataArrived();
 
 };
 
