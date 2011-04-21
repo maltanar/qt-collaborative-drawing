@@ -5,13 +5,10 @@
 // without regard to its role as client or server. It is responsible for:
 // - sending collaboration messages to remote transceivers
 // - receiving collaboration messages from remote transceivers
-// - destination resolution to abstract connection details
 
-// TODO IMPORTANT
-// doing the destination resolution on this level also requires that we somehow communicate the
-// user name for a newly connected client on this protocol level. two possible solutions are:
-// - discard username resolution, do it in the upper layer
-// - send user identification / handshake message on this layer (HELLOPAL)
+// MessageTransceiver is mainly useful for keeping a single connection to each peer
+// in the network and accessing these connections as needed
+
 
 MessageTransceiver::MessageTransceiver(QObject *parent) :
     QThread(parent)
@@ -19,52 +16,26 @@ MessageTransceiver::MessageTransceiver(QObject *parent) :
     // the transciever will act both as a server and a client
     // client behaviour is triggered by the connectTo slot
     // server behaviour is provided by a QTcpServer object
-
-    // set up the tcp server
-    mServer = new QTcpServer(this);
-    // forward incoming connection requests from the tcp server to us
-    connect(mServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
 }
 
 void MessageTransceiver::run()
 {
-    mServer->listen(QHostAddress::Any, COLLABORATION_TCP_PORT);
+    // set up the tcp server
+    mServer = new QTcpServer();
+    // forward incoming connection requests from the tcp server to us
+    connect(mServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+    // start listening for connection
+    if(!mServer->listen(QHostAddress::Any, TRANSCEIVER_TCP_PORT)) {
+        // listening on this specified port failed
+        // sorry, no go!
+        qWarning() << "QTcpServer failed to listen!";
+        return;
+    }
     exec();
-}
-
-void MessageTransceiver::addDestinationEntry(QString destination, QString hostname)
-{
-    // check if given destination key already exists in the destination resolution system
-    removeDestinationEntry(destination);
-    // add new destination entry
-    mDestinationEntries.insert(destination, hostname);
-}
-
-void MessageTransceiver::removeDestinationEntry(QString destination)
-{
-    // try to remove given destination entry
-    if(mDestinationEntries.contains(destination))
-        mDestinationEntries.remove(destination);
-}
-
-
-QString MessageTransceiver::resolveDestination(QString destination)
-{
-    // destination entry lookup, empty string if not found
-    return mDestinationEntries.value(destination, "");
 }
 
 void MessageTransceiver::connectTo(QString destination)
 {
-    // lookup given destination in the entries table
-    QString hostname = resolveDestination(destination);
-
-    if(hostname == "") {
-        // TODO SHOWERROR destination could not be resolved - display error message
-        qWarning() << "Could not resolve hostname for destination" << destination;
-        return;
-    }
-
     if(mOpenConnections.value(destination, NULL)) {
         // a connection for this destination already exists
         // TODO display error? or just return from the function quietly?
@@ -74,19 +45,72 @@ void MessageTransceiver::connectTo(QString destination)
 
     // TODO connect signals from QTcpSockets to handle errors and check if conn is established
     QTcpSocket * newConnection = new QTcpSocket(this);
-    newConnection->connectToHost(hostname, COLLABORATION_TCP_PORT);
 
-    // insert new tcp socket into the list of open connections
-    mOpenConnections.insert(destination, newConnection);
+    // connect the signals for this tcp socket
+    // TODO also connect and handle error signals
+    connect(newConnection, SIGNAL(connected()), this, SLOT(connected()));
+    connect(newConnection, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    // try to establish the connection
+    newConnection->connectToHost(destination, TRANSCEIVER_TCP_PORT);
 }
 
-void MessageTransceiver::sendMessage(QString destination, WTMessage msg)
+void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 {
-
+    QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
+    if(!destinationSocket) {
+        // TODO display error
+        qWarning() << "Connection for destination" << destination << "does not exist!";
+        return;
+    }
+    destinationSocket->write(msg);
 }
 
 void MessageTransceiver::newConnection()
 {
+    QTcpSocket * newSocket;
     qWarning() << "got new connection request!";
+    // establish all waiting connections
+    while(mServer->hasPendingConnections()) {
+        newSocket = mServer->nextPendingConnection();
+        qWarning() << "adding new remote-initiated connection to" << newSocket->peerAddress().toString();
+        mOpenConnections.insert(newSocket->peerAddress().toString(), newSocket);
+    }
+}
 
+void MessageTransceiver::connected()
+{
+    QTcpSocket * newConnection = qobject_cast<QTcpSocket *>(sender());
+    QString destination = newConnection->peerAddress().toString();
+
+    if(newConnection) {
+        qWarning() << "adding new local-initiated connection to" << destination;
+        // insert new tcp socket into the list of open connections
+        mOpenConnections.insert(destination, newConnection);
+    }
+}
+
+void MessageTransceiver::disconnected()
+{
+    QTcpSocket * oldConnection = qobject_cast<QTcpSocket *>(sender());
+    QString destination = oldConnection->peerAddress().toString();
+
+    // TODO emit a signal for disconnection of this client
+
+    if(oldConnection) {
+        qWarning() << "peer disconnected:" << destination;
+        // remove from connection list
+        mOpenConnections.remove(destination);
+    }
+}
+
+
+void MessageTransceiver::dataArrived()
+{
+    QTcpSocket * connection = qobject_cast<QTcpSocket *>(sender());
+    QString origin = connection->peerAddress().toString();
+
+    if(connection) {
+        qWarning() << "got new data from" << origin;
+        emit newData(origin, connection->readAll());
+    }
 }

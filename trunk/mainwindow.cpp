@@ -11,9 +11,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(&mt, SIGNAL(newData(QString,QByteArray)), this, SLOT(gotNewData(QString,QByteArray))) ;
+    connect(this, SIGNAL(connectToHost(QString)), &mt, SLOT(connectTo(QString)));
+    connect(this, SIGNAL(sendData(QString,QByteArray)), &mt, SLOT(sendMessage(QString,QByteArray)));
+
+    mt.start();
+
+
+
 
     //TODO Used for testing, remove later.
-    QPushButton *quit = new QPushButton(tr("Quit"), this);
+    /*QPushButton *quit = new QPushButton(tr("Quit"), this);
     quit->setGeometry(10,130,50,50);
     btn = new QPushButton(tr("merhaaaaba"), this);
     btn->setGeometry(10,70,50,50);
@@ -24,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
     connect(listen, SIGNAL(clicked()), this, SLOT(startListening()));
-    connect(btn, SIGNAL(clicked()), this, SLOT(yoksunsenaslinda()));
+    connect(btn, SIGNAL(clicked()), this, SLOT(yoksunsenaslinda()));*/
 }
 
 MainWindow::~MainWindow()
@@ -89,4 +97,23 @@ void MainWindow::dataArrived()
     }
 
 
+}
+
+void MainWindow::on_connectToHost_clicked()
+{
+    QString host = ui->hostAddress->text();
+    emit connectToHost(host);
+}
+
+void MainWindow::on_sendData_clicked()
+{
+    QString host = ui->hostAddress->text();
+    QByteArray data = ui->inputData->text().toAscii();
+
+    emit sendData(host, data);
+}
+
+void MainWindow::gotNewData(QString origin, QByteArray data)
+{
+    ui->receivedData->setPlainText(ui->receivedData->toPlainText() + "\n" + origin + " length: " + QString::number(data.length()));
 }
