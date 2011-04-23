@@ -3,7 +3,20 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <wtloginmessage.h>
-#include <wtloginresponsemessage.h>
+#include <wtloginresponse.h>
+#include <wtlogoutrequest.h>
+#include <wtpicturerequest.h>
+#include <wtpictureresponse.h>
+#include <wtsessionjoinrequest.h>
+#include <wtsessionjoinresponse.h>
+#include <wtsessionleaverequest.h>
+#include <wtsessionleaveresponse.h>
+#include <wtsessionlistrequest.h>
+#include <wtsessionlistresponse.h>
+#include <wtsessionmemberupdate.h>
+#include <wtupdatedrawing.h>
+#include <wtwritepermissionrequest.h>
+#include <wtwritepermissionstatus.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,7 +30,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mt.start();
 
+    WTLoginResponse msg;
+    msg.setUsername("ozan");
+    msg.setInfomsg("merhaba");
 
+
+
+    QByteArray *packet1 =  new QByteArray(msg.serialize());
+    WTLoginResponse msgTest;
+    msgTest.deserialize(packet1);
+    qWarning() << msg.getUsername() << " : " << msg.getInfomsg();
 
 
     //TODO Used for testing, remove later.
@@ -27,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     btn->setGeometry(10,70,50,50);
     QPushButton *listen = new QPushButton(tr("Listen"), this);
     tb = new QLineEdit(this);
-    tb->setGeometry(70,10,100,100);
+    tb->setGeometry(70,10,100,20);
     listen->setGeometry(10,10,50,50);
 
     connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -74,27 +96,7 @@ void MainWindow::dataArrived()
 
     }
 
-    if (datagram->startsWith("WTC1LOGINREQ")) {
-        WTLoginMessage loginMessage;
-        loginMessage.deserialize(datagram);
-        tb->setText(loginMessage.getUsername());
 
-        WTLoginResponseMessage loginResponse;
-
-        loginResponse.setResult(1);
-        qWarning("merhaba");
-        loginResponse.setInfomsg("Successful");
-        qWarning("merhaba2");
-        QByteArray responseDatagram = loginResponse.serialize();
-        qWarning("merhaba3");
-        server.writeDatagram(responseDatagram.data(), responseDatagram.size(), QHostAddress::Broadcast, 12345);
-        qWarning("merhaba4");
-    } else if (datagram->startsWith("WTC1LOGINRES")) {
-        WTLoginResponseMessage loginResponse;
-        loginResponse.deserialize(datagram);
-        tb->setText(loginResponse.getInfomsg());
-
-    }
 
 
 }

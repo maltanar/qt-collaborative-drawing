@@ -2,6 +2,9 @@
 #define WTMESSAGE_H
 
 #include <QObject>
+#include <QDataStream>
+#include <QDebug>
+#include <QStringList>
 
 class WTMessage : public QObject
 {
@@ -11,13 +14,15 @@ public:
     explicit WTMessage(QObject *parent = 0);
     ~WTMessage();
     virtual QByteArray serialize();
-    //TODO Decide on the type of the argument whether it should be constant and reference.
     virtual void deserialize(QByteArray *data);
+    void setUsername(QString username);
+    QString getUsername();
 
 protected:
     QString version;
     QString command;
     int msgSize;
+    QString username;
 
 
 };

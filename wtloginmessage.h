@@ -1,9 +1,9 @@
 #ifndef WTLOGINMESSAGE_H
 #define WTLOGINMESSAGE_H
 
-#include "wtrequestmessage.h"
+#include "wtmessage.h"
 
-class WTLoginMessage : public WTRequestMessage
+class WTLoginMessage : public WTMessage
 {
     Q_OBJECT
 public:

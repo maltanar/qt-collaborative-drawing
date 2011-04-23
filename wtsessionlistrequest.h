@@ -1,9 +1,9 @@
 #ifndef WTSESSIONLISTREQUEST_H
 #define WTSESSIONLISTREQUEST_H
 
-#include "wtrequestmessage.h"
+#include "wtmessage.h"
 
-class WTSessionListRequest : public WTRequestMessage
+class WTSessionListRequest : public WTMessage
 {
     Q_OBJECT
 public:

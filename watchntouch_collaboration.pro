@@ -13,20 +13,40 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     wtmessage.cpp \
-    wtloginresponsemessage.cpp \
-    wtrequestmessage.cpp \
     wtloginmessage.cpp \
     wtsessionlistrequest.cpp \
-    wtsessionstaterequest.cpp \
-    messagetransceiver.cpp
+    messagetransceiver.cpp \
+    wtlogoutrequest.cpp \
+    wtpicturerequest.cpp \
+    wtpictureresponse.cpp \
+    wtsessionjoinrequest.cpp \
+    wtsessionjoinresponse.cpp \
+    wtsessionleaverequest.cpp \
+    wtsessionleaveresponse.cpp \
+    wtsessionlistresponse.cpp \
+    wtsessionmemberupdate.cpp \
+    wtupdatedrawing.cpp \
+    wtwritepermissionrequest.cpp \
+    wtwritepermissionstatus.cpp \
+    wtloginresponse.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
-    wtloginresponsemessage.h \
-    wtrequestmessage.h \
     wtloginmessage.h \
     wtsessionlistrequest.h \
-    wtsessionstaterequest.h \
-    messagetransceiver.h
+    messagetransceiver.h \
+    wtlogoutrequest.h \
+    wtpicturerequest.h \
+    wtpictureresponse.h \
+    wtsessionjoinrequest.h \
+    wtsessionjoinresponse.h \
+    wtsessionleaverequest.h \
+    wtsessionleaveresponse.h \
+    wtsessionlistresponse.h \
+    wtsessionmemberupdate.h \
+    wtupdatedrawing.h \
+    wtwritepermissionrequest.h \
+    wtwritepermissionstatus.h \
+    wtloginresponse.h
 
 FORMS    += mainwindow.ui
