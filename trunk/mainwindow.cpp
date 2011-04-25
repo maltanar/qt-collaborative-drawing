@@ -30,18 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mt.start();
 
-    WTLoginResponse msg;
-    msg.setUsername("ozan");
-    msg.setInfomsg("merhaba");
-
-
-
-    QByteArray *packet1 =  new QByteArray(msg.serialize());
-    WTLoginResponse msgTest;
-    msgTest.deserialize(packet1);
-    qWarning() << msg.getUsername() << " : " << msg.getInfomsg();
-
-
     //TODO Used for testing, remove later.
     /*QPushButton *quit = new QPushButton(tr("Quit"), this);
     quit->setGeometry(10,130,50,50);

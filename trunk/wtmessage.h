@@ -17,6 +17,10 @@ public:
     virtual void deserialize(QByteArray *data);
     void setUsername(QString username);
     QString getUsername();
+    void setCommand(QString command);
+    QString getCommand();
+    void setVersion(QString version);
+    QString getVersion();
 
 protected:
     QString version;
