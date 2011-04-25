@@ -96,6 +96,8 @@ void MessageTransceiver::connected()
         qWarning() << "adding new local-initiated connection to" << destination;
         // insert new tcp socket into the list of open connections
         mOpenConnections.insert(destination, newConnection);
+        originBuffers.insert(destination, QByteArray());
+        originExpectedDataSize.insert(destination, 0);
         connect(newConnection, SIGNAL(readyRead()), this, SLOT(dataArrived()));
     }
 }
@@ -122,6 +124,7 @@ void MessageTransceiver::dataArrived()
     QString origin = connection->peerAddress().toString();
     QByteArray newData;
     QByteArray bufferContent;
+    unsigned int expectedLength = 0;
 
     if(connection) {
         qWarning() << "got new data from" << origin;
@@ -130,7 +133,9 @@ void MessageTransceiver::dataArrived()
 
         if(originBuffers[origin].isEmpty() && newData.startsWith(TRANSCEIVER_HEADER)) {
             // YAYAYAYYAY AYYY! brand new data for this origin!
-            originExpectedDataSize[origin] = newData.mid(8, 4).toInt();
+
+            memcpy(&expectedLength, newData.constData() + 8, 4);
+            originExpectedDataSize[origin] = expectedLength;
             originBuffers[origin].append(newData.right(newData.length() - 12));
             // check if expected data is complete
             if(originBuffers[origin].length() == originExpectedDataSize[origin]) {
