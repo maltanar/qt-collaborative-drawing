@@ -15,10 +15,10 @@ QByteArray WTSessionLeaveRequest::serialize()
     return data;
 }
 
-void WTSessionLeaveRequest::deserialize(QByteArray *data)
+void WTSessionLeaveRequest::deserialize(QByteArray data)
 {
     char sessionName[9];
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(24);

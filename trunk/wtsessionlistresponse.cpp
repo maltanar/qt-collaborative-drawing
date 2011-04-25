@@ -22,9 +22,9 @@ QByteArray WTSessionListResponse::serialize()
     return data;
 }
 
-void WTSessionListResponse::deserialize(QByteArray *data)
+void WTSessionListResponse::deserialize(QByteArray data)
 {
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(24);

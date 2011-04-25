@@ -11,7 +11,7 @@ public:
     explicit WTSessionListResponse(QObject *parent = 0);
 
     QByteArray serialize();
-    void deserialize(QByteArray *data);
+    void deserialize(QByteArray data);
 
     QStringList getSessionList();
     void setSessionList(QStringList &sessionList);

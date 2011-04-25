@@ -20,13 +20,13 @@ QByteArray WTMessage::serialize()
     return data;
 }
 
-void WTMessage::deserialize(QByteArray *data)
+void WTMessage::deserialize(QByteArray data)
 {
     //Assuming the header is always of the same size.
     char version[5];
     char command[9];
     char username[9];
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     dataStream.readRawData(version, 4);
     version[4] = '\0';
     dataStream.readRawData(command, 8);

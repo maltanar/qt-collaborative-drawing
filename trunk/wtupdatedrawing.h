@@ -10,7 +10,7 @@ public:
     explicit WTUpdateDrawing(QObject *parent = 0);
 
     QByteArray serialize();
-    void deserialize(QByteArray *data);
+    void deserialize(QByteArray data);
 
     QString getSessionName();
     void setSessionName(QString sessionName);

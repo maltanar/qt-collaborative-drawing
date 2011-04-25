@@ -15,11 +15,11 @@ QByteArray WTUpdateDrawing::serialize()
     return data;
 }
 
-void WTUpdateDrawing::deserialize(QByteArray *data)
+void WTUpdateDrawing::deserialize(QByteArray data)
 {
     char sessionName[9];
     char *picData;
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(24);
@@ -27,9 +27,9 @@ void WTUpdateDrawing::deserialize(QByteArray *data)
     sessionName[8] = '\0';
     this->sessionName = QString(sessionName).trimmed();
     //Rest of the characters belong to picture data
-    picData = new char[data->size()-32];
-    dataStream.readRawData(picData, data->size() - 32);
-    this->picData.setRawData(picData, data->size()-32);
+    picData = new char[data.size()-32];
+    dataStream.readRawData(picData, data.size() - 32);
+    this->picData.setRawData(picData, data.size()-32);
 }
 
 QString WTUpdateDrawing::getSessionName()

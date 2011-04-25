@@ -10,7 +10,7 @@ public:
     explicit WTLoginResponse(QObject *parent = 0);
 
     QByteArray serialize();
-    void deserialize(QByteArray *data);
+    void deserialize(QByteArray data);
 
     void setInfomsg(QString msg);
     QString getInfomsg();
