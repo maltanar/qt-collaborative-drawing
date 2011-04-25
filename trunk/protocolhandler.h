@@ -35,7 +35,7 @@ private:
 
     void handleMapRequestStatus(QString username, bool confirmed, QString destination = "");
 
-    void handleLoginRequest(WTLoginMessage *msg);
+    void handleLoginRequest(WTLoginMessage *msg, QString requestOrigin);
     void handleLoginResponse(WTLoginResponse *msg);
     void handleLogoutRequest(WTLogoutRequest *msg);
     void handlePictureRequest(WTPictureRequest *msg);
@@ -53,6 +53,9 @@ private:
 
 signals:
     void sendMessage(QString destination, QByteArray data);
+    void receivedLoginRequest(QString userName);
+    void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
+    void receivedLogoutRequest(QString userName);
 
 public slots:
     void receiveMessage(QString origin, QByteArray data);
