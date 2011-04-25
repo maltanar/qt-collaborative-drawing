@@ -132,6 +132,16 @@ void MessageTransceiver::dataArrived()
             // YAYAYAYYAY AYYY! brand new data for this origin!
             originExpectedDataSize[origin] = newData.mid(8, 4).toInt();
             originBuffers[origin].append(newData.right(newData.length() - 12));
+            // check if expected data is complete
+            if(originBuffers[origin].length() == originExpectedDataSize[origin]) {
+                // data should be complete now
+                // TODO check sum after implementing checksum on sender side
+                bufferContent =  originBuffers.value(origin, QByteArray());
+                emit gotNewData(origin, bufferContent);
+                // reset the data buffer for this origin
+                originBuffers[origin] = QByteArray();
+                originExpectedDataSize[origin] = 0;
+            }
         } else if(!originBuffers[origin].isEmpty()) {
             originBuffers[origin].append(newData);
             // check if expected data is complete
