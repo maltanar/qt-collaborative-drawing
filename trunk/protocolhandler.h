@@ -33,6 +33,8 @@ private:
 
     bool deliverMessage(WTMessage * msg);
 
+    void handleMapRequestStatus(QString username, bool confirmed, QString destination = "");
+
     void handleLoginRequest(WTLoginMessage *msg);
     void handleLoginResponse(WTLoginResponse *msg);
     void handleLogoutRequest(WTLogoutRequest *msg);
@@ -48,7 +50,6 @@ private:
     void handleUpdateDrawing(WTUpdateDrawing *msg);
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
-
 
 signals:
     void sendMessage(QString destination, QByteArray data);
