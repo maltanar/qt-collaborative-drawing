@@ -28,7 +28,96 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
         return;
     }
     // TODO determine the message type and deserialize accordingly
-
+    if (candidateMsg.getCommand() == "LOGINREQ")
+    {
+        WTLoginMessage *msg = new WTLoginMessage();
+        msg->deserialize(data);
+        handleLoginRequest(msg, origin);
+    }
+    else if (candidateMsg.getCommand() == "LOGINRES")
+    {
+        WTLoginResponse *msg = new WTLoginResponse();
+        msg->deserialize(data);
+        handleLoginResponse(msg);
+    }
+    else if (candidateMsg.getCommand() == "LOGOUTRQ")
+    {
+        WTLogoutRequest *msg = new WTLogoutRequest();
+        msg->deserialize(data);
+        handleLogoutRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "COLSTARQ")
+    {
+        WTPictureRequest *msg = new WTPictureRequest();
+        msg->deserialize(data);
+        handlePictureRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "COLSTARS")
+    {
+        WTPictureResponse *msg = new WTPictureResponse();
+        msg->deserialize(data);
+        handlePictureResponse(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSJOIN")
+    {
+        WTSessionJoinRequest *msg = new WTSessionJoinRequest();
+        msg->deserialize(data);
+        handleSessionJoinRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSRESP")
+    {
+        WTSessionJoinResponse *msg = new WTSessionJoinResponse();
+        msg->deserialize(data);
+        handleSessionJoinResponse(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSQUIT")
+    {
+        WTSessionLeaveRequest *msg = new WTSessionLeaveRequest();
+        msg->deserialize(data);
+        handleSessionLeaveRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSQACK")
+    {
+        WTSessionLeaveResponse *msg = new WTSessionLeaveResponse();
+        msg->deserialize(data);
+        handleSessionLeaveResponse(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSLREQ")
+    {
+        WTSessionListRequest *msg = new WTSessionListRequest();
+        msg->deserialize(data);
+        handleSessionListRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSLRES")
+    {
+        WTSessionListResponse *msg = new WTSessionListResponse();
+        msg->deserialize(data);
+        handleSessionListResponse(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESSMUPD")
+    {
+        WTSessionMemberUpdate *msg = new WTSessionMemberUpdate();
+        msg->deserialize(data);
+        handleSessionMemberUpdate(msg);
+    }
+    else if (candidateMsg.getCommand() == "DRAWUPDT")
+    {
+        WTUpdateDrawing *msg = new WTUpdateDrawing();
+        msg->deserialize(data);
+        handleUpdateDrawing(msg);
+    }
+    else if (candidateMsg.getCommand() == "WRTPRMRQ")
+    {
+        WTWritePermissionRequest *msg = new WTWritePermissionRequest();
+        msg->deserialize(data);
+        handleWritePermissionRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "WRTPRMST")
+    {
+        WTWritePermissionStatus *msg = new WTWritePermissionStatus();
+        msg->deserialize(data);
+        handleWritePermissionStatus(msg);
+    }
 }
 
 // deliverMessage is responsible for handing the given message in byte array
