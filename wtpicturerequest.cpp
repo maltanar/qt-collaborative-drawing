@@ -15,10 +15,10 @@ QByteArray WTPictureRequest::serialize()
     return data;
 }
 
-void WTPictureRequest::deserialize(QByteArray *data)
+void WTPictureRequest::deserialize(QByteArray data)
 {
     char sessionName[9];
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     dataStream.skipRawData(24);
     dataStream.readRawData(sessionName,8);

@@ -14,7 +14,7 @@ public:
     explicit WTMessage(QObject *parent = 0);
     ~WTMessage();
     virtual QByteArray serialize();
-    virtual void deserialize(QByteArray *data);
+    virtual void deserialize(QByteArray data);
     void setUsername(QString username);
     QString getUsername();
     void setCommand(QString command);

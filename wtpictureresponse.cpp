@@ -16,11 +16,11 @@ QByteArray WTPictureResponse::serialize()
     return data;
 }
 
-void WTPictureResponse::deserialize(QByteArray *data)
+void WTPictureResponse::deserialize(QByteArray data)
 {
     char sessionName[9];
     char *picData;
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(24);
@@ -28,9 +28,9 @@ void WTPictureResponse::deserialize(QByteArray *data)
     sessionName[8] = '\0';
     this->sessionName = QString(sessionName).trimmed();
 
-    picData = new char[data->size()-32];
-    dataStream.readRawData(picData, data->size() - 32);
-    this->picData.setRawData(picData, data->size() - 32);
+    picData = new char[data.size()-32];
+    dataStream.readRawData(picData, data.size() - 32);
+    this->picData.setRawData(picData, data.size() - 32);
 }
 
 QString WTPictureResponse::getSessionName()

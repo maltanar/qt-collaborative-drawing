@@ -10,7 +10,7 @@ public:
     explicit WTWritePermissionStatus(QObject *parent = 0);
 
     QByteArray serialize();
-    void deserialize(QByteArray *data);
+    void deserialize(QByteArray data);
 
     char getStatus();
     void setStatus(char status);

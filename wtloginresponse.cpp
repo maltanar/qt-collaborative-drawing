@@ -17,9 +17,9 @@ QByteArray WTLoginResponse::serialize()
     return data;
 }
 
-void WTLoginResponse::deserialize(QByteArray *data)
+void WTLoginResponse::deserialize(QByteArray data)
 {
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     char result;
     char *infomsg;
     WTMessage::deserialize(data);

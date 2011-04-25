@@ -17,9 +17,9 @@ QByteArray WTSessionJoinRequest::serialize()
     return data;
 }
 
-void WTSessionJoinRequest::deserialize(QByteArray *data)
+void WTSessionJoinRequest::deserialize(QByteArray data)
 {
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     char password[9];
     char sessionName[9];
     WTMessage::deserialize(data);

@@ -9,7 +9,7 @@ class WTSessionLeaveResponse : public WTMessage
 public:
     explicit WTSessionLeaveResponse(QObject *parent = 0);
 
-    void deserialize(QByteArray *data);
+    void deserialize(QByteArray data);
     QByteArray serialize();
 
     char getResult();

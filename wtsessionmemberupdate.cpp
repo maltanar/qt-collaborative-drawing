@@ -25,10 +25,10 @@ QByteArray WTSessionMemberUpdate::serialize()
     return data;
 }
 
-void WTSessionMemberUpdate::deserialize(QByteArray *data)
+void WTSessionMemberUpdate::deserialize(QByteArray data)
 {
     char sessionName[9];
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(24);

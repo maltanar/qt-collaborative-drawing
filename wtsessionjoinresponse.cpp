@@ -24,10 +24,10 @@ QByteArray WTSessionJoinResponse::serialize()
     return data;
 }
 
-void WTSessionJoinResponse::deserialize(QByteArray *data)
+void WTSessionJoinResponse::deserialize(QByteArray data)
 {
     char sessionName[9];
-    QDataStream dataStream(*data);
+    QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header
     dataStream.skipRawData(24);
