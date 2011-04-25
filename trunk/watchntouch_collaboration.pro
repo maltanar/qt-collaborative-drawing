@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     wtupdatedrawing.cpp \
     wtwritepermissionrequest.cpp \
     wtwritepermissionstatus.cpp \
-    wtloginresponse.cpp
+    wtloginresponse.cpp \
+    protocolhandler.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
@@ -47,6 +48,7 @@ HEADERS  += mainwindow.h \
     wtupdatedrawing.h \
     wtwritepermissionrequest.h \
     wtwritepermissionstatus.h \
-    wtloginresponse.h
+    wtloginresponse.h \
+    protocolhandler.h
 
 FORMS    += mainwindow.ui

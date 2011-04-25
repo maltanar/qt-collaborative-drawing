@@ -96,6 +96,7 @@ void MessageTransceiver::connected()
 void MessageTransceiver::disconnected()
 {
     QTcpSocket * oldConnection = qobject_cast<QTcpSocket *>(sender());
+    // TODO destination empty when remote peer disconnects?
     QString destination = oldConnection->peerAddress().toString();
 
     // TODO emit a signal for disconnection of this client
