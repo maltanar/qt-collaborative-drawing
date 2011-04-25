@@ -83,19 +83,26 @@ void ProtocolHandler::handleMapRequestStatus(QString username, bool confirmed, Q
 }
 
 
-void ProtocolHandler::handleLoginRequest(WTLoginMessage *msg)
+void ProtocolHandler::handleLoginRequest(WTLoginMessage *msg, QString requestOrigin)
 {
+    // Local peer role: Server
+    // add a mapping request for the remote peer
+    // this will be verified or discarded upon login result
+    pendingMapRequests.insert(msg->getUsername(), requestOrigin);
 
+    emit receivedLoginRequest(msg->getUsername());
 }
 
 void ProtocolHandler::handleLoginResponse(WTLoginResponse *msg)
 {
-
+    // Local peer role: Client
+    emit receivedLoginResponse(msg->getUsername(), msg->getResult(), msg->getInfomsg());
 }
 
 void ProtocolHandler::handleLogoutRequest(WTLogoutRequest *msg)
 {
-
+    // Local peer role: Server
+    emit receivedLogoutRequest(msg->getUsername());
 }
 
 void ProtocolHandler::handlePictureRequest(WTPictureRequest *msg)

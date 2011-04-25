@@ -56,12 +56,17 @@ void MessageTransceiver::connectTo(QString destination)
 
 void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 {
+    unsigned int messageSize = 0;
     QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
     if(!destinationSocket) {
         // TODO display error
         qWarning() << "Connection for destination" << destination << "does not exist!";
         return;
     }
+    messageSize = msg.length();
+    destinationSocket->write(TRANSCEIVER_HEADER);
+    destinationSocket->write((const char *) &messageSize, 4);
+    // TODO add checksum
     destinationSocket->write(msg);
 }
 
@@ -74,6 +79,8 @@ void MessageTransceiver::newConnection()
         newSocket = mServer->nextPendingConnection();
         qWarning() << "adding new remote-initiated connection to" << newSocket->peerAddress().toString();
         mOpenConnections.insert(newSocket->peerAddress().toString(), newSocket);
+        originBuffers.insert(newSocket->peerAddress().toString(), QByteArray());
+        originExpectedDataSize.insert(newSocket->peerAddress().toString(), 0);
         // connect signals for newly arrived connection
         connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataArrived()));
         connect(newSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
@@ -113,9 +120,33 @@ void MessageTransceiver::dataArrived()
 {
     QTcpSocket * connection = qobject_cast<QTcpSocket *>(sender());
     QString origin = connection->peerAddress().toString();
+    QByteArray newData;
+    QByteArray bufferContent;
 
     if(connection) {
         qWarning() << "got new data from" << origin;
-        emit newData(origin, connection->readAll());
+        newData = connection->readAll();
+        // TODO check if origin buffer for this origin exists
+
+        if(originBuffers[origin].isEmpty() && newData.startsWith(TRANSCEIVER_HEADER)) {
+            // YAYAYAYYAY AYYY! brand new data for this origin!
+            originExpectedDataSize[origin] = newData.mid(8, 4).toInt();
+            originBuffers[origin].append(newData.right(newData.length() - 12));
+        } else if(!originBuffers[origin].isEmpty()) {
+            originBuffers[origin].append(newData);
+            // check if expected data is complete
+            if(originBuffers[origin].length() == originExpectedDataSize[origin]) {
+                // data should be complete now
+                // TODO check sum after implementing checksum on sender side
+                bufferContent =  originBuffers.value(origin, QByteArray());
+                emit gotNewData(origin, bufferContent);
+                // reset the data buffer for this origin
+                originBuffers[origin] = QByteArray();
+                originExpectedDataSize[origin] = 0;
+            }
+        } else {
+            // unexpected ?
+            qWarning() << "unexpected data for origin" << origin;
+        }
     }
 }

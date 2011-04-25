@@ -8,6 +8,7 @@
 #include <QByteArray>
 
 #define     TRANSCEIVER_TCP_PORT      45454
+#define     TRANSCEIVER_HEADER        "MSGTXRX1"
 
 class MessageTransceiver : public QThread
 {
@@ -19,9 +20,11 @@ public:
 protected:
     QHash<QString, QTcpSocket *> mOpenConnections;
     QTcpServer * mServer;
+    QHash<QString, QByteArray> originBuffers;
+    QHash<QString, unsigned int> originExpectedDataSize;
 
 signals:
-    void newData(QString origin, QByteArray data);
+    void gotNewData(QString origin, QByteArray data);
 
 public slots:
     void connectTo(QString destination);
