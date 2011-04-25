@@ -49,3 +49,23 @@ QString WTMessage::getUsername()
 {
     return this->username;
 }
+
+void WTMessage::setCommand(QString command)
+{
+    this->command = command;
+}
+
+QString WTMessage::getCommand()
+{
+    return this->command;
+}
+
+void WTMessage::setVersion(QString version)
+{
+    this->version = version;
+}
+
+QString WTMessage::getVersion()
+{
+    return this->version;
+}
