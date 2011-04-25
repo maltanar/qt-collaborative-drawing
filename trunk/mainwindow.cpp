@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(&mt, SIGNAL(newData(QString,QByteArray)), this, SLOT(gotNewData(QString,QByteArray))) ;
+    connect(&mt, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(gotNewData(QString,QByteArray))) ;
     connect(this, SIGNAL(connectToHost(QString)), &mt, SLOT(connectTo(QString)));
     connect(this, SIGNAL(sendData(QString,QByteArray)), &mt, SLOT(sendMessage(QString,QByteArray)));
 
