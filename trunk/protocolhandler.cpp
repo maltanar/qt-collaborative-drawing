@@ -122,7 +122,7 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
     {
         WTPeerHandshake *msg = new WTPeerHandshake();
         msg->deserialize(data);
-        handlePeerHandshake(msg);
+        handlePeerHandshake(msg, origin);
     }
 }
 
@@ -154,13 +154,14 @@ bool ProtocolHandler::deliverMessage(WTMessage * msg)
 }
 
 
-void ProtocolHandler::handleMapRequestStatus(QString username, bool confirmed, QString destination)
+void ProtocolHandler::handleMapRequestStatus(QString username, bool confirmed)
 {
+
     if(confirmed) {
         // this mapping has been confirmed
         // we don't need the destination parameter, look for the username
         // in the pending map requests and move it to the established mappings
-        destination = pendingMapRequests.value(username, "");
+        QString destination = pendingMapRequests.value(username, "");
         if(destination == "") {
             // oops - something went wrong
             // no such mapping request pending
@@ -197,6 +198,8 @@ void ProtocolHandler::handleLoginResponse(WTLoginResponse *msg)
 void ProtocolHandler::handleLogoutRequest(WTLogoutRequest *msg)
 {
     // Local peer role: Server
+    // remove mapping for this peer
+    peerMap.remove(msg->getSrcUsername());
     emit receivedLogoutRequest(msg->getSrcUsername());
 }
 
@@ -272,9 +275,10 @@ void ProtocolHandler::handleWritePermissionStatus(WTWritePermissionStatus *msg)
     emit receivedWritePermissionStatus(msg->getSrcUsername(), msg->getStatus());
 }
 
-void ProtocolHandler::handlePeerHandshake(WTPeerHandshake *msg)
+void ProtocolHandler::handlePeerHandshake(WTPeerHandshake *msg, QString requestOrigin)
 {
     //Local peer role: Client
+    peerMap.insert(msg->getSrcUsername(), requestOrigin);
     emit receivedPeerHandshake(msg->getSrcUsername(), msg->getSessionName());
 }
 
@@ -288,6 +292,10 @@ void ProtocolHandler::sendLoginRequest(QString destUserName)
 
 void ProtocolHandler::sendLoginResponse(QString destUserName, char result, QString infoMsg)
 {
+    // Local peer role: server
+    // if login was OK, add pending mapping
+    // TODO encode this '1' in a more meaningful way
+    handleMapRequestStatus(destUserName, (bool) result);
     WTLoginResponse *msg = new WTLoginResponse;
     msg->setSrcUsername(this->userName);
     msg->setDestUsername(destUserName);
@@ -418,12 +426,12 @@ void ProtocolHandler::sendWritePermissionRequest(QString destUserName)
     deliverMessage(msg);
 }
 
-void ProtocolHandler::sendWritePermissionStatus(QString destUserName, char status)
+void ProtocolHandler::sendWritePermissionStatus(QString destUserName, QChar status)
 {
     WTWritePermissionStatus *msg = new WTWritePermissionStatus;
     msg->setSrcUsername(this->userName);
     msg->setDestUsername(destUserName);
-    msg->setStatus(status);
+    msg->setStatus(status.toAscii());
     deliverMessage(msg);
 }
 
