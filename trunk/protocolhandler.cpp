@@ -118,6 +118,12 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
         msg->deserialize(data);
         handleWritePermissionStatus(msg);
     }
+    else if (candidateMsg.getCommand() == "HELLOPAL")
+    {
+        WTPeerHandshake *msg = new WTPeerHandshake();
+        msg->deserialize(data);
+        handlePeerHandshake(msg);
+    }
 }
 
 // deliverMessage is responsible for handing the given message in byte array
@@ -250,6 +256,11 @@ void ProtocolHandler::handleWritePermissionRequest(WTWritePermissionRequest *msg
 }
 
 void ProtocolHandler::handleWritePermissionStatus(WTWritePermissionStatus *msg)
+{
+
+}
+
+void ProtocolHandler::handlePeerHandshake(WTPeerHandshake *msg)
 {
 
 }

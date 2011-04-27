@@ -2,21 +2,6 @@
 #include "ui_mainwindow.h"
 #include <QPushButton>
 #include <QTextEdit>
-#include <wtloginmessage.h>
-#include <wtloginresponse.h>
-#include <wtlogoutrequest.h>
-#include <wtpicturerequest.h>
-#include <wtpictureresponse.h>
-#include <wtsessionjoinrequest.h>
-#include <wtsessionjoinresponse.h>
-#include <wtsessionleaverequest.h>
-#include <wtsessionleaveresponse.h>
-#include <wtsessionlistrequest.h>
-#include <wtsessionlistresponse.h>
-#include <wtsessionmemberupdate.h>
-#include <wtupdatedrawing.h>
-#include <wtwritepermissionrequest.h>
-#include <wtwritepermissionstatus.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,20 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(sendData(QString,QByteArray)), &mt, SLOT(sendMessage(QString,QByteArray)));
 
     mt.start();
-
-    //TODO Used for testing, remove later.
-    /*QPushButton *quit = new QPushButton(tr("Quit"), this);
-    quit->setGeometry(10,130,50,50);
-    btn = new QPushButton(tr("merhaaaaba"), this);
-    btn->setGeometry(10,70,50,50);
-    QPushButton *listen = new QPushButton(tr("Listen"), this);
-    tb = new QLineEdit(this);
-    tb->setGeometry(70,10,100,20);
-    listen->setGeometry(10,10,50,50);
-
-    connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
-    connect(listen, SIGNAL(clicked()), this, SLOT(startListening()));
-    connect(btn, SIGNAL(clicked()), this, SLOT(yoksunsenaslinda()));*/
 }
 
 MainWindow::~MainWindow()
@@ -50,15 +21,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::yoksunsenaslinda()
-{
-    QByteArray datagram;
-    WTLoginMessage *msg = new WTLoginMessage();
-    msg->setUsername(tb->text());
-    datagram = msg->serialize();
-    qWarning("%s\n",datagram.constData());
-    server.writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, 12345);
-}
 
 void MainWindow::startListening()
 {

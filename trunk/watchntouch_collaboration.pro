@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     wtwritepermissionrequest.cpp \
     wtwritepermissionstatus.cpp \
     wtloginresponse.cpp \
-    protocolhandler.cpp
+    protocolhandler.cpp \
+    wtpeerhandshake.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
@@ -49,6 +50,7 @@ HEADERS  += mainwindow.h \
     wtwritepermissionrequest.h \
     wtwritepermissionstatus.h \
     wtloginresponse.h \
-    protocolhandler.h
+    protocolhandler.h \
+    wtpeerhandshake.h
 
 FORMS    += mainwindow.ui
