@@ -20,6 +20,7 @@
 #include <wtupdatedrawing.h>
 #include <wtwritepermissionrequest.h>
 #include <wtwritepermissionstatus.h>
+#include <wtpeerhandshake.h>
 
 class ProtocolHandler : public QObject
 {
@@ -50,6 +51,7 @@ private:
     void handleUpdateDrawing(WTUpdateDrawing *msg);
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
+    void handlePeerHandshake(WTPeerHandshake *msg);
 
 signals:
     void sendMessage(QString destination, QByteArray data);

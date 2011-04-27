@@ -30,7 +30,6 @@ private:
     MessageTransceiver mt;
 
 public slots:
-    void yoksunsenaslinda();
     void dataArrived();
     void gotNewConnection();
     void startListening();
