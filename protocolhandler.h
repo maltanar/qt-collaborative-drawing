@@ -38,7 +38,7 @@ private:
     QString getUserName();
     void setUserName(QString username);
 
-    void handleMapRequestStatus(QString username, bool confirmed, QString destination = "");
+    void handleMapRequestStatus(QString username, bool confirmed);
 
     void handleLoginRequest(WTLoginMessage *msg, QString requestOrigin);
     void handleLoginResponse(WTLoginResponse *msg);
@@ -55,7 +55,7 @@ private:
     void handleUpdateDrawing(WTUpdateDrawing *msg);
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
-    void handlePeerHandshake(WTPeerHandshake *msg);
+    void handlePeerHandshake(WTPeerHandshake *msg, QString requestOrigin);
 
 signals:
     void sendMessage(QString destination, QByteArray data);
@@ -74,7 +74,7 @@ signals:
     void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QHash<QString, long> users);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
-    void receivedWritePermissionStatus(QString userName, char status);
+    void receivedWritePermissionStatus(QString userName, QChar status);
 
 public slots:
     void receiveMessage(QString origin, QByteArray data);
@@ -94,7 +94,7 @@ public slots:
     void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QHash<QString, long> users);
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
-    void sendWritePermissionStatus(QString destUserName, char status);
+    void sendWritePermissionStatus(QString destUserName, QChar status);
 };
 
 #endif // PROTOCOLHANDLER_H

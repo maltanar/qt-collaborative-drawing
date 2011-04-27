@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     wtwritepermissionstatus.cpp \
     wtloginresponse.cpp \
     protocolhandler.cpp \
-    wtpeerhandshake.cpp
+    wtpeerhandshake.cpp \
+    collaborationserver.cpp \
+    collaborationclient.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
@@ -51,6 +53,8 @@ HEADERS  += mainwindow.h \
     wtwritepermissionstatus.h \
     wtloginresponse.h \
     protocolhandler.h \
-    wtpeerhandshake.h
+    wtpeerhandshake.h \
+    collaborationserver.h \
+    collaborationclient.h
 
 FORMS    += mainwindow.ui
