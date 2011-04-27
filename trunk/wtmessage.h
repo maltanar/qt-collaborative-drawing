@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QStringList>
 
+#define HEADER_SIZE 32
+
 class WTMessage : public QObject
 {
     Q_OBJECT
@@ -15,8 +17,10 @@ public:
     ~WTMessage();
     virtual QByteArray serialize();
     virtual void deserialize(QByteArray data);
-    void setUsername(QString username);
-    QString getUsername();
+    void setSrcUsername(QString username);
+    QString getSrcUsername();
+    void setDestUsername(QString username);
+    QString getDestUsername();
     void setCommand(QString command);
     QString getCommand();
     void setVersion(QString version);
@@ -26,7 +30,8 @@ protected:
     QString version;
     QString command;
     int msgSize;
-    QString username;
+    QString srcUsername;
+    QString destUsername;
 
 
 };

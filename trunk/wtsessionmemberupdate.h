@@ -22,6 +22,7 @@ public:
 
     void addUser(QString username, long IP);
     QHash<QString, long> getUsers();
+    void setUsers(QHash<QString, long> users);
 
     long getUserIP(QString username);
 private:

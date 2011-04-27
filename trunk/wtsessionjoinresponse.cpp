@@ -30,12 +30,12 @@ void WTSessionJoinResponse::deserialize(QByteArray data)
     QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header
-    dataStream.skipRawData(24);
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(&result,1);
     dataStream.readRawData(sessionName, 8);
     sessionName[8] = '\0';
     dataStream.readRawData((char *)&userCount, 4);
-    for (int i = 0; i < userCount; i++)
+    for (unsigned int i = 0; i < userCount; i++)
     {
         char username[9];
         long userIP;
@@ -68,7 +68,7 @@ QString WTSessionJoinResponse::getSessionName()
     return this->sessionName;
 }
 
-int WTSessionJoinResponse::getUserCount()
+unsigned int WTSessionJoinResponse::getUserCount()
 {
     return this->userCount;
 }
@@ -85,7 +85,12 @@ long WTSessionJoinResponse::getUserIP(QString username)
     return iter.value();
 }
 
-QHash<QString, long> WTSessionJoinResponse::getUserList()
+void WTSessionJoinResponse::setUsers(QHash<QString, long> users)
+{
+    this->users = users;
+}
+
+QHash<QString, long> WTSessionJoinResponse::getUsers()
 {
     return this->users;
 }
