@@ -24,8 +24,8 @@ void WTLoginResponse::deserialize(QByteArray data)
     char *infomsg;
     WTMessage::deserialize(data);
 
-    //Skip header and username
-    dataStream.skipRawData(24);
+    //Skip header and usernames
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(&result, 1);
     dataStream.readRawData((char *)&infomsgSize, 2);
     infomsg = new char[infomsgSize+1];

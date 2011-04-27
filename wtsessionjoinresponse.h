@@ -16,15 +16,16 @@ public:
     char getResult();
     void setSessionName(QString sessionName);
     QString getSessionName();
-    int getUserCount();
+    unsigned int getUserCount();
     void addUser(QString username, long userIP);
     long getUserIP(QString username);
-    QHash<QString, long> getUserList();
+    void setUsers(QHash<QString, long> users);
+    QHash<QString, long> getUsers();
 
 private:
     char result;
     QString sessionName;
-    int userCount;
+    unsigned int userCount;
     QHash<QString, long> users;
 };
 

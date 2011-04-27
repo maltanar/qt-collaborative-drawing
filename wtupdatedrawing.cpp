@@ -22,7 +22,7 @@ void WTUpdateDrawing::deserialize(QByteArray data)
     QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
-    dataStream.skipRawData(24);
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(sessionName,8);
     sessionName[8] = '\0';
     this->sessionName = QString(sessionName).trimmed();

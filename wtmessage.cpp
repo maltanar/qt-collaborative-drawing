@@ -1,7 +1,7 @@
 #include "wtmessage.h"
 
 WTMessage::WTMessage(QObject *parent) :
-        QObject(parent), msgSize(24) //Constant header size + username
+        QObject(parent), msgSize(HEADER_SIZE) //Constant header size + username
 {
         version = "WTC1";
 }
@@ -16,7 +16,8 @@ QByteArray WTMessage::serialize()
     QByteArray data(version.toAscii());
     data.append(command.toAscii());
     data.append(QByteArray::fromRawData((const char*)&msgSize, 4));
-    data.append(username.leftJustified(8, ' ').toAscii());
+    data.append(srcUsername.leftJustified(8, ' ').toAscii());
+    data.append(destUsername.leftJustified(8, ' ').toAscii());
     return data;
 }
 
@@ -25,29 +26,43 @@ void WTMessage::deserialize(QByteArray data)
     //Assuming the header is always of the same size.
     char version[5];
     char command[9];
-    char username[9];
+    char srcUsername[9];
+    char destUsername[9];
     QDataStream dataStream(data);
     dataStream.readRawData(version, 4);
     version[4] = '\0';
     dataStream.readRawData(command, 8);
     command[8] = '\0';
     dataStream.readRawData((char *)&msgSize, 4);
-    dataStream.readRawData(username, 8);
-    username[8] = '\0';
+    dataStream.readRawData(srcUsername, 8);
+    srcUsername[8] = '\0';
+    dataStream.readRawData(destUsername, 8);
+    destUsername[8] = '\0';
     this->version = QString(version);
     this->command = QString(command);
-    this->username = QString(username).trimmed();
+    this->srcUsername = QString(srcUsername).trimmed();
+    this->destUsername = QString(destUsername).trimmed();
 }
 
 
-void WTMessage::setUsername(QString username)
+void WTMessage::setSrcUsername(QString username)
 {
-    this->username = username;
+    this->srcUsername = username;
 }
 
-QString WTMessage::getUsername()
+QString WTMessage::getSrcUsername()
 {
-    return this->username;
+    return this->srcUsername;
+}
+
+void WTMessage::setDestUsername(QString username)
+{
+    this->destUsername = username;
+}
+
+QString WTMessage::getDestUsername()
+{
+    return this->getDestUsername();
 }
 
 void WTMessage::setCommand(QString command)

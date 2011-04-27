@@ -31,13 +31,13 @@ void WTSessionMemberUpdate::deserialize(QByteArray data)
     QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
-    dataStream.skipRawData(24);
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(sessionName,8);
     sessionName[8] = '\0';
     dataStream.readRawData((char *)&updatedMemberCount, 4);
     dataStream.readRawData(&updateType, 1);
 
-    for (int i = 0; i < updatedMemberCount; i++)
+    for (unsigned int i = 0; i < updatedMemberCount; i++)
     {
         char username[9];
         long IP;
@@ -82,6 +82,11 @@ void WTSessionMemberUpdate::addUser(QString username, long IP)
 QHash<QString, long> WTSessionMemberUpdate::getUsers()
 {
     return users;
+}
+
+void WTSessionMemberUpdate::setUsers(QHash<QString, long> users)
+{
+    this->users = users;
 }
 
 long WTSessionMemberUpdate::getUserIP(QString username)

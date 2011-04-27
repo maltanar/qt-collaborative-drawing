@@ -135,10 +135,10 @@ bool ProtocolHandler::deliverMessage(WTMessage * msg)
     if(!msg)
         return false;
     // find the peer destination for this username
-    QString destination = peerMap.value(msg->getUsername(), "");
+    QString destination = peerMap.value(msg->getDestUsername(), "");
     if(destination == "") {
         // the destination address for this peer is not defined
-        qWarning() << "deliverMessage: destination address for peer" << msg->getUsername() << "undefined";
+        qWarning() << "deliverMessage: destination address for peer" << msg->getDestUsername() << "undefined";
         delete msg;
         return false;
     }
@@ -183,84 +183,247 @@ void ProtocolHandler::handleLoginRequest(WTLoginMessage *msg, QString requestOri
     // Local peer role: Server
     // add a mapping request for the remote peer
     // this will be verified or discarded upon login result
-    pendingMapRequests.insert(msg->getUsername(), requestOrigin);
+    pendingMapRequests.insert(msg->getSrcUsername(), requestOrigin);
 
-    emit receivedLoginRequest(msg->getUsername());
+    emit receivedLoginRequest(msg->getSrcUsername());
 }
 
 void ProtocolHandler::handleLoginResponse(WTLoginResponse *msg)
 {
     // Local peer role: Client
-    emit receivedLoginResponse(msg->getUsername(), msg->getResult(), msg->getInfomsg());
+    emit receivedLoginResponse(msg->getSrcUsername(), msg->getResult(), msg->getInfomsg());
 }
 
 void ProtocolHandler::handleLogoutRequest(WTLogoutRequest *msg)
 {
     // Local peer role: Server
-    emit receivedLogoutRequest(msg->getUsername());
+    emit receivedLogoutRequest(msg->getSrcUsername());
 }
 
 void ProtocolHandler::handlePictureRequest(WTPictureRequest *msg)
 {
-
+    //Local peer role: Server
+    emit receivedPictureRequest(msg->getSrcUsername(), msg->getSessionName());
 }
 
 void ProtocolHandler::handlePictureResponse(WTPictureResponse *msg)
 {
-
+    //Local peer role: Client
+    emit receivedPictureResponse(msg->getSrcUsername(), msg->getSessionName(), msg->getPicData());
 }
 
 void ProtocolHandler::handleSessionJoinRequest(WTSessionJoinRequest *msg)
 {
-
+    //Local peer role: Server
+    emit receivedSessionJoinRequest(msg->getSrcUsername(), msg->getSessionName(), msg->getPassword());
 }
 
 void ProtocolHandler::handleSessionJoinResponse(WTSessionJoinResponse *msg)
 {
-
+    //Local peer role: Client
+    emit receivedSessionJoinResponse(msg->getSrcUsername(), msg->getSessionName(), msg->getResult(), msg->getUserCount(), msg->getUsers());
 }
 
 void ProtocolHandler::handleSessionLeaveRequest(WTSessionLeaveRequest *msg)
 {
-
+    //Local peer role: Server
+    emit receivedSessionLeaveRequest(msg->getSrcUsername(), msg->getSessionName());
 }
 
 void ProtocolHandler::handleSessionLeaveResponse(WTSessionLeaveResponse *msg)
 {
-
+    //Local peer role: Client
+    emit receivedSessionLeaveResponse(msg->getSrcUsername(), msg->getSessionName(), msg->getResult());
 }
 
 void ProtocolHandler::handleSessionListRequest(WTSessionListRequest *msg)
 {
-
+    //Local peer role: Server
+    emit receivedSessionListRequest(msg->getSrcUsername());
 }
 
 void ProtocolHandler::handleSessionListResponse(WTSessionListResponse *msg)
 {
-
+    //Local peer role: Client
+    emit receivedSessionListResponse(msg->getSrcUsername(), msg->getSessionList());
 }
 
 void ProtocolHandler::handleSessionMemberUpdate(WTSessionMemberUpdate *msg)
 {
-
+    //Local peer role: Server
+    emit receivedSessionMemberUpdate(msg->getSrcUsername(), msg->getSessionName(), msg->getUpdateType(), msg->getUsers());
 }
 
 void ProtocolHandler::handleUpdateDrawing(WTUpdateDrawing *msg)
 {
-
+    //Local peer role: Client
+    emit receivedUpdateDrawing(msg->getSrcUsername(), msg->getSessionName(), msg->getPicData());
 }
 
 void ProtocolHandler::handleWritePermissionRequest(WTWritePermissionRequest *msg)
 {
-
+    //Local peer role: Server
+    emit receivedWritePermissionRequest(msg->getSrcUsername());
 }
 
 void ProtocolHandler::handleWritePermissionStatus(WTWritePermissionStatus *msg)
 {
-
+    //Local peer role: Client
+    emit receivedWritePermissionStatus(msg->getSrcUsername(), msg->getStatus());
 }
 
 void ProtocolHandler::handlePeerHandshake(WTPeerHandshake *msg)
 {
-
+    //Local peer role: Client
+    emit receivedPeerHandshake(msg->getSrcUsername(), msg->getSessionName());
 }
+
+void ProtocolHandler::sendLoginRequest(QString destUserName)
+{
+    WTLoginMessage *msg = new WTLoginMessage;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendLoginResponse(QString destUserName, char result, QString infoMsg)
+{
+    WTLoginResponse *msg = new WTLoginResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setResult(result);
+    msg->setInfomsg(infoMsg);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendLogoutRequest(QString destUserName)
+{
+    WTLogoutRequest *msg = new WTLogoutRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendPeerHandshake(QString destUserName, QString sessionName)
+{
+    WTPeerHandshake *msg = new WTPeerHandshake;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendPictureRequest(QString destUserName, QString sessionName)
+{
+    WTPictureRequest *msg = new WTPictureRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendPictureResponse(QString destUserName, QString sessionName, QByteArray picData)
+{
+    WTPictureResponse *msg = new WTPictureResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setPicData(picData);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionJoinRequest(QString destUserName, QString sessionName, QString password)
+{
+    WTSessionJoinRequest *msg = new WTSessionJoinRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setPassword(password);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionJoinResponse(QString destUserName, QString sessionName, char result, QHash<QString, long> users)
+{
+    WTSessionJoinResponse *msg = new WTSessionJoinResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setResult(result);
+    msg->setUsers(users);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionLeaveRequest(QString destUserName, QString sessionName)
+{
+    WTSessionLeaveRequest *msg = new WTSessionLeaveRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionLeaveResponse(QString destUserName, QString sessionName, char result)
+{
+    WTSessionLeaveResponse *msg = new WTSessionLeaveResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setResult(result);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionListRequest(QString destUserName)
+{
+    WTSessionListRequest *msg = new WTSessionListRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionListResponse(QString destUserName, QStringList sessionList)
+{
+    WTSessionListResponse *msg = new WTSessionListResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionList(sessionList);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QHash<QString, long> users)
+{
+    WTSessionMemberUpdate *msg = new WTSessionMemberUpdate;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setUpdateType(updateType);
+    msg->setUsers(users);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData)
+{
+    WTUpdateDrawing *msg = new WTUpdateDrawing;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setPicData(picData);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendWritePermissionRequest(QString destUserName)
+{
+    WTWritePermissionRequest *msg = new WTWritePermissionRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendWritePermissionStatus(QString destUserName, char status)
+{
+    WTWritePermissionStatus *msg = new WTWritePermissionStatus;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setStatus(status);
+    deliverMessage(msg);
+}
+

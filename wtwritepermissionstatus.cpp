@@ -20,7 +20,7 @@ void WTWritePermissionStatus::deserialize(QByteArray data)
     QDataStream dataStream(data);
     WTMessage::deserialize(data);
     //Skip header and username
-    dataStream.skipRawData(24);
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(&status, 1);
 }
 

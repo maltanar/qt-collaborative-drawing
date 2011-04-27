@@ -45,10 +45,6 @@ void MainWindow::dataArrived()
         client.readDatagram(datagram->data(), datagram->size());
 
     }
-
-
-
-
 }
 
 void MainWindow::on_connectToHost_clicked()

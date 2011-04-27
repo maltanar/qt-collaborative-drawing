@@ -24,7 +24,7 @@ void WTSessionJoinRequest::deserialize(QByteArray data)
     char sessionName[9];
     WTMessage::deserialize(data);
     //Skip header and username
-    dataStream.skipRawData(24);
+    dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(sessionName, 8);
     //TODO size has to be changed to size of encrypted password
     dataStream.readRawData(password, 8);
