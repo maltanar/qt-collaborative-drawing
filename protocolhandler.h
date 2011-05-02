@@ -30,6 +30,8 @@ class ProtocolHandler : public QObject
 public:
     explicit ProtocolHandler(QObject *parent = 0);
 
+    void addUserMapping(QString userName, QString IP);
+
     void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
     MessageTransceiver* getMessageTransceiver();
 
@@ -62,6 +64,7 @@ private:
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
     void handlePeerHandshake(WTPeerHandshake *msg, QString requestOrigin);
+
 
 signals:
     void sendMessage(QString destination, QByteArray data);
