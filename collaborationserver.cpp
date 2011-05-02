@@ -125,14 +125,15 @@ ProtocolHandler * CollaborationServer::getProtocolHandler()
 // so that clients in the network can auto-discover the server
 void CollaborationServer::serviceBroadcastTimeout()
 {
-    qWarning() << "emitting service broadcast";
     QByteArray broadcastPackage;
     QDataStream packageStream(&broadcastPackage, QIODevice::ReadWrite);
     packageStream << QString("WTCOLSRV");
     QNetworkInterface interface;
     QList<QHostAddress> IpList = interface.allAddresses();
+    // TODO we are broadcasting only the IPv4 addresses - bad workaround
+    // client side should pick the proper address in subnet
     for (int i = 0; i < IpList.size(); i++)
-        if (IpList.at(i) != QHostAddress("127.0.0.1")) { // local loopback isn't useful for others
+        if (IpList.at(i) != QHostAddress("127.0.0.1") && IpList.at(i).protocol() == QAbstractSocket::IPv4Protocol) { // local loopback isn't useful for others
             packageStream << IpList.at(i);
         }
 
