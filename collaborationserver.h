@@ -7,6 +7,9 @@
 
 #include "protocolhandler.h"
 
+#define SERVICE_BROADCAST_PERIOD_MS     1000
+#define SERVICE_BROADCAST_PORT          45455
+
 class CollaborationServer : public QObject
 {
     Q_OBJECT
@@ -18,7 +21,10 @@ public:
 
 private:
     QList<QString> m_userList;
+    QList<QString> m_sessionList;
     ProtocolHandler * m_protocolHandler;
+    QUdpSocket serviceBroadcastSocket;
+    QTimer serviceBroadcastTimer;
 
 signals:
     void sendLoginResponse(QString destUserName, char result, QString infoMsg);
@@ -38,6 +44,9 @@ public slots:
     void receivedSessionListRequest(QString userName);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
+
+private slots:
+    void serviceBroadcastTimeout();
 };
 
 #endif // COLLABORATIONSERVER_H

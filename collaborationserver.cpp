@@ -15,6 +15,8 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     QObject(parent)
 {
     m_protocolHandler = NULL;
+    connect(&serviceBroadcastTimer, SIGNAL(timeout()), this, SLOT(serviceBroadcastTimeout()));
+    serviceBroadcastTimer.start(SERVICE_BROADCAST_PERIOD_MS);
 }
 
 void CollaborationServer::receivedLoginRequest(QString userName)
@@ -24,13 +26,14 @@ void CollaborationServer::receivedLoginRequest(QString userName)
     if(m_userList.contains(userName)) {
         // user with this name already logged in
         qWarning() << userName << "requested to log in but failed, already exists";
-        emit sendLoginResponse(userName, 0, "User " + userName + "already exists!");
+        emit sendLoginResponse(userName, 0, "User " + userName + " already exists!");
         return;
     } else {
         // add user to list of logged in users
         m_userList.append(userName);
         qWarning() << userName << "logged in successfully";
-        emit sendLoginResponse(userName, 1, "Login for user " + userName + "successful!");
+        qWarning() << "list of inloggad users" << m_userList;
+        emit sendLoginResponse(userName, 1, "Login for user " + userName + " successful!");
     }
 }
 
@@ -70,7 +73,8 @@ void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString 
 
 void CollaborationServer::receivedSessionListRequest(QString userName)
 {
-
+    qWarning() << userName << "wants list of sessions, sending";
+    emit sendSessionListResponse(userName, m_sessionList);
 }
 
 void CollaborationServer::receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData)
@@ -115,4 +119,22 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
 ProtocolHandler * CollaborationServer::getProtocolHandler()
 {
     return m_protocolHandler;
+}
+
+// broadcast the server's address(es) over UDP at certain intervals
+// so that clients in the network can auto-discover the server
+void CollaborationServer::serviceBroadcastTimeout()
+{
+    qWarning() << "emitting service broadcast";
+    QByteArray broadcastPackage;
+    QDataStream packageStream(&broadcastPackage, QIODevice::ReadWrite);
+    packageStream << QString("WTCOLSRV");
+    QNetworkInterface interface;
+    QList<QHostAddress> IpList = interface.allAddresses();
+    for (int i = 0; i < IpList.size(); i++)
+        if (IpList.at(i) != QHostAddress("127.0.0.1")) { // local loopback isn't useful for others
+            packageStream << IpList.at(i);
+        }
+
+    serviceBroadcastSocket.writeDatagram(broadcastPackage, QHostAddress::Broadcast, SERVICE_BROADCAST_PORT);
 }

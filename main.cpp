@@ -12,8 +12,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    //MainWindow w;
+    //w.show();
 
 
     MessageTransceiver m;
@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 
     p.setMessageTransceiver(&m);
     cs.setProtocolHandler(&p);
+
+    m.start();
 
 
 /*
