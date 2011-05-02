@@ -1,5 +1,9 @@
 #include <QtGui/QApplication>
 #include "mainwindow.h"
+#include "messagetransceiver.h"
+#include "protocolhandler.h"
+#include "collaborationserver.h"
+#include "collaborationclient.h"
 
 #include <messagetransceiver.h>
 #include <protocolhandler.h>
@@ -11,6 +15,16 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
+
+    MessageTransceiver m;
+    ProtocolHandler p;
+    CollaborationServer cs;
+
+    p.setMessageTransceiver(&m);
+    cs.setProtocolHandler(&p);
+
+
+/*
     MessageTransceiver m;
     ProtocolHandler p;
     CollaborationClient c;
@@ -21,5 +35,6 @@ int main(int argc, char *argv[])
     p.setUserName("Ozan");
     c.dummyFunction(COLLABORATION_SERVER_NAME);
 
+*/
     return a.exec();
 }
