@@ -22,13 +22,19 @@
 #include <wtwritepermissionstatus.h>
 #include <wtpeerhandshake.h>
 
+#include "messagetransceiver.h"
+
 class ProtocolHandler : public QObject
 {
     Q_OBJECT
 public:
     explicit ProtocolHandler(QObject *parent = 0);
 
+    void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
+    MessageTransceiver* getMessageTransceiver();
+
 private:
+    MessageTransceiver * m_messageTransceiver;
     QHash<QString, QString> peerMap;
     QHash<QString, QString> pendingMapRequests;
     QString userName;
