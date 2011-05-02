@@ -6,6 +6,11 @@ ProtocolHandler::ProtocolHandler(QObject *parent) :
     m_messageTransceiver = NULL;
 }
 
+void ProtocolHandler::addUserMapping(QString userName, QString IP)
+{
+    peerMap.insert(userName, IP);
+}
+
 // receiveMessage is responsible for handling byte array data coming
 // from the MessageTransceiver by checking for proper message format,
 // deserializing it, constructing the appropriate message object
