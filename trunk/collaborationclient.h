@@ -8,6 +8,7 @@
 #include <protocolhandler.h>
 
 #define COLLABORATION_SERVER_NAME "$SERVER$"
+#define SERVICE_BROADCAST_PORT 45455
 
 class CollaborationClient : public QObject
 {
@@ -26,6 +27,7 @@ public:
 private:
     QStringList m_userList;
     ProtocolHandler *m_protocolHandler;
+    QUdpSocket serviceBroadcastReceiver;
 
 signals:
     void sendLoginRequest(QString destUserName);
@@ -37,6 +39,8 @@ signals:
     void sendSessionListRequest(QString destUserName);
     void sendWritePermissionRequest(QString destUserName);
 
+    void foundCollaborationServer(QHostAddress serverAddress);
+
 public slots:
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedPeerHandshake(QString userName, QString sessionName);
@@ -47,6 +51,9 @@ public slots:
     void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QHash<QString, long> users);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionStatus(QString userName, QChar status);
+
+private slots:
+    void gotServiceBroadcast();
 
 };
 
