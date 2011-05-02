@@ -46,6 +46,10 @@ void MessageTransceiver::connectTo(QString destination)
     // TODO connect signals from QTcpSockets to handle errors and check if conn is established
     QTcpSocket * newConnection = new QTcpSocket(this);
 
+    // we may have to queue some messages to this socket before connection
+    // is established
+    destBuffers[destination] = QByteArray();
+
     // connect the signals for this tcp socket
     // TODO also connect and handle error signals
     connect(newConnection, SIGNAL(connected()), this, SLOT(connected()));
@@ -56,17 +60,31 @@ void MessageTransceiver::connectTo(QString destination)
 
 void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 {
-    unsigned int messageSize = 0;
+    unsigned int messageSize = msg.length();
     QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
+
     if(!destinationSocket) {
-        // TODO display error
-        qWarning() << "Connection for destination" << destination << "does not exist!";
+        qWarning() << "Connection for destination" << destination << "does not exist, put data into queue";
+        // open a connection to this peer
+        connectTo(destination);
+        // queue data, will be sent when connection is established
+        destBuffers[destination].append(TRANSCEIVER_HEADER);
+        destBuffers[destination].append((const char *) &messageSize, 4);
+        destBuffers[destination].append(msg);
         return;
     }
-    messageSize = msg.length();
+    // attach the transceiver-level header with message size info
     destinationSocket->write(TRANSCEIVER_HEADER);
     destinationSocket->write((const char *) &messageSize, 4);
-    // TODO add checksum
+    // TODO add checksum?
+    destinationSocket->write(msg);
+}
+
+void MessageTransceiver::sendMessageNoHeader(QTcpSocket* destinationSocket,QByteArray msg)
+{
+    // send message directly without attaching transceiver-level header
+    // meaning that the transceiver-level header is already attached
+    // only used internally for queued data transmission
     destinationSocket->write(msg);
 }
 
@@ -99,6 +117,15 @@ void MessageTransceiver::connected()
         originBuffers.insert(destination, QByteArray());
         originExpectedDataSize.insert(destination, 0);
         connect(newConnection, SIGNAL(readyRead()), this, SLOT(dataArrived()));
+
+        // if there is data waiting to be sent in the buffer to this destination,
+        // now we can send it
+        if(destBuffers[destination].size() > 0) {
+            qWarning() << "sending queued data to" << destination << "datasize" << destBuffers[destination].size();
+            sendMessageNoHeader(newConnection, destBuffers[destination]);
+            // clear the send queue
+            destBuffers[destination] = QByteArray();
+        }
     }
 }
 

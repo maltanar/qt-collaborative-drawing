@@ -21,7 +21,10 @@ protected:
     QHash<QString, QTcpSocket *> mOpenConnections;
     QTcpServer * mServer;
     QHash<QString, QByteArray> originBuffers;
+    QHash<QString, QByteArray> destBuffers;
     QHash<QString, unsigned int> originExpectedDataSize;
+
+    void sendMessageNoHeader(QTcpSocket*,QByteArray msg);
 
 signals:
     void gotNewData(QString origin, QByteArray data);
