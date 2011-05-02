@@ -35,6 +35,9 @@ public:
     void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
     MessageTransceiver* getMessageTransceiver();
 
+    QString getUserName();
+    void setUserName(QString username);
+
 private:
     MessageTransceiver * m_messageTransceiver;
     QHash<QString, QString> peerMap;
@@ -42,9 +45,6 @@ private:
     QString userName;
 
     bool deliverMessage(WTMessage * msg);
-
-    QString getUserName();
-    void setUserName(QString username);
 
     void handleMapRequestStatus(QString username, bool confirmed);
 
