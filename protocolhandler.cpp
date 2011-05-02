@@ -3,6 +3,7 @@
 ProtocolHandler::ProtocolHandler(QObject *parent) :
     QObject(parent)
 {
+    m_messageTransceiver = NULL;
 }
 
 // receiveMessage is responsible for handling byte array data coming
@@ -435,3 +436,19 @@ void ProtocolHandler::sendWritePermissionStatus(QString destUserName, QChar stat
     deliverMessage(msg);
 }
 
+void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTransceiver)
+{
+    if(m_messageTransceiver) {
+        // disconnect all signals and slots from previous MessageTransceiver
+        disconnect(this);
+        disconnect(m_messageTransceiver);
+    }
+    // connect signals and slots
+    connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
+    connect(newMesssageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
+}
+
+MessageTransceiver* ProtocolHandler::getMessageTransceiver()
+{
+    return m_messageTransceiver;
+}
