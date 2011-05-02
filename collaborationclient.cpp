@@ -4,6 +4,9 @@ CollaborationClient::CollaborationClient(QObject *parent) :
     QObject(parent),
     m_protocolHandler(NULL)
 {
+    // set up the broadcast listener to autodiscover the server
+    serviceBroadcastReceiver.bind(SERVICE_BROADCAST_PORT, QUdpSocket::ShareAddress);
+    connect(&serviceBroadcastReceiver, SIGNAL(readyRead()), this, SLOT(gotServiceBroadcast()));
 }
 
 void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandler)
@@ -78,8 +81,8 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
     else
     {
         //Session join was sucessful.
-        //Add all the members in the list "users" into the
-        //- user-ip mapping
+        //Add all members to the list that is going to be
+        // - used to send picture data to all members in that session
         QHash<QString, long>::iterator itr;
         for (itr = users.begin(); itr != users.end(); itr++)
         {
@@ -133,4 +136,48 @@ void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar 
     //TODO else
     //TODO - can draw to classroom session
     //TODO so, change a state variable to show the permission accordingly
+}
+
+void CollaborationClient::gotServiceBroadcast()
+{
+    qWarning() << "got service broadcast!";
+
+    QByteArray broadcastPackage;
+    QString packageHeader;
+    QHostAddress serverAddress;
+    QNetworkInterface networkInterface;
+    QList<QNetworkInterface> allInterfaces = networkInterface.allInterfaces();
+    QList<QNetworkAddressEntry> allAddresses;
+
+    for (int i = 0; i < allInterfaces.size(); i++)
+    {
+        allAddresses.append(allInterfaces[i].addressEntries());
+    }
+
+    while(serviceBroadcastReceiver.hasPendingDatagrams())
+    {
+        broadcastPackage.resize(serviceBroadcastReceiver.pendingDatagramSize());
+        serviceBroadcastReceiver.readDatagram(broadcastPackage.data(), broadcastPackage.size());
+        QDataStream packageStream(&broadcastPackage, QIODevice::ReadWrite);
+        packageStream >> packageHeader;
+
+        if (packageHeader == "WTCOLSRV")
+        {
+            packageStream >> serverAddress;
+
+            for(int i = 0; i < allAddresses.size(); i++)
+            {
+                if (allAddresses[i].ip().protocol() != QAbstractSocket::IPv4Protocol) continue;
+
+                if (((allAddresses[i].ip().toIPv4Address() & allAddresses[i].netmask().toIPv4Address()) ==
+                     (serverAddress.toIPv4Address() & allAddresses[i].netmask().toIPv4Address())))
+                {
+                    qWarning() << allAddresses[i].ip() << allAddresses[i].netmask();
+                    qWarning() << serverAddress << "!";
+                    emit foundCollaborationServer(serverAddress);
+                    break;
+                }
+            }
+        }
+    }
 }

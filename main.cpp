@@ -16,17 +16,14 @@ int main(int argc, char *argv[])
     //w.show();
 
 
-    MessageTransceiver m;
+    /*MessageTransceiver m;
     ProtocolHandler p;
     CollaborationServer cs;
 
     p.setMessageTransceiver(&m);
-    cs.setProtocolHandler(&p);
-
-    m.start();
+    cs.setProtocolHandler(&p);*/
 
 
-/*
     MessageTransceiver m;
     ProtocolHandler p;
     CollaborationClient c;
@@ -37,6 +34,8 @@ int main(int argc, char *argv[])
     p.setUserName("Ozan");
     c.dummyFunction(COLLABORATION_SERVER_NAME);
 
-*/
+    m.run();
+
+
     return a.exec();
 }
