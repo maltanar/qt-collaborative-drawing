@@ -29,7 +29,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionJoinResponse(QString,QString,char,uint,QHash<QString,long>)), this, SLOT(receivedSessionJoinResponse(QString,QString,char,uint,QHash<QString,long>)));
     connect(newProtocolHandler, SIGNAL(receivedSessionLeaveResponse(QString,QString,char)), this, SLOT(receivedSessionLeaveResponse(QString,QString,char)));
     connect(newProtocolHandler, SIGNAL(receivedSessionListResponse(QString,QStringList)), this, SLOT(receivedSessionListResponse(QString,QStringList)));
-    connect(newProtocolHandler, SIGNAL(receivedSessionMemberUpdate(QString,QString,char,QHash<QString,long>)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionMemberUpdate(QString,QString,char,QHash<QString,long>)), this, SLOT(receivedSessionMemberUpdate(QString,QString,char,QHash<QString,long>)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionStatus(QString,QChar)), this, SLOT(receivedWritePermissionStatus(QString,QChar)));
     m_protocolHandler = newProtocolHandler;

@@ -62,7 +62,7 @@ void WTMessage::setDestUsername(QString username)
 
 QString WTMessage::getDestUsername()
 {
-    return this->getDestUsername();
+    return this->destUsername;
 }
 
 void WTMessage::setCommand(QString command)

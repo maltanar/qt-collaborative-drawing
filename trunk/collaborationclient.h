@@ -18,6 +18,11 @@ public:
     void setProtocolHandler(ProtocolHandler * newProtocolHandler);
     ProtocolHandler * getProtocolHandler();
 
+    void dummyFunction(QString userName)
+    {
+        emit sendLoginRequest(userName);
+    }
+
 private:
     QStringList m_userList;
     ProtocolHandler *m_protocolHandler;
