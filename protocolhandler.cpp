@@ -11,6 +11,11 @@ void ProtocolHandler::addUserMapping(QString userName, QString IP)
     peerMap.insert(userName, IP);
 }
 
+QString ProtocolHandler::getUserMapping(QString userName)
+{
+    return peerMap.value(userName, "");
+}
+
 QString ProtocolHandler::getUserName()
 {
     return userName;

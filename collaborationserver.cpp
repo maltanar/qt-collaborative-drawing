@@ -17,6 +17,12 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     m_protocolHandler = NULL;
     connect(&serviceBroadcastTimer, SIGNAL(timeout()), this, SLOT(serviceBroadcastTimeout()));
     serviceBroadcastTimer.start(SERVICE_BROADCAST_PERIOD_MS);
+
+    // TODO add create session messages and remove the lines below
+    m_sessionList.append("test");
+    m_sessionData["test"] = new CollaborationSession();
+    m_sessionData["test"]->setSessionName("test");
+    m_sessionData["test"]->setSessionPassword("lulz");
 }
 
 void CollaborationServer::receivedLoginRequest(QString userName)
@@ -58,12 +64,42 @@ void CollaborationServer::receivedLogoutRequest(QString userName)
 
 void CollaborationServer::receivedPictureRequest(QString userName, QString sessionName)
 {
+    // first, check if the session with given name exists
+    if(!m_sessionList.contains(sessionName)) {
+        // no such session
+        qWarning() << "receivedPictureRequest error: session" << sessionName << "does not exist!";
+        // TODO send error reply to client
+        return;
+    }
 
+    // now check if this user has joined this session
+    if(!m_sessionData[sessionName]->getSessionParticipants().contains(userName)) {
+        // user is not a member of this sesion
+        qWarning() << "receivedPictureRequest error: user" << userName << "is not a member of" << sessionName;
+        return;
+    }
+
+    // everything OK, we can send the session drawing state
+    QPicture tmpPic = m_sessionData[sessionName]->getSessionDrawingState();
+
+    emit sendPictureResponse(userName, sessionName, QByteArray::fromRawData(tmpPic.data(), tmpPic.size()));
 }
 
 void CollaborationServer::receivedSessionJoinRequest(QString userName, QString sessionName, QString password)
 {
+    QHostAddress userAddress(m_protocolHandler->getUserMapping(userName));
+    // first, check if the session with given name exists
+    if(!m_sessionList.contains(sessionName)) {
+        // no such session
+        qWarning() << "receivedSessionJoinRequest error: session" << sessionName << "does not exist!";
+        // TODO send error reply to client
+        return;
+    }
 
+    if(m_sessionData[sessionName]->addSessionParticipant(userName, password, userAddress.toIPv4Address())) {
+        // user successfully joined the session
+        // TODO send appropriate join response
+    }
 }
 
 void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString sessionName)

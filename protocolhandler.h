@@ -31,6 +31,7 @@ public:
     explicit ProtocolHandler(QObject *parent = 0);
 
     void addUserMapping(QString userName, QString IP);
+    QString getUserMapping(QString userName);
 
     void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
     MessageTransceiver* getMessageTransceiver();
