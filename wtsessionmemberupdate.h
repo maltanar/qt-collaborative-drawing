@@ -19,21 +19,16 @@ public:
     QString getSessionName();
     void setSessionName(QString sessionName);
 
-    uint getUpdatedMemberCount();
-
     char getUpdateType();
     void setUpdateType(char updateType);
 
-    void addUser(QString username, long IP);
-    QHash<QString, long> getUsers();
-    void setUsers(QHash<QString, long> users);
+    QString getUser();
+    void setUser(QString user);
 
-    long getUserIP(QString username);
 private:
     QString sessionName;
-    uint updatedMemberCount;
     char updateType;
-    QHash<QString, long> users;
+    QString user;
 };
 
 #endif // WTSESSIONMEMBERUPDATE_H
