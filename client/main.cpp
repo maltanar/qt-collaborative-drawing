@@ -1,10 +1,5 @@
 #include <QtGui/QApplication>
 #include "mainwindow.h"
-#include "messagetransceiver.h"
-#include "protocolhandler.h"
-#include "collaborationserver.h"
-#include "collaborationclient.h"
-
 #include <messagetransceiver.h>
 #include <protocolhandler.h>
 #include <collaborationclient.h>
