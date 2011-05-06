@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QList>
+#include <QHash>
 #include <QPicture>
 #include <QPainter>
 
@@ -21,10 +21,10 @@ public:
     void setSessionPassword(QString newPassword);
     QString getSessionPassword();
 
-    QList<QString> getSessionParticipants();
-    void setSessionParticipants(QList<QString> participantList);
+    QHash<QString, long> getSessionParticipants();
+    void setSessionParticipants(QHash<QString, long> participantList);
 
-    bool addSessionParticipant(QString userName, QString sessionPassword);
+    bool addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress);
     void removeSessionParticipant(QString userName);
 
     QPicture getSessionDrawingState();
@@ -33,7 +33,7 @@ public:
 protected:
     QString m_sessionName;
     QString m_sessionPassword;
-    QList<QString> m_sessionParticipants;
+    QHash<QString, long> m_sessionParticipants;
     QPicture m_sessionDrawingData;
     QPainter m_picturePainter;
 

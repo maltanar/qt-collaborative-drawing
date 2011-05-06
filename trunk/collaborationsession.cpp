@@ -25,17 +25,17 @@ QString CollaborationSession::getSessionPassword()
     return m_sessionPassword;
 }
 
-QList<QString> CollaborationSession::getSessionParticipants()
+QHash<QString, long> CollaborationSession::getSessionParticipants()
 {
     return m_sessionParticipants;
 }
 
-void CollaborationSession::setSessionParticipants(QList<QString> participantList)
+void CollaborationSession::setSessionParticipants(QHash<QString, long> participantList)
 {
     m_sessionParticipants = participantList;
 }
 
-bool CollaborationSession::addSessionParticipant(QString userName, QString sessionPassword)
+bool CollaborationSession::addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress)
 {
     if(sessionPassword == m_sessionPassword) {
         // password is correct, check if participant already exists in this session
@@ -44,7 +44,8 @@ bool CollaborationSession::addSessionParticipant(QString userName, QString sessi
             return false;
         else {
             // everything in order, we can add this participant to the session
-            m_sessionParticipants.append(userName);
+            m_sessionParticipants[userName] = userIpAddress;
+
             return true;
         }
     } else
@@ -55,7 +56,7 @@ bool CollaborationSession::addSessionParticipant(QString userName, QString sessi
 void CollaborationSession::removeSessionParticipant(QString userName)
 {
     if(m_sessionParticipants.contains(userName))
-        m_sessionParticipants.removeOne(userName);
+        m_sessionParticipants.remove(userName);
 }
 
 QPicture CollaborationSession::getSessionDrawingState()
@@ -65,7 +66,11 @@ QPicture CollaborationSession::getSessionDrawingState()
 
 void CollaborationSession::addDrawingStep(QPicture newDrawingStep)
 {
-    m_picturePainter.begin(&m_sessionDrawingData);
+    QPicture tmpPicture;
+    m_picturePainter.begin(&tmpPicture);
+    m_picturePainter.drawPicture(0,0,m_sessionDrawingData);
     m_picturePainter.drawPicture(0,0,newDrawingStep);
     m_picturePainter.end();
+
+    m_sessionDrawingData = tmpPicture;
 }

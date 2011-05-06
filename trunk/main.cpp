@@ -9,6 +9,8 @@
 #include <protocolhandler.h>
 #include <collaborationclient.h>
 
+#include "collaborationsession.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -22,6 +24,30 @@ int main(int argc, char *argv[])
 
     p.setMessageTransceiver(&m);
     cs.setProtocolHandler(&p);*/
+
+    CollaborationSession sess;
+    sess.setSessionName("naber");
+    sess.setSessionPassword("lol");
+    QPicture hede;
+    QPainter hodo;
+    hodo.begin(&hede);
+    hodo.drawEllipse(100,100, 50,50);
+    hodo.end();
+    sess.addDrawingStep(hede);
+
+    hodo.begin(&hede);
+    hodo.drawEllipse(100,100, 75,75);
+    hodo.end();
+    sess.addDrawingStep(hede);
+
+    QPicture zit = sess.getSessionDrawingState();
+    QPixmap lulz(200,200);
+    lulz.fill(Qt::white);
+    hodo.begin(&lulz);
+    hodo.drawPicture(0,0,zit);
+    hodo.end();
+
+    lulz.save("naber.png");
 
 
     MessageTransceiver m;

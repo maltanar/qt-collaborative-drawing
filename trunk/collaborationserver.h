@@ -6,6 +6,7 @@
 #include <QList>
 
 #include "protocolhandler.h"
+#include "collaborationsession.h"
 
 #define SERVICE_BROADCAST_PERIOD_MS     1000
 #define SERVICE_BROADCAST_PORT          45455
@@ -19,12 +20,14 @@ public:
     void setProtocolHandler(ProtocolHandler * newProtocolHandler);
     ProtocolHandler * getProtocolHandler();
 
-private:
+protected:
     QList<QString> m_userList;
     QList<QString> m_sessionList;
     ProtocolHandler * m_protocolHandler;
     QUdpSocket serviceBroadcastSocket;
     QTimer serviceBroadcastTimer;
+    QHash<QString, CollaborationSession *> m_sessionData;
+
 
 signals:
     void sendLoginResponse(QString destUserName, char result, QString infoMsg);
