@@ -4,6 +4,7 @@ CollaborationClient::CollaborationClient(QObject *parent) :
     QObject(parent),
     m_protocolHandler(NULL)
 {
+
     // set up the broadcast listener to autodiscover the server
     serviceBroadcastReceiver.bind(SERVICE_BROADCAST_PORT, QUdpSocket::ShareAddress);
     connect(&serviceBroadcastReceiver, SIGNAL(readyRead()), this, SLOT(gotServiceBroadcast()));
@@ -63,9 +64,32 @@ void CollaborationClient::receivedLoginResponse(QString userName, QChar result, 
 void CollaborationClient::receivedPeerHandshake(QString userName, QString sessionName)
 {
     //Connect to the user that has just said hello.
-    //TODO Check if sessionMemberUpdate has been received first
-    //m_collaborationSessions[sessionName].addSessionParticipant(userName);
 
+    //If this client is the one which joins to a session
+    // - it is expecting to get peerHandshake messages from all the session members
+    if (m_currentState[sessionName] == JOIN_SESSION_STATE)
+    {
+        qWarning() << "Peer " << userName << " is acknowledged";
+        m_collaborationSessions[sessionName]->acknowledgePeer(userName);
+        //if all members shaked hands, then request picture from server
+        if (m_collaborationSessions[sessionName]->isAllAcknowledged())
+        {
+            qWarning() << "All peers are acknowledged.";
+            emit sendPictureRequest(COLLABORATION_SERVER_NAME,sessionName);
+        }
+        m_currentState[sessionName] = JOIN_SESSION_PEERHANDHAKE_COMPLETED;
+    }
+    else if (m_currentState[sessionName] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+    {
+        //Add user to the session member list for this client
+        m_collaborationSessions[sessionName]->addSessionParticipant(userName, m_collaborationSessions[sessionName]->getSessionPassword(), 0);
+        //Shake hands with the client
+        emit sendPeerHandshake(userName, sessionName);
+    }
+    else
+    {
+        qWarning() << "Received unexpected peer handshake";
+    }
 }
 
 void CollaborationClient::receivedPictureResponse(QString userName, QString sessionName, QByteArray picData)
@@ -75,6 +99,8 @@ void CollaborationClient::receivedPictureResponse(QString userName, QString sess
     sessState.setData(picData.constData(), picData.size());
     //Set the current picture data of the session for this client
     m_collaborationSessions[sessionName]->addDrawingStep(sessState);
+    //Joining to the session has been completed.
+    m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
 }
 
 void CollaborationClient::receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users)
@@ -89,6 +115,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
     {
         //Session join was successful.
         qWarning() << "Session Join by " << userName << " was successful";
+        m_currentState.insert(sessionName, JOIN_SESSION_STATE);
 
         //Create a new session
         CollaborationSession *collaborationSession = new CollaborationSession;
@@ -99,8 +126,6 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Map it with its sessionName
         m_collaborationSessions.insert(sessionName, collaborationSession);
 
-
-
         //Add all members to the list that is going to which
         // - this client will establish TCP connections
         QHash<QString, long>::iterator itr;
@@ -109,11 +134,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
             //Send handshake messages to the users in the session
             emit sendPeerHandshake(itr.key(), sessionName);
         }
-
-        //TODO After RECEIVING all peer handshake messages, send picRequest to the server
-
     }
-
 }
 
 void CollaborationClient::receivedSessionLeaveResponse(QString userName, QString sessionName, char result)
@@ -160,17 +181,20 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     //The users in the list "users" have started to join to the session
     if (updateType == UPDATE_SESSION_JOIN_BEGIN)
     {
+        m_currentState[sessionName] = MEMBER_UPDATE_JOIN_BEGIN_RECEIVED;
         //TODO - This client first should complete what it is sending and stop sending
         //TODO - Open connections to the members in the list "users"
     }
     //The users in the list "users" have completely joined the session
     else if (updateType == UPDATE_SESSION_JOIN_END)
     {
+        m_currentState[sessionName] = MEMBER_UPDATE_JOIN_END_RECEIVED;
         //TODO - This client resumes sending
     }
     //The users in the list "users" have left the session
     else if (updateType == UPDATE_SESSION_LEAVE)
     {
+        m_collaborationSessions[sessionName]->getSessionParticipants().remove(user);
         //TODO - Close connections to the users in the list "users"
     }
 }
