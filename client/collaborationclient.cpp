@@ -84,6 +84,7 @@ void CollaborationClient::receivedPeerHandshake(QString userName, QString sessio
     }
     else if (m_currentState[sessionName] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
     {
+        qWarning() << "Got handshake from new peer : " << userName;
         //Add user to the session member list for this client
         m_collaborationSessions[sessionName]->addSessionParticipant(userName, m_collaborationSessions[sessionName]->getSessionPassword(), 0);
         //Shake hands with the client
@@ -145,8 +146,11 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         for (itr = users.begin(); itr != users.end(); itr++)
         {
             //Send handshake messages to the users in the session
-            if (itr.key() != m_protocolHandler->getUserName())
+            if (itr.key() != m_protocolHandler->getUserName()) {
+                m_protocolHandler->addUserMapping(itr.key(), QHostAddress(itr.value()).toString());
+                qWarning() << "Peer handshake has been sent to : " << itr.key();
                 emit sendPeerHandshake(itr.key(), sessionName);
+            }
         }
     }
 }
