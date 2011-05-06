@@ -53,7 +53,7 @@ public slots:
     void receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users);
     void receivedSessionLeaveResponse(QString userName, QString sessionName, char result);
     void receivedSessionListResponse(QString userName, QStringList sessionList);
-    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QHash<QString, long> users);
+    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionStatus(QString userName, QChar status);
 

@@ -275,7 +275,7 @@ void ProtocolHandler::handleSessionListResponse(WTSessionListResponse *msg)
 void ProtocolHandler::handleSessionMemberUpdate(WTSessionMemberUpdate *msg)
 {
     //Local peer role: Server
-    emit receivedSessionMemberUpdate(msg->getSrcUsername(), msg->getSessionName(), msg->getUpdateType(), msg->getUsers());
+    emit receivedSessionMemberUpdate(msg->getSrcUsername(), msg->getSessionName(), msg->getUpdateType(), msg->getUser());
 }
 
 void ProtocolHandler::handleUpdateDrawing(WTUpdateDrawing *msg)
@@ -418,14 +418,14 @@ void ProtocolHandler::sendSessionListResponse(QString destUserName, QStringList 
     deliverMessage(msg);
 }
 
-void ProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QHash<QString, long> users)
+void ProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString user)
 {
     WTSessionMemberUpdate *msg = new WTSessionMemberUpdate;
     msg->setSrcUsername(this->userName);
     msg->setDestUsername(destUserName);
     msg->setSessionName(sessionName);
     msg->setUpdateType(updateType);
-    msg->setUsers(users);
+    msg->setUser(user);
     deliverMessage(msg);
 }
 

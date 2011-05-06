@@ -81,7 +81,7 @@ signals:
     void receivedSessionLeaveResponse(QString userName, QString sessionName, char result);
     void receivedSessionListRequest(QString userName);
     void receivedSessionListResponse(QString userName, QStringList sessionList);
-    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QHash<QString, long> users);
+    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
     void receivedWritePermissionStatus(QString userName, QChar status);
@@ -101,7 +101,7 @@ public slots:
     void sendSessionLeaveResponse(QString destUserName, QString sessionName, char result);
     void sendSessionListRequest(QString destUserName);
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
-    void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QHash<QString, long> users);
+    void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString users);
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
     void sendWritePermissionStatus(QString destUserName, QChar status);
