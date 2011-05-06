@@ -104,6 +104,7 @@ void CollaborationClient::receivedPictureResponse(QString userName, QString sess
     m_collaborationSessions[sessionName]->addDrawingStep(sessState);
     //Joining to the session has been completed.
     m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
+    emit sessionJoinResult(sessionName, 1, m_collaborationSessions[sessionName]->getSessionParticipants());
 }
 
 void CollaborationClient::receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users)
@@ -113,6 +114,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Session join request was unsuccessful
         //TODO show error message.
         qWarning() << "Session Join by " << userName << " was unsuccessful.";
+        emit sessionJoinResult(sessionName, result, users);
     }
     else
     {
@@ -129,13 +131,22 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Map it with its sessionName
         m_collaborationSessions.insert(sessionName, collaborationSession);
 
+        //TODO Remove this!
+        if (users.size() == 1)
+        {
+            m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
+            emit sessionJoinResult(sessionName, result, users);
+            return;
+        }
+
         //Add all members to the list that is going to which
         // - this client will establish TCP connections
         QHash<QString, long>::iterator itr;
         for (itr = users.begin(); itr != users.end(); itr++)
         {
             //Send handshake messages to the users in the session
-            emit sendPeerHandshake(itr.key(), sessionName);
+            if (itr.key() != m_protocolHandler->getUserName())
+                emit sendPeerHandshake(itr.key(), sessionName);
         }
     }
 }
@@ -280,4 +291,9 @@ void CollaborationClient::loginToServer(QHostAddress serverAddress, QString user
 void CollaborationClient::refreshSessionList()
 {
     emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
+}
+
+void CollaborationClient::joinSession(QString sessionName, QString password)
+{
+    emit sendSessionJoinRequest(COLLABORATION_SERVER_NAME, sessionName, password);
 }

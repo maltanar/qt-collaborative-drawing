@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ph->setMessageTransceiver(mt);
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
+
+    connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
 }
 
 MainWindow::~MainWindow()
@@ -116,4 +118,9 @@ void MainWindow::on_actionConnect_triggered()
 void MainWindow::on_actionEraser_triggered()
 {
     ui->graphicsView->setDrawingMode(DRAWINGMODE_ERASER);
+}
+
+void MainWindow::sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users)
+{
+    qWarning() << "Session join result: " << sessionName << " : " << result << " : " << users.count();
 }

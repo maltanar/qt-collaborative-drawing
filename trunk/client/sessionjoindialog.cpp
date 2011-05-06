@@ -27,7 +27,7 @@ SessionJoinDialog::~SessionJoinDialog()
 
 void SessionJoinDialog::on_refreshList_clicked()
 {
-
+    m_client->refreshSessionList();
 }
 
 void SessionJoinDialog::on_pushButton_clicked()
@@ -38,7 +38,9 @@ void SessionJoinDialog::on_pushButton_clicked()
 
 void SessionJoinDialog::on_sessionList_doubleClicked(QModelIndex index)
 {
-
+    m_client->joinSession(ui->sessionList->currentItem()->text(), ui->password->text());
+    this->hide();
+    this->deleteLater();
 }
 
 void SessionJoinDialog::on_buttonBox_accepted()

@@ -28,6 +28,7 @@ public:
 
     void loginToServer(QHostAddress serverAddress, QString userName);
     void refreshSessionList();
+    void joinSession(QString sessionName, QString password);
 
     void dummyFunction(QString userName)
     {
@@ -54,6 +55,7 @@ signals:
     void foundCollaborationServer(QHostAddress serverAddress);
     void loginResult(bool result, QString infoMsg);
     void sessionListAvailable(QStringList newSessionList);
+    void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
 
     // internal signals that will be connected to the ProtocolHandler
     void sendLoginRequest(QString destUserName);
