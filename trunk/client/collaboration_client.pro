@@ -33,7 +33,12 @@ SOURCES += main.cpp\
     wtpeerhandshake.cpp \
     collaborationserver.cpp \
     collaborationclient.cpp \
-    collaborationsession.cpp
+    collaborationsession.cpp \
+    basedrawingwidget.cpp \
+    drawingdata.cpp \
+    collaborativedrawingwidget.cpp \
+    drawingaction.cpp \
+    sessionjoindialog.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
@@ -57,6 +62,13 @@ HEADERS  += mainwindow.h \
     wtpeerhandshake.h \
     collaborationserver.h \
     collaborationclient.h \
-    collaborationsession.h
+    collaborationsession.h \
+    drawingdata.h \
+    drawingaction.h \
+    basedrawingwidget.h \
+    appglobals.h \
+    collaborativedrawingwidget.h \
+    sessionjoindialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    sessionjoindialog.ui

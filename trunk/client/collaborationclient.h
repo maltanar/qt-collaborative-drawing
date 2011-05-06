@@ -26,6 +26,9 @@ public:
     void setProtocolHandler(ProtocolHandler * newProtocolHandler);
     ProtocolHandler * getProtocolHandler();
 
+    void loginToServer(QHostAddress serverAddress, QString userName);
+    void refreshSessionList();
+
     void dummyFunction(QString userName)
     {
         emit sendLoginRequest(userName);
@@ -47,6 +50,12 @@ private:
     QHash<QString, long> m_ackedPeers;
 
 signals:
+    // external signals that are meant to be used for the user interface
+    void foundCollaborationServer(QHostAddress serverAddress);
+    void loginResult(bool result, QString infoMsg);
+    void sessionListAvailable(QStringList newSessionList);
+
+    // internal signals that will be connected to the ProtocolHandler
     void sendLoginRequest(QString destUserName);
     void sendLogoutRequest(QString destUserName);
     void sendPeerHandshake(QString destUserName, QString sessionName);
@@ -56,9 +65,7 @@ signals:
     void sendSessionListRequest(QString destUserName);
     void sendWritePermissionRequest(QString destUserName);
 
-    void foundCollaborationServer(QHostAddress serverAddress);
-
-public slots:
+private slots:
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedPeerHandshake(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);

@@ -49,14 +49,17 @@ void CollaborationClient::receivedLoginResponse(QString userName, QChar result, 
 {
     //TODO show the infoMsg
     qWarning() << "Login Response message: " <<  infoMsg;
+
     if (result == 0)
     {
         //TODO show error message
         qWarning() << "Login is unsuccessful";
+        emit loginResult(false, infoMsg);
     }
     else
     {
         qWarning() << "Login is successful";
+        emit loginResult(true, infoMsg);
         emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
     }
 }
@@ -173,6 +176,8 @@ void CollaborationClient::receivedSessionListResponse(QString userName, QStringL
     {
        qWarning() << i << sessionList.at(i) << "\n";   
     }
+
+    emit sessionListAvailable(sessionList);
 }
 
 void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user)
@@ -218,7 +223,7 @@ void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar 
 
 void CollaborationClient::gotServiceBroadcast()
 {
-    qWarning() << "got service broadcast!";
+    //qWarning() << "got service broadcast!";
 
     QByteArray broadcastPackage;
     QString packageHeader;
@@ -245,13 +250,14 @@ void CollaborationClient::gotServiceBroadcast()
 
             for(int i = 0; i < allAddresses.size(); i++)
             {
-                if (allAddresses[i].ip().protocol() != QAbstractSocket::IPv4Protocol) continue;
+                if (allAddresses[i].ip().protocol() != QAbstractSocket::IPv4Protocol)
+                    continue;
 
                 if (((allAddresses[i].ip().toIPv4Address() & allAddresses[i].netmask().toIPv4Address()) ==
                      (serverAddress.toIPv4Address() & allAddresses[i].netmask().toIPv4Address())))
                 {
-                    qWarning() << allAddresses[i].ip() << allAddresses[i].netmask();
-                    qWarning() << serverAddress << "!";
+                    //qWarning() << allAddresses[i].ip() << allAddresses[i].netmask();
+                    //qWarning() << serverAddress << "!";
                     emit foundCollaborationServer(serverAddress);
                     break;
                 }
@@ -260,3 +266,18 @@ void CollaborationClient::gotServiceBroadcast()
     }
 }
 
+
+void CollaborationClient::loginToServer(QHostAddress serverAddress, QString userName)
+{
+    // TODO check if mapping for server already exists
+    m_protocolHandler->addUserMapping(COLLABORATION_SERVER_NAME, serverAddress.toString());
+    // set the origin (source) user name
+    m_protocolHandler->setUserName(userName);
+    // emit login request
+    emit sendLoginRequest(COLLABORATION_SERVER_NAME);
+}
+
+void CollaborationClient::refreshSessionList()
+{
+    emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
+}

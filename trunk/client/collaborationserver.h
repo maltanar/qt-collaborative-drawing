@@ -35,7 +35,7 @@ signals:
     void sendSessionJoinResponse(QString destUserName, QString sessionName, char result, QHash<QString, long> users);
     void sendSessionLeaveResponse(QString destUserName, QString sessionName, char result);
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
-    void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QHash<QString, long> users);
+    void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString users);
     void sendWritePermissionStatus(QString destUserName, QChar status);
 
 public slots:

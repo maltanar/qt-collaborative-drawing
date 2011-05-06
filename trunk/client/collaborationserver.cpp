@@ -98,13 +98,29 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
 
     if(m_sessionData[sessionName]->addSessionParticipant(userName, password, userAddress.toIPv4Address())) {
         // user successfully joined the session
-        // TODO send appropriate join response
-    }
+        QHash<QString, long> participants = m_sessionData[sessionName]->getSessionParticipants();
+        // send join response to the newly joined client
+        emit sendSessionJoinResponse(userName, sessionName, 1, participants);
+        // send session member update to all other clients
+        QHashIterator<QString, long> i(participants);
+         while (i.hasNext()) {
+             i.next();
+             if(i.key() != userName)
+                emit sendSessionMemberUpdate(i.key(), sessionName, UPDATE_SESSION_JOIN_BEGIN, userName);
+         }
+         return;
+     } else {
+         // there was a problem with the user joining the session
+         emit sendSessionJoinResponse(userName, sessionName, 0, QHash<QString, long>());
+         qWarning() << "receivedSessionJoinRequest error: user" << userName << "could not join session" << sessionName;
+         // TODO send error message to client
+         return;
+     }
 }
 
 void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString sessionName)
 {
-
+    // TODO
 }
 
 void CollaborationServer::receivedSessionListRequest(QString userName)
@@ -115,12 +131,31 @@ void CollaborationServer::receivedSessionListRequest(QString userName)
 
 void CollaborationServer::receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData)
 {
+    // first, check if the session with given name exists
+    if(!m_sessionList.contains(sessionName)) {
+        // no such session
+        qWarning() << "receivedPictureRequest error: session" << sessionName << "does not exist!";
+        // TODO send error reply to client
+        return;
+    }
 
+    // now check if this user has joined this session
+    if(!m_sessionData[sessionName]->getSessionParticipants().contains(userName)) {
+        // user is not a member of this sesion
+        qWarning() << "receivedPictureRequest error: user" << userName << "is not a member of" << sessionName;
+        return;
+    }
+
+    // everything OK
+    QPicture tmpPic;
+    tmpPic.setData(picData.constData(), picData.length());
+    // send data to session
+    m_sessionData[sessionName]->addDrawingStep(tmpPic);
 }
 
 void CollaborationServer::receivedWritePermissionRequest(QString userName)
 {
-
+    // TODO
 }
 
 // sets the ProtocolHandler for this CollaborationServer
