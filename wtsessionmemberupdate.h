@@ -3,6 +3,10 @@
 
 #include <wtmessage.h>
 
+#define UPDATE_SESSION_JOIN_BEGIN  0
+#define UPDATE_SESSION_JOIN_END    1
+#define UPDATE_SESSION_LEAVE       2
+
 class WTSessionMemberUpdate : public WTMessage
 {
     Q_OBJECT
