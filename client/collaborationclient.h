@@ -30,10 +30,7 @@ public:
     void refreshSessionList();
     void joinSession(QString sessionName, QString password);
 
-    void dummyFunction(QString userName)
-    {
-        emit sendLoginRequest(userName);
-    }
+
 
 
 private:

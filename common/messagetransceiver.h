@@ -38,6 +38,7 @@ private slots:
     void connected();
     void disconnected();
     void dataArrived();
+    void socketError(QAbstractSocket::SocketError err);
 
 };
 
