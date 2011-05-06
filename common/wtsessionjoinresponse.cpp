@@ -88,6 +88,7 @@ long WTSessionJoinResponse::getUserIP(QString username)
 void WTSessionJoinResponse::setUsers(QHash<QString, long> users)
 {
     this->users = users;
+    this->userCount = users.size();
 }
 
 QHash<QString, long> WTSessionJoinResponse::getUsers()
