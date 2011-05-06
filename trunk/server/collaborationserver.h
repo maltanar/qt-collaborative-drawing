@@ -8,6 +8,8 @@
 #include "protocolhandler.h"
 #include "collaborationsession.h"
 
+// TODO move into a common header file with client
+#define COLLABORATION_SERVER_NAME       "$SERVER$"
 #define SERVICE_BROADCAST_PERIOD_MS     1000
 #define SERVICE_BROADCAST_PORT          45455
 
