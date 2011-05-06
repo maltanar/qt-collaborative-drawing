@@ -11,6 +11,12 @@
 #define COLLABORATION_SERVER_NAME "$SERVER$"
 #define SERVICE_BROADCAST_PORT 45455
 
+#define JOIN_SESSION_STATE 1
+#define JOIN_SESSION_PEERHANDHAKE_COMPLETED 2
+#define JOIN_SESSION_COMPLETED 3
+#define MEMBER_UPDATE_JOIN_BEGIN_RECEIVED 4
+#define MEMBER_UPDATE_JOIN_END_RECEIVED 5
+
 class CollaborationClient : public QObject
 {
     Q_OBJECT
@@ -33,6 +39,12 @@ private:
     QHash<QString, CollaborationSession *> m_collaborationSessions;
 
     QUdpSocket serviceBroadcastReceiver;
+
+    //State of the client in a session
+    QHash<QString, int> m_currentState;
+
+    //Number of peers who have acknowledged already
+    QHash<QString, long> m_ackedPeers;
 
 signals:
     void sendLoginRequest(QString destUserName);

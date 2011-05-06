@@ -33,6 +33,13 @@ QHash<QString, long> CollaborationSession::getSessionParticipants()
 void CollaborationSession::setSessionParticipants(QHash<QString, long> participantList)
 {
     m_sessionParticipants = participantList;
+
+    //Initialize all session members as unacknowledged
+    QHash<QString, long>::iterator itr;
+    for (itr = participantList.begin(); itr != participantList.end(); itr++)
+    {
+        m_sessionAcknowledgements.insert(itr.key(),false);
+    }
 }
 
 bool CollaborationSession::addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress)
@@ -73,4 +80,25 @@ void CollaborationSession::addDrawingStep(QPicture newDrawingStep)
     m_picturePainter.end();
 
     m_sessionDrawingData = tmpPicture;
+}
+
+
+void CollaborationSession::acknowledgePeer(QString userName)
+{
+    m_sessionAcknowledgements[userName] = true;
+}
+
+bool CollaborationSession::isAcknowledged(QString userName)
+{
+    return m_sessionAcknowledgements[userName];
+}
+
+bool CollaborationSession::isAllAcknowledged()
+{
+    QHash<QString, bool>::iterator itr;
+    for (itr = m_sessionAcknowledgements.begin(); itr != m_sessionAcknowledgements.end(); itr++)
+    {
+        if (!itr.value()) return false;
+    }
+    return true;
 }

@@ -30,10 +30,15 @@ public:
     QPicture getSessionDrawingState();
     void addDrawingStep(QPicture newDrawingStep);
 
+    void acknowledgePeer(QString userName);
+    bool isAcknowledged(QString userName);
+    bool isAllAcknowledged();
+
 protected:
     QString m_sessionName;
     QString m_sessionPassword;
     QHash<QString, long> m_sessionParticipants;
+    QHash<QString, bool> m_sessionAcknowledgements;
     QPicture m_sessionDrawingData;
     QPainter m_picturePainter;
 
