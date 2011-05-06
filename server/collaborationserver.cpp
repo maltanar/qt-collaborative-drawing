@@ -23,6 +23,14 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     m_sessionData["test"] = new CollaborationSession();
     m_sessionData["test"]->setSessionName("test");
     m_sessionData["test"]->setSessionPassword("lulz");
+    m_sessionList.append("test2");
+    m_sessionData["test2"] = new CollaborationSession();
+    m_sessionData["test2"]->setSessionName("test2");
+    m_sessionData["test2"]->setSessionPassword("lulz2");
+    m_sessionList.append("test");
+    m_sessionData["test3"] = new CollaborationSession();
+    m_sessionData["test3"]->setSessionName("test3");
+    m_sessionData["test3"]->setSessionPassword("lulz3");
 }
 
 void CollaborationServer::receivedLoginRequest(QString userName)
@@ -125,7 +133,7 @@ void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString 
 
 void CollaborationServer::receivedSessionListRequest(QString userName)
 {
-    qWarning() << userName << "wants list of sessions, sending";
+    qWarning() << userName << "wants list of sessions, sending" << m_sessionList;
     emit sendSessionListResponse(userName, m_sessionList);
 }
 
@@ -173,7 +181,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendSessionJoinResponse(QString,QString,char,QHash<QString,long>)), newProtocolHandler, SLOT(sendSessionJoinResponse(QString,QString,char,QHash<QString,long>)));
     connect(this, SIGNAL(sendSessionLeaveResponse(QString,QString,char)), newProtocolHandler, SLOT(sendSessionLeaveResponse(QString,QString,char)));
     connect(this, SIGNAL(sendSessionListResponse(QString,QStringList)), newProtocolHandler, SLOT(sendSessionListResponse(QString,QStringList)));
-    connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,char,QHash<QString,long>)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,char,QHash<QString,long>)));
+    connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,char,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,char,QString)));
     connect(this, SIGNAL(sendWritePermissionStatus(QString,QChar)),newProtocolHandler, SLOT(sendWritePermissionStatus(QString,QChar)));
     // signals from protocol handler to server slots
     connect(newProtocolHandler, SIGNAL(receivedLoginRequest(QString)), this, SLOT(receivedLoginRequest(QString)));
@@ -184,6 +192,9 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionListRequest(QString)), this, SLOT(receivedSessionListRequest(QString)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionRequest(QString)), this, SLOT(receivedWritePermissionRequest(QString)));
+    // set protocol handler user name
+    newProtocolHandler->setUserName(COLLABORATION_SERVER_NAME);
+
     m_protocolHandler = newProtocolHandler;
 }
 
