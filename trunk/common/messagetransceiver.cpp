@@ -48,12 +48,13 @@ void MessageTransceiver::connectTo(QString destination)
 
     // we may have to queue some messages to this socket before connection
     // is established
-    destBuffers[destination] = QByteArray();
+    if(!destBuffers.contains(destination))
+        destBuffers[destination] = QByteArray();
 
     // connect the signals for this tcp socket
-    // TODO also connect and handle error signals
     connect(newConnection, SIGNAL(connected()), this, SLOT(connected()));
     connect(newConnection, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    connect(newConnection, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
     // try to establish the connection
     newConnection->connectToHost(destination, TRANSCEIVER_TCP_PORT);
 }
@@ -65,12 +66,14 @@ void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 
     if(!destinationSocket) {
         qWarning() << "Connection for destination" << destination << "does not exist, put data into queue";
-        // open a connection to this peer
-        connectTo(destination);
         // queue data, will be sent when connection is established
+        if(!destBuffers.contains(destination))
+            destBuffers[destination] = QByteArray();
         destBuffers[destination].append(TRANSCEIVER_HEADER);
         destBuffers[destination].append((const char *) &messageSize, 4);
         destBuffers[destination].append(msg);
+        // open a connection to this peer
+        connectTo(destination);
         return;
     }
     // attach the transceiver-level header with message size info
@@ -102,6 +105,7 @@ void MessageTransceiver::newConnection()
         // connect signals for newly arrived connection
         connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataArrived()));
         connect(newSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+        // TODO also connect and handle error signals
     }
 }
 
@@ -191,4 +195,12 @@ void MessageTransceiver::dataArrived()
             qWarning() << "unexpected data for origin" << origin;
         }
     }
+}
+
+void MessageTransceiver::socketError(QAbstractSocket::SocketError err)
+{
+    QTcpSocket * connection = qobject_cast<QTcpSocket *>(sender());
+    QString origin = connection->peerAddress().toString();
+
+    qWarning() << "socket error" << err << "for" << origin;
 }
