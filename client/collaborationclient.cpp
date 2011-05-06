@@ -201,6 +201,7 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     //The users in the list "users" have started to join to the session
     if (updateType == UPDATE_SESSION_JOIN_BEGIN)
     {
+        qWarning() << "New member wants to join : " << user;
         m_currentState[sessionName] = MEMBER_UPDATE_JOIN_BEGIN_RECEIVED;
         //TODO - This client first should complete what it is sending and stop sending
         //TODO - Open connections to the members in the list "users"

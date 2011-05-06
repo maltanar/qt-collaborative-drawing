@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
 
+    mt->start();
+
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
 }
 

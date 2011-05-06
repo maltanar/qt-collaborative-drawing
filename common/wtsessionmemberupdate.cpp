@@ -31,6 +31,7 @@ void WTSessionMemberUpdate::deserialize(QByteArray data)
     dataStream.readRawData(&updateType, 1);
     dataStream.readRawData(userName, 8);
     userName[8] = '\0';
+    this->sessionName = QString(sessionName).trimmed();
     this->user = QString(userName).trimmed();
 }
 
