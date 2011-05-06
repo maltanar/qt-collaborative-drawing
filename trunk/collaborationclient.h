@@ -6,6 +6,7 @@
 #include <QStringList>
 
 #include <protocolhandler.h>
+#include <collaborationsession.h>
 
 #define COLLABORATION_SERVER_NAME "$SERVER$"
 #define SERVICE_BROADCAST_PORT 45455
@@ -24,9 +25,13 @@ public:
         emit sendLoginRequest(userName);
     }
 
+
 private:
     QStringList m_userList;
+    QStringList m_sessionList;
     ProtocolHandler *m_protocolHandler;
+    QHash<QString, CollaborationSession *> m_collaborationSessions;
+
     QUdpSocket serviceBroadcastReceiver;
 
 signals:

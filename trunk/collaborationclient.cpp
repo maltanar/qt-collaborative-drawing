@@ -51,57 +51,87 @@ void CollaborationClient::receivedLoginResponse(QString userName, QChar result, 
     if (result == 0)
     {
         //TODO show error message
-        qWarning() << "Login is unsucessful";
+        qWarning() << "Login is unsuccessful";
     }
     else
     {
-        qWarning() << "Login is sucessful";
+        qWarning() << "Login is successful";
         emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
     }
 }
 
 void CollaborationClient::receivedPeerHandshake(QString userName, QString sessionName)
 {
-    //TODO Add user into the list, to which the drawings are sent
+    //Connect to the user that has just said hello.
+    //TODO Check if sessionMemberUpdate has been received first
+    //m_collaborationSessions[sessionName].addSessionParticipant(userName);
+
 }
 
 void CollaborationClient::receivedPictureResponse(QString userName, QString sessionName, QByteArray picData)
 {
-    //TODO Show the pictureData on screen
+    //Show the pictureData on screen
+    QPicture sessState;
+    sessState.setData(picData.constData(), picData.size());
+    //Set the current picture data of the session for this client
+    m_collaborationSessions[sessionName]->addDrawingStep(sessState);
 }
 
 void CollaborationClient::receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users)
 {
-
     if (result == 0)
     {
-        //Session join request was unsucessful
+        //Session join request was unsuccessful
         //TODO show error message.
+        qWarning() << "Session Join by " << userName << " was unsuccessful.";
     }
     else
     {
-        //Session join was sucessful.
-        //Add all members to the list that is going to be
-        // - used to send picture data to all members in that session
+        //Session join was successful.
+        qWarning() << "Session Join by " << userName << " was successful";
+
+        //Create a new session
+        CollaborationSession *collaborationSession = new CollaborationSession;
+        collaborationSession->setSessionName(sessionName);
+
+        collaborationSession->setSessionParticipants(users);
+
+        //Map it with its sessionName
+        m_collaborationSessions.insert(sessionName, collaborationSession);
+
+
+
+        //Add all members to the list that is going to which
+        // - this client will establish TCP connections
         QHash<QString, long>::iterator itr;
         for (itr = users.begin(); itr != users.end(); itr++)
         {
-            m_userList.append(itr.key());
+            //Send handshake messages to the users in the session
+            emit sendPeerHandshake(itr.key(), sessionName);
         }
 
+        //TODO After RECEIVING all peer handshake messages, send picRequest to the server
 
     }
-    //TODO check the result:
-    //TODO - if the sessionjoin was sucessful, get the members
-    //TODO - - this client waits until all connections to the peers are established
-    //TODO - - this client sends picRequest to the server
-    //TODO - otherwise show message "join was unsucessful"
+
 }
 
 void CollaborationClient::receivedSessionLeaveResponse(QString userName, QString sessionName, char result)
 {
-    //TODO depending on the result, delete the members from the list that drawing is sent
-    //TODO Close connections to each peer in the session so that no data comes from those peers.
+    if (result == 0)
+    {
+        qWarning() << "Session Leave by " << userName << " was unsuccesful";
+    }
+    else
+    {
+        qWarning() << "Session Leave by " << userName << " was succesful";
+        //Remove the participants from the client's collaboration session
+        m_collaborationSessions[sessionName]->getSessionParticipants().clear();
+        //Remove the name of the session as the client has left it
+        m_collaborationSessions[sessionName]->setSessionName("");
+        //Remove the password of the session as the client has left the session
+        m_collaborationSessions[sessionName]->setSessionPassword("");
+    }
 }
 
 void CollaborationClient::receivedSessionListResponse(QString userName, QStringList sessionList)
@@ -109,24 +139,48 @@ void CollaborationClient::receivedSessionListResponse(QString userName, QStringL
     //TODO List the sessions so that a client can decide which one to join
     int size = sessionList.size();
     qWarning() << "Current sessions:\n";
+
+    //Check if the client has already a session list
+    // - if yes, clear it and get the new list
+    if (!m_sessionList.empty())
+         m_sessionList.clear();
+
+    m_sessionList.append(sessionList);
+
+    //Print the session list to stdout
     for (int i = 0; i < size; i++)
     {
-       qWarning() << i << sessionList.at(i) << "\n";
+       qWarning() << i << sessionList.at(i) << "\n";   
     }
 }
 
 void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QHash<QString, long> users)
 {
-    //TODO if updateType is 0
-    //TODO - This client first should complete what it is sending and stop sending
-    //TODO - Open connections to the members in the list "users"
-    //TODO if updateType is 1
-    //TODO - This client resumes sending
+
+    //The users in the list "users" have started to join to the session
+    if (updateType == UPDATE_SESSION_JOIN_BEGIN)
+    {
+        //TODO - This client first should complete what it is sending and stop sending
+        //TODO - Open connections to the members in the list "users"
+    }
+    //The users in the list "users" have completely joined the session
+    else if (updateType == UPDATE_SESSION_JOIN_END)
+    {
+        //TODO - This client resumes sending
+    }
+    //The users in the list "users" have left the session
+    else if (updateType == UPDATE_SESSION_LEAVE)
+    {
+        //TODO - Close connections to the users in the list "users"
+    }
 }
 
 void CollaborationClient::receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData)
 {
-    //TODO update the state with the picData
+    //Update the state with the picData
+    QPicture drawingStep;
+    drawingStep.setData(picData.constData(), picData.size());
+    m_collaborationSessions[sessionName]->addDrawingStep(drawingStep);
 }
 
 void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar status)
@@ -181,3 +235,4 @@ void CollaborationClient::gotServiceBroadcast()
         }
     }
 }
+
