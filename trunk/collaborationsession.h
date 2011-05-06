@@ -1,0 +1,46 @@
+#ifndef COLLABORATIONSESSION_H
+#define COLLABORATIONSESSION_H
+
+#include <QObject>
+#include <QString>
+#include <QList>
+#include <QPicture>
+#include <QPainter>
+
+// represents the information and actions of a single collaborative drawing session
+
+class CollaborationSession : public QObject
+{
+    Q_OBJECT
+public:
+    explicit CollaborationSession(QObject *parent = 0);
+
+    void setSessionName(QString newName);
+    QString getSessionName();
+
+    void setSessionPassword(QString newPassword);
+    QString getSessionPassword();
+
+    QList<QString> getSessionParticipants();
+    void setSessionParticipants(QList<QString> participantList);
+
+    bool addSessionParticipant(QString userName, QString sessionPassword);
+    void removeSessionParticipant(QString userName);
+
+    QPicture getSessionDrawingState();
+    void addDrawingStep(QPicture newDrawingStep);
+
+protected:
+    QString m_sessionName;
+    QString m_sessionPassword;
+    QList<QString> m_sessionParticipants;
+    QPicture m_sessionDrawingData;
+    QPainter m_picturePainter;
+
+signals:
+
+public slots:
+
+};
+
+#endif // COLLABORATIONSESSION_H

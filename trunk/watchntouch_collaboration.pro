@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     protocolhandler.cpp \
     wtpeerhandshake.cpp \
     collaborationserver.cpp \
-    collaborationclient.cpp
+    collaborationclient.cpp \
+    collaborationsession.cpp
 
 HEADERS  += mainwindow.h \
     wtmessage.h \
@@ -55,6 +56,7 @@ HEADERS  += mainwindow.h \
     protocolhandler.h \
     wtpeerhandshake.h \
     collaborationserver.h \
-    collaborationclient.h
+    collaborationclient.h \
+    collaborationsession.h
 
 FORMS    += mainwindow.ui
