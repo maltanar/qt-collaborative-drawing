@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mt->start();
 
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
+    connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
+    connect(client, SIGNAL(drawingArrived(QString,QByteArray)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray)));
 }
 
 MainWindow::~MainWindow()
@@ -125,4 +127,10 @@ void MainWindow::on_actionEraser_triggered()
 void MainWindow::sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users)
 {
     qWarning() << "Session join result: " << sessionName << " : " << result << " : " << users.count();
+}
+
+void MainWindow::drawingCommitted(QString sessionName, QPicture pictureData)
+{
+    QByteArray picData(pictureData.data(), pictureData.size());
+    client->sendDrawing(sessionName, picData);
 }

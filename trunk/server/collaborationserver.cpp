@@ -27,7 +27,7 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     m_sessionData["test2"] = new CollaborationSession();
     m_sessionData["test2"]->setSessionName("test2");
     m_sessionData["test2"]->setSessionPassword("lulz2");
-    m_sessionList.append("test");
+    m_sessionList.append("test3");
     m_sessionData["test3"] = new CollaborationSession();
     m_sessionData["test3"]->setSessionName("test3");
     m_sessionData["test3"]->setSessionPassword("lulz3");
@@ -91,6 +91,15 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     QPicture tmpPic = m_sessionData[sessionName]->getSessionDrawingState();
 
     emit sendPictureResponse(userName, sessionName, QByteArray::fromRawData(tmpPic.data(), tmpPic.size()));
+
+    // send sessionMember update to the other clients in the session
+
+    QHash<QString, long>::iterator itr;
+    QHash<QString, long> clients = m_sessionData[sessionName]->getSessionParticipants();
+    for (itr = clients.begin(); itr != clients.end(); itr++)
+    {
+        emit sendSessionMemberUpdate(itr.key(), sessionName, UPDATE_SESSION_JOIN_END, userName);
+    }
 }
 
 void CollaborationServer::receivedSessionJoinRequest(QString userName, QString sessionName, QString password)
