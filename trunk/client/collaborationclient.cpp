@@ -124,6 +124,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
     {
         //Session join was successful.
         qWarning() << "Session Join by " << userName << " was successful";
+        users.remove(m_protocolHandler->getUserName());
         m_currentState.insert(sessionName, JOIN_SESSION_STATE);
 
         //Create a new session
@@ -136,7 +137,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         m_collaborationSessions.insert(sessionName, collaborationSession);
 
         //TODO Remove this!
-        if (users.size() == 1)
+        if (users.size() == 0)
         {
             m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
             emit sessionJoinResult(sessionName, result, users);
@@ -229,6 +230,8 @@ void CollaborationClient::receivedUpdateDrawing(QString userName, QString sessio
     QPicture drawingStep;
     drawingStep.setData(picData.constData(), picData.size());
     m_collaborationSessions[sessionName]->addDrawingStep(drawingStep);
+
+    qWarning() << "Picdata geldi of size : " << picData.size();
 
     //TODO this will be emitted in collaboration session
     emit drawingArrived(sessionName, picData);

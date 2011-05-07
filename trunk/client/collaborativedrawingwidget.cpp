@@ -80,6 +80,7 @@ void CollaborativeDrawingWidget::dataArrived()
 void CollaborativeDrawingWidget::gotDrawingData(QString sessionName, QByteArray picData)
 {
     QPicture pic;
+    qWarning() << "Resim geldiii of size : " << picData.size();
     pic.setData(picData.constData(), picData.size());
     BaseDrawingWidget::commitDrawing(pic);
 }
