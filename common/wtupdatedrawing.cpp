@@ -27,9 +27,9 @@ void WTUpdateDrawing::deserialize(QByteArray data)
     sessionName[8] = '\0';
     this->sessionName = QString(sessionName).trimmed();
     //Rest of the characters belong to picture data
-    picData = new char[data.size()-32];
-    dataStream.readRawData(picData, data.size() - 32);
-    this->picData.setRawData(picData, data.size()-32);
+    picData = new char[data.size()-(HEADER_SIZE+8)];
+    dataStream.readRawData(picData, data.size() - (HEADER_SIZE+8));
+    this->picData.setRawData(picData, data.size()-(HEADER_SIZE+8));
 }
 
 QString WTUpdateDrawing::getSessionName()

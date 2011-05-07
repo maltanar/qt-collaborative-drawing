@@ -314,7 +314,8 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
     //TODO- Check if a user is connecting...
     //TODO If member update is join begin then cannot send drawings
     //Send the picData to all the peers in the session
-    if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+
+    //if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
     {
         QHash<QString, long>::iterator itr;
         QHash<QString, long> participants = m_collaborationSessions[sessionName]->getSessionParticipants();
