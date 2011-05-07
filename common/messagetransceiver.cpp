@@ -61,7 +61,7 @@ void MessageTransceiver::connectTo(QString destination)
 
 void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 {
-    unsigned int messageSize = msg.length();
+    unsigned int messageSize = msg.length() + 12;   // TODO header size should be defined
     QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
 
     if(!destinationSocket) {
@@ -161,39 +161,45 @@ void MessageTransceiver::dataArrived()
         qWarning() << "got new data from" << origin;
         newData = connection->readAll();
         // TODO check if origin buffer for this origin exists
+        if(!originBuffers.contains(origin))
+            originBuffers[origin] = QByteArray();
+        // append data to buffer and process
+        originBuffers[origin].append(newData);
+        processOriginBuffer(origin);
+    }
+}
 
-        if(originBuffers[origin].isEmpty() && newData.startsWith(TRANSCEIVER_HEADER)) {
-            // YAYAYAYYAY AYYY! brand new data for this origin!
+void MessageTransceiver::processOriginBuffer(QString origin)
+{
+    QByteArray originBuffer = originBuffers[origin];
+    QByteArray currentMessage;
+    unsigned int currentMessageSize = 0;
+    bool remainingMessages = true;
 
-            memcpy(&expectedLength, newData.constData() + 8, 4);
-            originExpectedDataSize[origin] = expectedLength;
-            originBuffers[origin].append(newData.right(newData.length() - 12));
-            // check if expected data is complete
-            if(originBuffers[origin].length() == originExpectedDataSize[origin]) {
-                // data should be complete now
-                // TODO check sum after implementing checksum on sender side
-                bufferContent =  originBuffers.value(origin, QByteArray());
-                emit gotNewData(origin, bufferContent);
-                // reset the data buffer for this origin
-                originBuffers[origin] = QByteArray();
-                originExpectedDataSize[origin] = 0;
-            }
-        } else if(!originBuffers[origin].isEmpty()) {
-            originBuffers[origin].append(newData);
-            // check if expected data is complete
-            if(originBuffers[origin].length() == originExpectedDataSize[origin]) {
-                // data should be complete now
-                // TODO check sum after implementing checksum on sender side
-                bufferContent =  originBuffers.value(origin, QByteArray());
-                emit gotNewData(origin, bufferContent);
-                // reset the data buffer for this origin
-                originBuffers[origin] = QByteArray();
-                originExpectedDataSize[origin] = 0;
-            }
-        } else {
-            // unexpected ?
-            qWarning() << "unexpected data for origin" << origin;
+    while(remainingMessages) {
+        // check if buffer starts with broken message
+        if(originBuffer.length() > 0 && !originBuffer.startsWith(TRANSCEIVER_HEADER)) {
+            // buffer does not stat with header,
+            // possibly broken message
+            qWarning() << "Error! processOriginBuffer found missing transceiver header for origin" << origin;
+            // reset the origin buffer
+            // TODO instead of reset, search for next message transceiver header
+            originBuffers[origin] = QByteArray();
+            return;
         }
+        // read the size of next message in line
+        memcpy(&currentMessageSize, originBuffer.constData() + 8, 4);
+        // check if this message is complete
+        if(currentMessageSize <= originBuffer.length()) {
+            // message is complete
+            currentMessage = originBuffer.right(currentMessageSize - 12); // discard msgtxrx header
+            emit gotNewData(origin, currentMessage);
+            // truncate the origin buffer
+            originBuffers[origin] = originBuffer.right(originBuffer.length() - currentMessageSize);
+            originBuffer = originBuffers[origin];
+        } else
+            // message is incomplete, exit loop
+            remainingMessages = false;
     }
 }
 

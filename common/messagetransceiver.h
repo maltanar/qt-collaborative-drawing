@@ -25,6 +25,7 @@ protected:
     QHash<QString, unsigned int> originExpectedDataSize;
 
     void sendMessageNoHeader(QTcpSocket*,QByteArray msg);
+    void processOriginBuffer(QString origin);
 
 signals:
     void gotNewData(QString origin, QByteArray data);
