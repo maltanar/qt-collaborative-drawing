@@ -3,8 +3,8 @@
 CollaborativeDrawingWidget::CollaborativeDrawingWidget(QWidget *parent) :
     BaseDrawingWidget(parent)
 {
-    serverSocket = NULL;
-    connect(&server, SIGNAL(newConnection()), this, SLOT(gotNewConnection()));
+    //serverSocket = NULL;
+    //connect(&server, SIGNAL(newConnection()), this, SLOT(gotNewConnection()));
 }
 
 void CollaborativeDrawingWidget::commitDrawing(QPicture drawingPictureData)
@@ -15,13 +15,19 @@ void CollaborativeDrawingWidget::commitDrawing(QPicture drawingPictureData)
     qWarning() << "Collab commitDrawing size" << drawingPictureData.size();
 
     BaseDrawingWidget::commitDrawing(drawingPictureData);
-    QByteArray picdata(drawingPictureData.data(), drawingPictureData.size());
+    //TODO Session name will not be static!!!!
+    emit drawingCommited("test",drawingPictureData);
+
+
+    /*QByteArray picdata(drawingPictureData.data(), drawingPictureData.size());
     int dsize = drawingPictureData.size();
     QByteArray datalen = QByteArray::fromRawData((const char*)&dsize, 4);;
 
     qWarning() << "written header # " << clientSocket.write(QString("DRAW").toAscii());
     qWarning() << "written length # " << clientSocket.write(datalen) << datalen;
-    qWarning() << "written bytes #" << clientSocket.write(picdata);
+    qWarning() << "written bytes #" << clientSocket.write(picdata);*/
+
+
 }
 
 void CollaborativeDrawingWidget::startListening(int portNumber)
@@ -68,6 +74,12 @@ void CollaborativeDrawingWidget::dataArrived()
         sizeOfPackage = -1;
         receivedData = QByteArray();
     }
+}
 
 
+void CollaborativeDrawingWidget::gotDrawingData(QString sessionName, QByteArray picData)
+{
+    QPicture pic;
+    pic.setData(picData.constData(), picData.size());
+    BaseDrawingWidget::commitDrawing(pic);
 }

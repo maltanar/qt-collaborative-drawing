@@ -25,6 +25,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendSessionJoinRequest(QString,QString,QString)), newProtocolHandler, SLOT(sendSessionJoinRequest(QString,QString,QString)));
     connect(this, SIGNAL(sendSessionLeaveRequest(QString,QString)), newProtocolHandler, SLOT(sendSessionLeaveRequest(QString,QString)));
     connect(this, SIGNAL(sendSessionListRequest(QString)), newProtocolHandler, SLOT(sendSessionListRequest(QString)));
+    connect(this, SIGNAL(sendUpdateDrawing(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendUpdateDrawing(QString,QString,QByteArray)));
     connect(this, SIGNAL(sendWritePermissionRequest(QString)), newProtocolHandler, SLOT(sendWritePermissionRequest(QString)));
 
     connect(newProtocolHandler, SIGNAL(receivedLoginResponse(QString,QChar,QString)), this, SLOT(receivedLoginResponse(QString,QChar,QString)));
@@ -103,6 +104,8 @@ void CollaborationClient::receivedPictureResponse(QString userName, QString sess
     sessState.setData(picData.constData(), picData.size());
     //Set the current picture data of the session for this client
     m_collaborationSessions[sessionName]->addDrawingStep(sessState);
+    //TODO this will be emitted in collaboration session
+    emit drawingArrived(sessionName, picData);
     //Joining to the session has been completed.
     m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
     emit sessionJoinResult(sessionName, 1, m_collaborationSessions[sessionName]->getSessionParticipants());
@@ -226,6 +229,9 @@ void CollaborationClient::receivedUpdateDrawing(QString userName, QString sessio
     QPicture drawingStep;
     drawingStep.setData(picData.constData(), picData.size());
     m_collaborationSessions[sessionName]->addDrawingStep(drawingStep);
+
+    //TODO this will be emitted in collaboration session
+    emit drawingArrived(sessionName, picData);
 }
 
 void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar status)
@@ -301,4 +307,25 @@ void CollaborationClient::refreshSessionList()
 void CollaborationClient::joinSession(QString sessionName, QString password)
 {
     emit sendSessionJoinRequest(COLLABORATION_SERVER_NAME, sessionName, password);
+}
+
+void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
+{
+    //TODO- Check if a user is connecting...
+    //TODO If member update is join begin then cannot send drawings
+    //Send the picData to all the peers in the session
+    if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+    {
+        QHash<QString, long>::iterator itr;
+        QHash<QString, long> participants = m_collaborationSessions[sessionName]->getSessionParticipants();
+
+        for (itr = participants.begin(); itr != participants.end(); itr++)
+        {
+            //Don't send the picData to the drawer itself
+            if (itr.key() == m_protocolHandler->getUserName()) continue;
+            emit sendUpdateDrawing(itr.key(), sessionName, picData);
+        }
+        //Send picData to the server
+        emit sendUpdateDrawing(COLLABORATION_SERVER_NAME, sessionName, picData);
+    }
 }

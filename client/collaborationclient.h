@@ -29,9 +29,7 @@ public:
     void loginToServer(QHostAddress serverAddress, QString userName);
     void refreshSessionList();
     void joinSession(QString sessionName, QString password);
-
-
-
+    void sendDrawing(QString sessionName, QByteArray picData);
 
 private:
     QStringList m_userList;
@@ -53,6 +51,7 @@ signals:
     void loginResult(bool result, QString infoMsg);
     void sessionListAvailable(QStringList newSessionList);
     void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
+    void drawingArrived(QString sessionName, QByteArray picData);
 
     // internal signals that will be connected to the ProtocolHandler
     void sendLoginRequest(QString destUserName);
@@ -62,6 +61,7 @@ signals:
     void sendSessionJoinRequest(QString destUserName, QString sessionName, QString password);
     void sendSessionLeaveRequest(QString destUserName, QString sessionName);
     void sendSessionListRequest(QString destUserName);
+    void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
 
 private slots:

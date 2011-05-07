@@ -39,6 +39,7 @@ private slots:
     void on_actionRedPen_triggered();
     void on_actionEraser_triggered();
     void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
+    void drawingCommitted(QString sessionName, QPicture pictureData);
 };
 
 #endif // MAINWINDOW_H
