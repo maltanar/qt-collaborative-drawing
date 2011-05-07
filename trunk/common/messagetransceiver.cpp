@@ -177,8 +177,10 @@ void MessageTransceiver::processOriginBuffer(QString origin)
     bool remainingMessages = true;
 
     while(remainingMessages) {
+        if(originBuffer.length() == 0)
+            break;
         // check if buffer starts with broken message
-        if(originBuffer.length() > 0 && !originBuffer.startsWith(TRANSCEIVER_HEADER)) {
+        if(!originBuffer.startsWith(TRANSCEIVER_HEADER)) {
             // buffer does not stat with header,
             // possibly broken message
             qWarning() << "Error! processOriginBuffer found missing transceiver header for origin" << origin;
