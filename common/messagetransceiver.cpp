@@ -191,17 +191,22 @@ void MessageTransceiver::processOriginBuffer(QString origin)
         }
         // read the size of next message in line
         memcpy(&currentMessageSize, originBuffer.constData() + 8, 4);
+        qWarning() << "processOriginBuffer current message size" << currentMessageSize << "buffer length" << originBuffer.length();
         // check if this message is complete
         if(currentMessageSize <= originBuffer.length()) {
             // message is complete
             currentMessage = originBuffer.right(currentMessageSize - 12); // discard msgtxrx header
+            qWarning() << "length of current message" << currentMessage.length();
             emit gotNewData(origin, currentMessage);
             // truncate the origin buffer
             originBuffers[origin] = originBuffer.right(originBuffer.length() - currentMessageSize);
             originBuffer = originBuffers[origin];
-        } else
+            qWarning() << "new origin buffer size" << originBuffer.size();
+        } else {
             // message is incomplete, exit loop
+            qWarning() << "processOriginBuffer waiting for more data";
             remainingMessages = false;
+        }
     }
 }
 
