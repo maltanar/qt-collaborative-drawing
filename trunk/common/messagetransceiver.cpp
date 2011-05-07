@@ -195,7 +195,7 @@ void MessageTransceiver::processOriginBuffer(QString origin)
         // check if this message is complete
         if(currentMessageSize <= originBuffer.length()) {
             // message is complete
-            currentMessage = originBuffer.mid(12, currentMessageSize); // discard msgtxrx header
+            currentMessage = originBuffer.mid(12, currentMessageSize-12); // discard msgtxrx header
             qWarning() << "length of current message" << currentMessage.length();
             emit gotNewData(origin, currentMessage);
             // truncate the origin buffer
