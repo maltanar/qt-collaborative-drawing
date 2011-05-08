@@ -1,4 +1,5 @@
 #include "collaborationsession.h"
+#include <QPixmap>
 
 CollaborationSession::CollaborationSession(QObject *parent) :
     QObject(parent)
@@ -80,6 +81,15 @@ void CollaborationSession::addDrawingStep(QPicture newDrawingStep)
     m_picturePainter.end();
 
     m_sessionDrawingData = tmpPicture;
+
+    //TODO Remove this
+    QPixmap hede(800,480);
+    hede.fill(Qt::white);
+    m_picturePainter.begin(&hede);
+    m_picturePainter.drawPicture(0,0, m_sessionDrawingData);
+    m_picturePainter.end();
+    hede.save("state.png");
+
 }
 
 
