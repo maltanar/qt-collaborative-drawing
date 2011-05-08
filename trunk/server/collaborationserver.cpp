@@ -147,12 +147,12 @@ void CollaborationServer::receivedSessionListRequest(QString userName)
     emit sendSessionListResponse(userName, m_sessionList);
 }
 
-void CollaborationServer::receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData)
+void CollaborationServer::receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData)
 {
     // first, check if the session with given name exists
     if(!m_sessionList.contains(sessionName)) {
         // no such session
-        qWarning() << "receivedPictureRequest error: session" << sessionName << "does not exist!";
+        qWarning() << "receivedUpdateDrawingServer error: session" << sessionName << "does not exist!";
         // TODO send error reply to client
         return;
     }
@@ -160,7 +160,7 @@ void CollaborationServer::receivedUpdateDrawing(QString userName, QString sessio
     // now check if this user has joined this session
     if(!m_sessionData[sessionName]->getSessionParticipants().contains(userName)) {
         // user is not a member of this sesion
-        qWarning() << "receivedPictureRequest error: user" << userName << "is not a member of" << sessionName;
+        qWarning() << "receivedUpdateDrawingServer error: user" << userName << "is not a member of" << sessionName;
         return;
     }
 
@@ -206,7 +206,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionJoinRequest(QString,QString,QString)), this, SLOT(receivedSessionJoinRequest(QString,QString,QString)));
     connect(newProtocolHandler, SIGNAL(receivedSessionLeaveRequest(QString,QString)), this, SLOT(receivedSessionLeaveRequest(QString,QString)));
     connect(newProtocolHandler, SIGNAL(receivedSessionListRequest(QString)), this, SLOT(receivedSessionListRequest(QString)));
-    connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
+    connect(newProtocolHandler, SIGNAL(receivedUpdateDrawingServer(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawingServer(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionRequest(QString)), this, SLOT(receivedWritePermissionRequest(QString)));
 
     // set protocol handler user name

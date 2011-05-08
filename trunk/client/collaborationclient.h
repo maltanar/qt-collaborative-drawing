@@ -62,6 +62,7 @@ signals:
     void sendSessionLeaveRequest(QString destUserName, QString sessionName);
     void sendSessionListRequest(QString destUserName);
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
+    void sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
 
 private slots:
