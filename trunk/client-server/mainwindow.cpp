@@ -16,20 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setDrawingData(drawingData);
     connect(ui->actionUndo,SIGNAL(triggered()),ui->graphicsView->getDrawingData()->getUndoStack(), SLOT(undo()));
     connect(ui->actionRedo,SIGNAL(triggered()),ui->graphicsView->getDrawingData()->getUndoStack(), SLOT(redo()));
-
-    mt = new MessageTransceiver();
-    ph = new ProtocolHandler();
-    ph->setMessageTransceiver(mt);
-    server = new CollaborationServer();
-    server->setProtocolHandler(ph);
-    client = new CollaborationClient();
-    client->setProtocolHandler(ph);
-
-    connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
-    connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
-    connect(client, SIGNAL(drawingArrived(QString,QByteArray)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray)));
-
-    connect(client, SIGNAL(sessionListAvailable(QStringList)), this, SLOT(gotSessionList(QStringList)));
 }
 
 MainWindow::~MainWindow()
@@ -111,6 +97,21 @@ void MainWindow::on_actionSessions_triggered()
 
 void MainWindow::on_startServerButton_clicked()
 {
+    mt = new MessageTransceiver();
+    ph = new ProtocolHandler();
+    ph->setMessageTransceiver(mt);
+    server = new CollaborationServer();
+    server->setProtocolHandler(ph);
+    client = new CollaborationClient();
+    client->setProtocolHandler(ph);
+
+    connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
+    connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
+    connect(client, SIGNAL(drawingArrived(QString,QByteArray)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray)));
+
+    connect(client, SIGNAL(sessionListAvailable(QStringList)), this, SLOT(gotSessionList(QStringList)));
+
+
     ui->startServerButton->setEnabled(false);
     ui->statusLabel->setText("Running");
     server->setServerUserName(ui->userName->text());
