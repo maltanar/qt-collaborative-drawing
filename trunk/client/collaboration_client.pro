@@ -23,6 +23,7 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtsessionlistresponse.cpp \
                      ../common/wtsessionmemberupdate.cpp \
                      ../common/wtupdatedrawing.cpp \
+                     ../common/wtupdatedrawingserver.cpp \
                      ../common/wtwritepermissionrequest.cpp \
                      ../common/wtwritepermissionstatus.cpp \
                      ../common/wtloginresponse.cpp \
@@ -44,6 +45,7 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtsessionlistresponse.h \
                      ../common/wtsessionmemberupdate.h \
                      ../common/wtupdatedrawing.h \
+                     ../common/wtupdatedrawingserver.h \
                      ../common/wtwritepermissionrequest.h \
                      ../common/wtwritepermissionstatus.h \
                      ../common/wtloginresponse.h \

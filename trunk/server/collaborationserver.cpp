@@ -91,6 +91,8 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     // everything OK, we can send the session drawing state
     QPicture tmpPic = m_sessionData[sessionName]->getSessionDrawingState();
 
+    qWarning() << "sending picture response" << userName << sessionName << tmpPic.size();
+
     emit sendPictureResponse(userName, sessionName, QByteArray::fromRawData(tmpPic.data(), tmpPic.size()));
 
     // send sessionMember update to the other clients in the session
@@ -117,8 +119,6 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
     if(m_sessionData[sessionName]->addSessionParticipant(userName, password, userAddress.toIPv4Address())) {
         // user successfully joined the session
         QHash<QString, long> participants = m_sessionData[sessionName]->getSessionParticipants();
-        // send join response to the newly joined client
-        emit sendSessionJoinResponse(userName, sessionName, 1, participants);
         // send session member update to all other clients
         QHashIterator<QString, long> i(participants);
          while (i.hasNext()) {
@@ -126,6 +126,8 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
              if(i.key() != userName)
                 emit sendSessionMemberUpdate(i.key(), sessionName, UPDATE_SESSION_JOIN_BEGIN, userName);
          }
+         // send join response to the newly joined client
+         emit sendSessionJoinResponse(userName, sessionName, 1, participants);
          return;
      } else {
          // there was a problem with the user joining the session
@@ -149,6 +151,7 @@ void CollaborationServer::receivedSessionListRequest(QString userName)
 
 void CollaborationServer::receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData)
 {
+    qWarning() << "received update drawing" << userName << sessionName << picData.size();
     // first, check if the session with given name exists
     if(!m_sessionList.contains(sessionName)) {
         // no such session
