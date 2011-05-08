@@ -47,7 +47,7 @@ private:
 
 signals:
     // external signals that are meant to be used for the user interface
-    void foundCollaborationServer(QHostAddress serverAddress);
+    void foundCollaborationServer(QHostAddress serverAddress, QString serverUserName);
     void loginResult(bool result, QString infoMsg);
     void sessionListAvailable(QStringList newSessionList);
     void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);

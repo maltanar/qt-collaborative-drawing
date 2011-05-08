@@ -15,6 +15,7 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     QObject(parent)
 {
     m_protocolHandler = NULL;
+    m_serverUserName = COLLABORATION_SERVER_NAME;
     connect(&serviceBroadcastTimer, SIGNAL(timeout()), this, SLOT(serviceBroadcastTimeout()));
     serviceBroadcastTimer.start(SERVICE_BROADCAST_PERIOD_MS);
 
@@ -178,6 +179,11 @@ void CollaborationServer::receivedWritePermissionRequest(QString userName)
 // sets the ProtocolHandler for this CollaborationServer
 void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandler)
 {
+    if(!newProtocolHandler) {
+        qWarning() << "Cannot set a null protocol handler for CollaborationServer!";
+        return;
+    }
+
     if(m_protocolHandler) {
         // disconnect all signals and slots from previous protocol handler
         disconnect(this);
@@ -192,6 +198,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendSessionListResponse(QString,QStringList)), newProtocolHandler, SLOT(sendSessionListResponse(QString,QStringList)));
     connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,char,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,char,QString)));
     connect(this, SIGNAL(sendWritePermissionStatus(QString,QChar)),newProtocolHandler, SLOT(sendWritePermissionStatus(QString,QChar)));
+
     // signals from protocol handler to server slots
     connect(newProtocolHandler, SIGNAL(receivedLoginRequest(QString)), this, SLOT(receivedLoginRequest(QString)));
     connect(newProtocolHandler, SIGNAL(receivedLogoutRequest(QString)), this, SLOT(receivedLogoutRequest(QString)));
@@ -201,8 +208,9 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionListRequest(QString)), this, SLOT(receivedSessionListRequest(QString)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionRequest(QString)), this, SLOT(receivedWritePermissionRequest(QString)));
+
     // set protocol handler user name
-    newProtocolHandler->setUserName(COLLABORATION_SERVER_NAME);
+    newProtocolHandler->setUserName(m_serverUserName);
 
     m_protocolHandler = newProtocolHandler;
 }
@@ -219,14 +227,27 @@ void CollaborationServer::serviceBroadcastTimeout()
     QByteArray broadcastPackage;
     QDataStream packageStream(&broadcastPackage, QIODevice::ReadWrite);
     packageStream << QString("WTCOLSRV");
+    packageStream << m_serverUserName;
     QNetworkInterface interface;
     QList<QHostAddress> IpList = interface.allAddresses();
-    // TODO we are broadcasting only the IPv4 addresses - bad workaround
-    // client side should pick the proper address in subnet
+
     for (int i = 0; i < IpList.size(); i++)
         if (IpList.at(i) != QHostAddress("127.0.0.1") && IpList.at(i).protocol() == QAbstractSocket::IPv4Protocol) { // local loopback isn't useful for others
             packageStream << IpList.at(i);
         }
 
     serviceBroadcastSocket.writeDatagram(broadcastPackage, QHostAddress::Broadcast, SERVICE_BROADCAST_PORT);
+}
+
+void CollaborationServer::setServerUserName(QString newUserName)
+{
+    if(m_protocolHandler)
+        m_protocolHandler->setUserName(newUserName);
+
+    m_serverUserName = newUserName;
+}
+
+QString CollaborationServer::getServerUserName()
+{
+    return m_serverUserName;
 }
