@@ -34,7 +34,7 @@ void SessionJoinDialog::on_refreshList_clicked()
 void SessionJoinDialog::on_pushButton_clicked()
 {
     ui->connectionStatus->setText("Connecting...");
-    m_client->loginToServer(QHostAddress(ui->serverIP->text()), ui->userName->text());
+    m_client->loginToServer(QHostAddress(ui->serverIP->text()), ui->serverName->text(), ui->userName->text());
 }
 
 void SessionJoinDialog::on_sessionList_doubleClicked(QModelIndex index)

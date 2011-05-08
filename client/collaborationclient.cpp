@@ -61,7 +61,7 @@ void CollaborationClient::receivedLoginResponse(QString userName, QChar result, 
     {
         qWarning() << "Login is successful";
         emit loginResult(true, infoMsg);
-        emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
+        emit sendSessionListRequest(m_serverName);
     }
 }
 
@@ -79,7 +79,7 @@ void CollaborationClient::receivedPeerHandshake(QString userName, QString sessio
         if (m_collaborationSessions[sessionName]->isAllAcknowledged())
         {
             qWarning() << "All peers are acknowledged.";
-            emit sendPictureRequest(COLLABORATION_SERVER_NAME,sessionName);
+            emit sendPictureRequest(m_serverName,sessionName);
         }
         m_currentState[sessionName] = JOIN_SESSION_PEERHANDHAKE_COMPLETED;
     }
@@ -248,7 +248,9 @@ void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar 
 
 void CollaborationClient::gotServiceBroadcast()
 {
-    //qWarning() << "got service broadcast!";
+    // receive collaborationserver service broadcasts over UDP
+    // note that this is just for autodiscovery, we don't automatically connect to any
+    // of the discovered servers
 
     QByteArray broadcastPackage;
     QString packageHeader;
@@ -296,24 +298,25 @@ void CollaborationClient::gotServiceBroadcast()
 }
 
 
-void CollaborationClient::loginToServer(QHostAddress serverAddress, QString userName)
+void CollaborationClient::loginToServer(QHostAddress serverAddress, QString serverName, QString userName)
 {
     // TODO check if mapping for server already exists
-    m_protocolHandler->addUserMapping(COLLABORATION_SERVER_NAME, serverAddress.toString());
+    m_protocolHandler->addUserMapping(serverName, serverAddress.toString());
+    m_serverName = serverName;
     // set the origin (source) user name
     m_protocolHandler->setUserName(userName);
     // emit login request
-    emit sendLoginRequest(COLLABORATION_SERVER_NAME);
+    emit sendLoginRequest(m_serverName);
 }
 
 void CollaborationClient::refreshSessionList()
 {
-    emit sendSessionListRequest(COLLABORATION_SERVER_NAME);
+    emit sendSessionListRequest(m_serverName);
 }
 
 void CollaborationClient::joinSession(QString sessionName, QString password)
 {
-    emit sendSessionJoinRequest(COLLABORATION_SERVER_NAME, sessionName, password);
+    emit sendSessionJoinRequest(m_serverName, sessionName, password);
 }
 
 void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
@@ -334,6 +337,6 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
             emit sendUpdateDrawing(itr.key(), sessionName, picData);
         }
         //Send picData to the server
-        emit sendUpdateDrawing(COLLABORATION_SERVER_NAME, sessionName, picData);
+        emit sendUpdateDrawing(m_serverName, sessionName, picData);
     }
 }
