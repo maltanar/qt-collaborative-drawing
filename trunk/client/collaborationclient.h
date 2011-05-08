@@ -8,7 +8,6 @@
 #include <protocolhandler.h>
 #include <collaborationsession.h>
 
-#define COLLABORATION_SERVER_NAME "$SERVER$"
 #define SERVICE_BROADCAST_PORT 45455
 
 #define JOIN_SESSION_STATE 1
@@ -26,12 +25,13 @@ public:
     void setProtocolHandler(ProtocolHandler * newProtocolHandler);
     ProtocolHandler * getProtocolHandler();
 
-    void loginToServer(QHostAddress serverAddress, QString userName);
+    void loginToServer(QHostAddress serverAddress, QString serverName, QString userName);
     void refreshSessionList();
     void joinSession(QString sessionName, QString password);
     void sendDrawing(QString sessionName, QByteArray picData);
 
 private:
+    QString m_serverName;
     QStringList m_userList;
     QStringList m_sessionList;
     ProtocolHandler *m_protocolHandler;
