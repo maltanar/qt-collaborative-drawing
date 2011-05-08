@@ -152,7 +152,9 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         {
             //Send handshake messages to the users in the session
             if (itr.key() != m_protocolHandler->getUserName()) {
-                m_protocolHandler->addUserMapping(itr.key(), QHostAddress(itr.value()).toString());
+                // check if this peer is the server user, we already have a connection to that
+                if(itr.key() != m_serverName)
+                    m_protocolHandler->addUserMapping(itr.key(), QHostAddress(itr.value()).toString());
                 qWarning() << "Peer handshake has been sent to : " << itr.key();
                 emit sendPeerHandshake(itr.key(), sessionName);
             }
