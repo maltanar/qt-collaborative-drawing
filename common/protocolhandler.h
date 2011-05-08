@@ -18,6 +18,7 @@
 #include <wtsessionlistresponse.h>
 #include <wtsessionmemberupdate.h>
 #include <wtupdatedrawing.h>
+#include <wtupdatedrawingserver.h>
 #include <wtwritepermissionrequest.h>
 #include <wtwritepermissionstatus.h>
 #include <wtpeerhandshake.h>
@@ -62,6 +63,7 @@ private:
     void handleSessionListResponse(WTSessionListResponse *msg);
     void handleSessionMemberUpdate(WTSessionMemberUpdate *msg);
     void handleUpdateDrawing(WTUpdateDrawing *msg);
+    void handleUpdateDrawingServer(WTUpdateDrawingServer *msg);
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
     void handlePeerHandshake(WTPeerHandshake *msg, QString requestOrigin);
@@ -83,6 +85,7 @@ signals:
     void receivedSessionListResponse(QString userName, QStringList sessionList);
     void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
+    void receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
     void receivedWritePermissionStatus(QString userName, QChar status);
 
@@ -103,6 +106,7 @@ public slots:
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
     void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString users);
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
+    void sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
     void sendWritePermissionStatus(QString destUserName, QChar status);
 };
