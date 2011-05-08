@@ -4,6 +4,9 @@ ProtocolHandler::ProtocolHandler(QObject *parent) :
     QObject(parent)
 {
     m_messageTransceiver = NULL;
+
+    // connect the loopback signal-slot pair
+    connect(this, SIGNAL(sendMessageLoopback(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
 }
 
 void ProtocolHandler::addUserMapping(QString userName, QString IP)
@@ -161,6 +164,15 @@ bool ProtocolHandler::deliverMessage(WTMessage * msg)
     // check for null messages
     if(!msg)
         return false;
+    // serialize the message into a byte array
+    QByteArray msgData = msg->serialize();
+    // check for loopback (send message to self)
+    if(msg->getDestUsername() == getUserName()) {
+        qWarning() << "message loopback!";
+        emit sendMessageLoopback(msg->getDestUsername(), msgData);
+        delete msg;
+        return true;
+    }
     // find the peer destination for this username
     QString destination = peerMap.value(msg->getDestUsername(), "");
     if(destination == "") {
@@ -169,8 +181,6 @@ bool ProtocolHandler::deliverMessage(WTMessage * msg)
         delete msg;
         return false;
     }
-    // serialize the message into a byte array
-    QByteArray msgData = msg->serialize();
     // time for delivery!
     emit sendMessage(destination, msgData);
     // we should be able to delete this message now
