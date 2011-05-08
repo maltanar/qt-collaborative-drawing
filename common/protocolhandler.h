@@ -71,6 +71,8 @@ private:
 
 signals:
     void sendMessage(QString destination, QByteArray data);
+    void sendMessageLoopback(QString desination, QByteArray data);
+
     void receivedLoginRequest(QString userName);
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedLogoutRequest(QString userName);
