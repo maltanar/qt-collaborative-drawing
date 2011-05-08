@@ -127,6 +127,12 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
         msg->deserialize(data);
         handleUpdateDrawing(msg);
     }
+    else if (candidateMsg.getCommand() == "DRAWSUPD")
+    {
+        WTUpdateDrawingServer *msg = new WTUpdateDrawingServer();
+        msg->deserialize(data);
+        handleUpdateDrawingServer(msg);
+    }
     else if (candidateMsg.getCommand() == "WRTPRMRQ")
     {
         WTWritePermissionRequest *msg = new WTWritePermissionRequest();
@@ -284,6 +290,12 @@ void ProtocolHandler::handleUpdateDrawing(WTUpdateDrawing *msg)
     emit receivedUpdateDrawing(msg->getSrcUsername(), msg->getSessionName(), msg->getPicData());
 }
 
+void ProtocolHandler::handleUpdateDrawingServer(WTUpdateDrawingServer *msg)
+{
+    //Local peer role: Server
+    emit receivedUpdateDrawingServer(msg->getSrcUsername(), msg->getSessionName(), msg->getPicData());
+}
+
 void ProtocolHandler::handleWritePermissionRequest(WTWritePermissionRequest *msg)
 {
     //Local peer role: Server
@@ -432,6 +444,16 @@ void ProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sess
 void ProtocolHandler::sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData)
 {
     WTUpdateDrawing *msg = new WTUpdateDrawing;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setPicData(picData);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData)
+{
+    WTUpdateDrawingServer *msg = new WTUpdateDrawingServer;
     msg->setSrcUsername(this->userName);
     msg->setDestUsername(destUserName);
     msg->setSessionName(sessionName);
