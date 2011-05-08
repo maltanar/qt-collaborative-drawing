@@ -74,7 +74,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         ../server/collaborationserver.cpp \
         ../client/collaborationclient.cpp \
-	sessionjoindialog.cpp \
         $$COMMON_SOURCES \
         $$CWIDGET_SOURCES
 
@@ -82,9 +81,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     ../server/collaborationserver.h \
     ../client/collaborationclient.h \
-    sessionjoindialog.h \
     $$COMMON_HEADERS \
     $$CWIDGET_HEADERS
 
-FORMS    += mainwindow.ui \
-    sessionjoindialog.ui
+FORMS    += mainwindow.ui
