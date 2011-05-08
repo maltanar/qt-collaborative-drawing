@@ -79,6 +79,17 @@ void MainWindow::on_actionEraser_triggered()
 
 void MainWindow::sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users)
 {
+    QMessageBox m;
+    if(result == 1) {
+        m.setText("Joined session " + sessionName + ", you may start drawing");
+        m.exec();
+        ui->stackedWidget->setCurrentIndex(0);
+    } else {
+        m.setText("Failed to join session " + sessionName + ", check the password");
+        m.exec();
+        ui->stackedWidget->setCurrentIndex(1);
+    }
+
     qWarning() << "Session join result: " << sessionName << " : " << result << " : " << users.count();
 }
 
@@ -107,6 +118,8 @@ void MainWindow::on_startServerButton_clicked()
 
     client->loginToServer(QHostAddress("127.0.0.1"), ui->userName->text(), ui->userName->text());
     client->refreshSessionList();
+
+    ui->sessionBox->setEnabled(true);
 }
 
 void MainWindow::gotSessionList(QStringList sessionList)

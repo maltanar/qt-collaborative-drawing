@@ -29,7 +29,12 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtloginresponse.cpp \
                      ../common/protocolhandler.cpp \
                      ../common/wtpeerhandshake.cpp \
-                     ../common/collaborationsession.cpp 
+                     ../common/collaborationsession.cpp \
+
+CWIDGET_SOURCES += ../collaborative_drawing_widget/basedrawingwidget.cpp \
+	               ../collaborative_drawing_widget/drawingdata.cpp \
+	               ../collaborative_drawing_widget/collaborativedrawingwidget.cpp \
+	               ../collaborative_drawing_widget/drawingaction.cpp                     
 
 COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtloginmessage.h \
@@ -53,33 +58,33 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtpeerhandshake.h \
                      ../common/collaborationsession.h
 
+CWIDGET_HEADERS += ../collaborative_drawing_widget/basedrawingwidget.h \
+	               ../collaborative_drawing_widget/drawingdata.h \
+	               ../collaborative_drawing_widget/collaborativedrawingwidget.h \
+	               ../collaborative_drawing_widget/drawingaction.h \
+	               ../collaborative_drawing_widget/appglobals.h
+
 INCLUDEPATH += . \
     ../common \
     ../client \
-    ../server
+    ../server \
+    ../collaborative_drawing_widget 
 
 SOURCES += main.cpp\
         mainwindow.cpp \
         ../server/collaborationserver.cpp \
         ../client/collaborationclient.cpp \
-	basedrawingwidget.cpp \
-	drawingdata.cpp \
-	collaborativedrawingwidget.cpp \
-	drawingaction.cpp \
 	sessionjoindialog.cpp \
-        $$COMMON_SOURCES
+        $$COMMON_SOURCES \
+        $$CWIDGET_SOURCES
 
 
 HEADERS  += mainwindow.h \
     ../server/collaborationserver.h \
     ../client/collaborationclient.h \
-    appglobals.h \
-    drawingdata.h \
-    drawingaction.h \
-    basedrawingwidget.h \
-    collaborativedrawingwidget.h \
     sessionjoindialog.h \
-    $$COMMON_HEADERS
+    $$COMMON_HEADERS \
+    $$CWIDGET_HEADERS
 
 FORMS    += mainwindow.ui \
     sessionjoindialog.ui
