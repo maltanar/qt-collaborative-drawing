@@ -21,6 +21,7 @@ private:
     CollaborationClient *m_client;
 
 private slots:
+    void on_joinSession_clicked();
     void on_buttonBox_rejected();
     void on_buttonBox_accepted();
     void on_sessionList_doubleClicked(QModelIndex index);

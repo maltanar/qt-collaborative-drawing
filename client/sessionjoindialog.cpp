@@ -39,9 +39,7 @@ void SessionJoinDialog::on_pushButton_clicked()
 
 void SessionJoinDialog::on_sessionList_doubleClicked(QModelIndex index)
 {
-    m_client->joinSession(ui->sessionList->currentItem()->text(), ui->password->text());
-    this->hide();
-    this->deleteLater();
+
 }
 
 void SessionJoinDialog::on_buttonBox_accepted()
@@ -71,4 +69,11 @@ void SessionJoinDialog::gotSessionList(QStringList sessionList)
 {
     ui->sessionList->clear();
     ui->sessionList->addItems(sessionList);
+}
+
+void SessionJoinDialog::on_joinSession_clicked()
+{
+    m_client->joinSession(ui->sessionList->currentItem()->text(), ui->password->text());
+    this->hide();
+    this->deleteLater();
 }
