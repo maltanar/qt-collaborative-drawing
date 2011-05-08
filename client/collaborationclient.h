@@ -36,6 +36,7 @@ private:
     QStringList m_sessionList;
     ProtocolHandler *m_protocolHandler;
     QHash<QString, CollaborationSession *> m_collaborationSessions;
+    QHash<QString, QString> m_pendingHandshakes;
 
     QUdpSocket serviceBroadcastReceiver;
 
