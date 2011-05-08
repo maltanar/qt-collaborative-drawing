@@ -77,7 +77,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Double-click to join a session</string>
+      <string>Sessions</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -90,6 +90,13 @@
        <widget class="QPushButton" name="refreshList">
         <property name="text">
          <string>Refresh list</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="joinSession">
+        <property name="text">
+         <string>Join selected session</string>
         </property>
        </widget>
       </item>
