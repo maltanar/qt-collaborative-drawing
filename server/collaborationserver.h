@@ -51,7 +51,7 @@ public slots:
     void receivedSessionJoinRequest(QString userName, QString sessionName, QString password);
     void receivedSessionLeaveRequest(QString userName, QString sessionName);
     void receivedSessionListRequest(QString userName);
-    void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
+    void receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
 
 private slots:

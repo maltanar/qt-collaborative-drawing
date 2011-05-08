@@ -26,6 +26,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendSessionLeaveRequest(QString,QString)), newProtocolHandler, SLOT(sendSessionLeaveRequest(QString,QString)));
     connect(this, SIGNAL(sendSessionListRequest(QString)), newProtocolHandler, SLOT(sendSessionListRequest(QString)));
     connect(this, SIGNAL(sendUpdateDrawing(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendUpdateDrawing(QString,QString,QByteArray)));
+    connect(this, SIGNAL(sendUpdateDrawingServer(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendUpdateDrawingServer(QString,QString,QByteArray)));
     connect(this, SIGNAL(sendWritePermissionRequest(QString)), newProtocolHandler, SLOT(sendWritePermissionRequest(QString)));
 
     connect(newProtocolHandler, SIGNAL(receivedLoginResponse(QString,QChar,QString)), this, SLOT(receivedLoginResponse(QString,QChar,QString)));
@@ -337,6 +338,6 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
             emit sendUpdateDrawing(itr.key(), sessionName, picData);
         }
         //Send picData to the server
-        emit sendUpdateDrawing(m_serverName, sessionName, picData);
+        emit sendUpdateDrawingServer(m_serverName, sessionName, picData);
     }
 }
