@@ -10,13 +10,14 @@ SessionJoinDialog::SessionJoinDialog(CollaborationClient * client, QWidget *pare
     ui->setupUi(this);
     m_client = client;
 
-    connect(m_client, SIGNAL(foundCollaborationServer(QHostAddress)), this, SLOT(foundServer(QHostAddress)));
+    connect(m_client, SIGNAL(foundCollaborationServer(QHostAddress, QString)), this, SLOT(foundServer(QHostAddress, QString)));
     connect(m_client, SIGNAL(loginResult(bool,QString)), this, SLOT(loginResult(bool,QString)));
     connect(m_client, SIGNAL(sessionListAvailable(QStringList)), this, SLOT(gotSessionList(QStringList)));
 }
 
-void SessionJoinDialog::foundServer(QHostAddress addr)
+void SessionJoinDialog::foundServer(QHostAddress addr, QString serverName)
 {
+    ui->serverName->setText(serverName);
     ui->serverIP->setText(addr.toString());
 }
 

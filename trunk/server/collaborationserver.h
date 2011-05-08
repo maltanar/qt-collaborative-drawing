@@ -22,7 +22,11 @@ public:
     void setProtocolHandler(ProtocolHandler * newProtocolHandler);
     ProtocolHandler * getProtocolHandler();
 
+    void setServerUserName(QString newUserName);
+    QString getServerUserName();
+
 protected:
+    QString m_serverUserName;
     QList<QString> m_userList;
     QList<QString> m_sessionList;
     ProtocolHandler * m_protocolHandler;

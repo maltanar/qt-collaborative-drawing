@@ -26,7 +26,7 @@ private slots:
     void on_sessionList_doubleClicked(QModelIndex index);
     void on_pushButton_clicked();
     void on_refreshList_clicked();
-    void foundServer(QHostAddress addr);
+    void foundServer(QHostAddress addr, QString serverName);
     void loginResult(bool result, QString infoMsg);
     void gotSessionList(QStringList sessionList);
 };

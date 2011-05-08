@@ -252,6 +252,7 @@ void CollaborationClient::gotServiceBroadcast()
 
     QByteArray broadcastPackage;
     QString packageHeader;
+    QString serverUserName;
     QHostAddress serverAddress;
     QNetworkInterface networkInterface;
     QList<QNetworkInterface> allInterfaces = networkInterface.allInterfaces();
@@ -271,6 +272,9 @@ void CollaborationClient::gotServiceBroadcast()
 
         if (packageHeader == "WTCOLSRV")
         {
+            packageStream >> serverUserName;
+            // TODO we are using only the first entry of the multiple server addresses
+            // modify this part to make use of all existing entries
             packageStream >> serverAddress;
 
             for(int i = 0; i < allAddresses.size(); i++)
@@ -283,7 +287,7 @@ void CollaborationClient::gotServiceBroadcast()
                 {
                     //qWarning() << allAddresses[i].ip() << allAddresses[i].netmask();
                     //qWarning() << serverAddress << "!";
-                    emit foundCollaborationServer(serverAddress);
+                    emit foundCollaborationServer(serverAddress, serverUserName);
                     break;
                 }
             }
