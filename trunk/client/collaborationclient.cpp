@@ -94,7 +94,8 @@ void CollaborationClient::receivedPeerHandshake(QString userName, QString sessio
     }
     else
     {
-        qWarning() << "Received unexpected peer handshake";
+        qWarning() << "Received unexpected peer handshake, adding to pending list";
+        m_pendingHandshakes.insert(userName, sessionName);
     }
 }
 
@@ -212,6 +213,13 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
         m_currentState[sessionName] = MEMBER_UPDATE_JOIN_BEGIN_RECEIVED;
         //TODO - This client first should complete what it is sending and stop sending
         //TODO - Open connections to the members in the list "users"
+        // check if we already received a handshake for this user and session
+        if(m_pendingHandshakes.contains(user) && m_pendingHandshakes.value(user, "") == sessionName) {
+            // acknowledge peer
+            receivedPeerHandshake(user, sessionName);
+            // clear pending ack
+            m_pendingHandshakes.remove(user);
+        }
     }
     //The users in the list "users" have completely joined the session
     else if (updateType == UPDATE_SESSION_JOIN_END)
