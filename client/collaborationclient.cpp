@@ -107,7 +107,7 @@ void CollaborationClient::receivedPictureResponse(QString userName, QString sess
     //Set the current picture data of the session for this client
     m_collaborationSessions[sessionName]->addDrawingStep(sessState);
     //TODO this will be emitted in collaboration session
-    emit drawingArrived(sessionName, picData);
+    emit drawingArrived(sessionName, picData, true);
     //Joining to the session has been completed.
     m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
     emit sessionJoinResult(sessionName, 1, m_collaborationSessions[sessionName]->getSessionParticipants());
@@ -247,7 +247,7 @@ void CollaborationClient::receivedUpdateDrawing(QString userName, QString sessio
     qWarning() << "Picdata geldi of size : " << picData.size();
 
     //TODO this will be emitted in collaboration session
-    emit drawingArrived(sessionName, picData);
+    emit drawingArrived(sessionName, picData, false);
 }
 
 void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar status)

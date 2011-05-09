@@ -25,13 +25,6 @@ private:
 
 private slots:
     void on_actionConnect_triggered();
-    void on_actionListen_triggered();
-    void on_actionLoad_triggered();
-    void on_actionSave_triggered();
-    void on_actionEllipse_triggered();
-    void on_actionStraightLine_triggered();
-    void on_actionRectangle_triggered();
-    void on_actionFreehand_triggered();
     void on_actionPenWidthDec_triggered();
     void on_actionPenWidthInc_triggered();
     void on_actionBluePen_triggered();
