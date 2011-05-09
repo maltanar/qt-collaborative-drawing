@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Watch and Touch Collaborative Drawing Tests</string>
+   <string>Collaborative Drawing Client-Server</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -54,7 +54,14 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="userName"/>
+            <widget class="QLineEdit" name="userName">
+             <property name="text">
+              <string>Server</string>
+             </property>
+             <property name="maxLength">
+              <number>8</number>
+             </property>
+            </widget>
            </item>
            <item row="2" column="1">
             <widget class="QPushButton" name="startServerButton">

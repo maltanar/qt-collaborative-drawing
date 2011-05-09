@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setDrawingData(drawingData);
     connect(ui->actionUndo,SIGNAL(triggered()),ui->graphicsView->getDrawingData()->getUndoStack(), SLOT(undo()));
     connect(ui->actionRedo,SIGNAL(triggered()),ui->graphicsView->getDrawingData()->getUndoStack(), SLOT(redo()));
+
+    ui->stackedWidget->setCurrentIndex(1);
 }
 
 MainWindow::~MainWindow()
@@ -28,6 +30,7 @@ void MainWindow::on_actionRedPen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::red);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionBlackPen_triggered()
@@ -35,6 +38,7 @@ void MainWindow::on_actionBlackPen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::black);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionBluePen_triggered()
@@ -42,6 +46,7 @@ void MainWindow::on_actionBluePen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::blue);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionPenWidthInc_triggered()
