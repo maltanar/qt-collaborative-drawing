@@ -10,22 +10,15 @@ class CollaborativeDrawingWidget : public BaseDrawingWidget
 public:
     explicit CollaborativeDrawingWidget(QWidget *parent = 0);
 
-    // TODO this doesn't belong here
-    QTcpSocket clientSocket;
-    QTcpServer server;
-    QTcpSocket *serverSocket;
-
-    void startListening(int portNumber);
-
 protected:
     void commitDrawing(QPicture drawingData);
+
+    QString m_currentSession;
 
 signals:
     void drawingCommited(QString sessionName, QPicture drawingData);
 
 public slots:
-    void gotNewConnection();
-    void dataArrived();
     void gotDrawingData(QString sessionName, QByteArray picData);
 
 };
