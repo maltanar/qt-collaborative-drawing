@@ -138,11 +138,13 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Map it with its sessionName
         m_collaborationSessions.insert(sessionName, collaborationSession);
 
-        //TODO Remove this!
+        //TODO Remove this?
+        // the sole user in the session is this user, so no handshakes needed
+        // we can directly send the current state request to the server
         if (users.size() == 0)
         {
             m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
-            emit sessionJoinResult(sessionName, result, users);
+            emit sendPictureRequest(m_serverName, sessionName);
             return;
         }
 
