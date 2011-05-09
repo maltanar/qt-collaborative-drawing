@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
     connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
-    connect(client, SIGNAL(drawingArrived(QString,QByteArray)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray)));
+    connect(client, SIGNAL(drawingArrived(QString,QByteArray,bool)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray,bool)));
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +40,7 @@ void MainWindow::on_actionRedPen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::red);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionBlackPen_triggered()
@@ -47,6 +48,7 @@ void MainWindow::on_actionBlackPen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::black);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionBluePen_triggered()
@@ -54,6 +56,7 @@ void MainWindow::on_actionBluePen_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setColor(Qt::blue);
     ui->graphicsView->setDrawingPen(current);
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
 }
 
 void MainWindow::on_actionPenWidthInc_triggered()
@@ -68,49 +71,6 @@ void MainWindow::on_actionPenWidthDec_triggered()
     QPen current = ui->graphicsView->getDrawingPen();
     current.setWidth(current.width()-1);
     ui->graphicsView->setDrawingPen(current);
-}
-
-void MainWindow::on_actionFreehand_triggered()
-{
-    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
-}
-
-void MainWindow::on_actionRectangle_triggered()
-{
-    ui->graphicsView->setDrawingMode(DRAWINGMODE_RECTANGLE);
-}
-
-void MainWindow::on_actionStraightLine_triggered()
-{
-    ui->graphicsView->setDrawingMode(DRAWINGMODE_STRAIGHTLINE);
-}
-
-void MainWindow::on_actionEllipse_triggered()
-{
-    ui->graphicsView->setDrawingMode(DRAWINGMODE_ELLIPSE);
-}
-
-void MainWindow::on_actionSave_triggered()
-{
-    QString fileName = QFileDialog::getSaveFileName(this, "Save PNG","", "Portable Network Graphics (*.png)");
-    if(fileName != "")
-        ui->graphicsView->getDrawingData()->saveImage(fileName);
-}
-
-void MainWindow::on_actionLoad_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, "Save SVG","", "Portable Network Graphics (*.png)");
-    if(fileName != "")
-        ui->graphicsView->getDrawingData()->loadImage(fileName);
-}
-
-void MainWindow::on_actionListen_triggered()
-{
-    QString portstr = QInputDialog::getText(this, "Port number",
-                                              "Port number to listen on:", QLineEdit::Normal,
-                                              "1337");
-
-    ui->graphicsView->startListening(portstr.toInt());
 }
 
 void MainWindow::on_actionConnect_triggered()
