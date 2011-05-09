@@ -97,7 +97,8 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     QHash<QString, long> clients = m_sessionData[sessionName]->getSessionParticipants();
     for (itr = clients.begin(); itr != clients.end(); itr++)
     {
-        emit sendSessionMemberUpdate(itr.key(), sessionName, UPDATE_SESSION_JOIN_END, userName);
+        if(itr.key() != userName)
+            emit sendSessionMemberUpdate(itr.key(), sessionName, UPDATE_SESSION_JOIN_END, userName);
     }
 }
 

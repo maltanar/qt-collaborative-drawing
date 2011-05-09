@@ -80,9 +80,9 @@ void CollaborationClient::receivedPeerHandshake(QString userName, QString sessio
         if (m_collaborationSessions[sessionName]->isAllAcknowledged())
         {
             qWarning() << "All peers are acknowledged.";
+            m_currentState[sessionName] = JOIN_SESSION_PEERHANDHAKE_COMPLETED;
             emit sendPictureRequest(m_serverName,sessionName);
         }
-        m_currentState[sessionName] = JOIN_SESSION_PEERHANDHAKE_COMPLETED;
     }
     else if (m_currentState[sessionName] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
     {
@@ -143,7 +143,6 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         // we can directly send the current state request to the server
         if (users.size() == 0)
         {
-            m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
             emit sendPictureRequest(m_serverName, sessionName);
             return;
         }
