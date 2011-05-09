@@ -21,19 +21,22 @@ void CollaborativeDrawingWidget::commitDrawing(QPicture drawingPictureData)
 
 }
 
-void CollaborativeDrawingWidget::gotDrawingData(QString sessionName, QByteArray picData)
+void CollaborativeDrawingWidget::gotDrawingData(QString sessionName, QByteArray picData, bool isInitialState)
 {
     // this slot will be invoked when the user joins a new session and the server
     // sends the current drawing state for this session
     QPicture pic;
     qWarning() << "Session state data of size : " << picData.size() << "from session" << sessionName;
-    // set the session name
-    m_currentSession = sessionName;
+    if(isInitialState) {
+        // set the session name
+        m_currentSession = sessionName;
+        // clear up any old data
+        getDrawingData()->clear();
+        // the widget should be enabled now
+        setEnabled(true);
+    }
     pic.setData(picData.constData(), picData.size());
-    // clear up any old data
-    getDrawingData()->clear();
+
     // commit the new data
     BaseDrawingWidget::commitDrawing(pic);
-    // the widget should be enabled now
-    setEnabled(true);
 }
