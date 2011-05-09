@@ -20,18 +20,14 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     serviceBroadcastTimer.start(SERVICE_BROADCAST_PERIOD_MS);
 
     // TODO add create session messages and remove the lines below
-    m_sessionList.append("test");
-    m_sessionData["test"] = new CollaborationSession();
-    m_sessionData["test"]->setSessionName("test");
-    m_sessionData["test"]->setSessionPassword("lulz");
-    m_sessionList.append("test2");
-    m_sessionData["test2"] = new CollaborationSession();
-    m_sessionData["test2"]->setSessionName("test2");
-    m_sessionData["test2"]->setSessionPassword("lulz2");
-    m_sessionList.append("test3");
-    m_sessionData["test3"] = new CollaborationSession();
-    m_sessionData["test3"]->setSessionName("test3");
-    m_sessionData["test3"]->setSessionPassword("lulz3");
+    m_sessionList.append("Test1");
+    m_sessionData["Test1"] = new CollaborationSession();
+    m_sessionData["Test1"]->setSessionName("Test1");
+    m_sessionData["Test1"]->setSessionPassword("1234");
+    m_sessionList.append("Test2");
+    m_sessionData["Test2"] = new CollaborationSession();
+    m_sessionData["Test2"]->setSessionName("Test2");
+    m_sessionData["Test2"]->setSessionPassword("1234");
 }
 
 void CollaborationServer::receivedLoginRequest(QString userName)
