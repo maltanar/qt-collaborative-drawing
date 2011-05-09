@@ -51,7 +51,7 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
         qWarning() <<  "ProtocolHandler::receiveMessage got message with incorrect header" << candidateMsg.getVersion();
         return;
     }
-    // TODO determine the message type and deserialize accordingly
+    qWarning() << "command:" << candidateMsg.getCommand();
     if (candidateMsg.getCommand() == "LOGINREQ")
     {
         WTLoginMessage *msg = new WTLoginMessage();
