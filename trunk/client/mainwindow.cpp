@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include "collaborativedrawingwidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -93,4 +94,24 @@ void MainWindow::drawingCommitted(QString sessionName, QPicture pictureData)
 {
     QByteArray picData(pictureData.data(), pictureData.size());
     client->sendDrawing(sessionName, picData);
+}
+
+void MainWindow::on_actionStraightLine_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_STRAIGHTLINE);
+}
+
+void MainWindow::on_actionRectangle_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_RECTANGLE);
+}
+
+void MainWindow::on_actionFreehand_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
+}
+
+void MainWindow::on_actionClear_triggered()
+{
+    ui->graphicsView->clear();
 }

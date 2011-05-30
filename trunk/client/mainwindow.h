@@ -33,6 +33,10 @@ private slots:
     void on_actionEraser_triggered();
     void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
     void drawingCommitted(QString sessionName, QPicture pictureData);
+    void on_actionStraightLine_triggered();
+    void on_actionRectangle_triggered();
+    void on_actionFreehand_triggered();
+    void on_actionClear_triggered();
 };
 
 #endif // MAINWINDOW_H
