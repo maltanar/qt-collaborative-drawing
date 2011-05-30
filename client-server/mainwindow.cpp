@@ -143,3 +143,23 @@ void MainWindow::on_pushButton_clicked()
 {
     client->joinSession(ui->sessionList->currentItem()->text(), ui->sessionPassword->text());
 }
+
+void MainWindow::on_actionClear_triggered()
+{
+    ui->graphicsView->clear();
+}
+
+void MainWindow::on_actionFreehand_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_FREEHAND);
+}
+
+void MainWindow::on_actionRectangle_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_RECTANGLE);
+}
+
+void MainWindow::on_actionStraightLine_triggered()
+{
+    ui->graphicsView->setDrawingMode(DRAWINGMODE_STRAIGHTLINE);
+}

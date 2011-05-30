@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>480</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -155,10 +155,14 @@ p, li { white-space: pre-wrap; }
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionClear"/>
    <addaction name="actionRedPen"/>
    <addaction name="actionBlackPen"/>
    <addaction name="actionBluePen"/>
    <addaction name="actionEraser"/>
+   <addaction name="actionFreehand"/>
+   <addaction name="actionRectangle"/>
+   <addaction name="actionStraightLine"/>
    <addaction name="actionPenWidthInc"/>
    <addaction name="actionPenWidthDec"/>
    <addaction name="actionDrawing"/>
@@ -204,27 +208,27 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionRedPen">
    <property name="text">
-    <string>RedPen</string>
+    <string>Red</string>
    </property>
   </action>
   <action name="actionBlackPen">
    <property name="text">
-    <string>BlackPen</string>
+    <string>Black</string>
    </property>
   </action>
   <action name="actionBluePen">
    <property name="text">
-    <string>BluePen</string>
+    <string>Blue</string>
    </property>
   </action>
   <action name="actionPenWidthInc">
    <property name="text">
-    <string>PenWidth++</string>
+    <string>PenW++</string>
    </property>
   </action>
   <action name="actionPenWidthDec">
    <property name="text">
-    <string>PenWidth--</string>
+    <string>PenW--</string>
    </property>
   </action>
   <action name="actionFreehand">
@@ -260,6 +264,11 @@ p, li { white-space: pre-wrap; }
   <action name="actionDrawing">
    <property name="text">
     <string>Drawing</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>
