@@ -57,6 +57,7 @@ public slots:
     void setDrawingColor(QColor color);
     void increasePenWidth();
     void decreasePenWidth();
+    void clear();
 
 };
 

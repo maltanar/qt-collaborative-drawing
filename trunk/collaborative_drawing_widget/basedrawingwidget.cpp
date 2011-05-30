@@ -305,3 +305,12 @@ void BaseDrawingWidget::decreasePenWidth()
 {
     drawingPen.setWidth(drawingPen.width() > 2 ? drawingPen.width()-1 : 1);
 }
+
+void BaseDrawingWidget::clear()
+{
+    picturePainter.begin(&picture);
+    picturePainter.fillRect(sceneRect(), Qt::white);
+    picturePainter.end();
+
+    commitDrawing(picture);
+}
