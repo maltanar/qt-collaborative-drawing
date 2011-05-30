@@ -27,6 +27,10 @@ private:
     MessageTransceiver *mt;
 
 private slots:
+    void on_actionStraightLine_triggered();
+    void on_actionRectangle_triggered();
+    void on_actionFreehand_triggered();
+    void on_actionClear_triggered();
     void on_pushButton_clicked();
     void on_refreshList_clicked();
     void on_startServerButton_clicked();
