@@ -238,7 +238,24 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     //The users in the list "users" have left the session
     else if (updateType == UPDATE_SESSION_LEAVE)
     {
-        m_collaborationSessions[sessionName]->getSessionParticipants().remove(user);
+        qWarning() << "User " << user << "has been removed";
+
+        QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
+        QHash<QString, long>::iterator iter;
+        for (iter = participants->begin(); iter != participants->end(); iter++)
+        {
+            if (iter.key() == user)
+            {
+                participants->erase(iter);
+                break;
+            }
+        }
+
+        //.remove(user);
+        if (m_collaborationSessions[sessionName]->getSessionParticipants().contains(user))
+        {
+            qWarning() << "User could not be removed :S";
+        }
         //TODO - Close connections to the users in the list "users"
     }
 }
@@ -372,12 +389,14 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
     //if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
     {
         QHash<QString, long>::iterator itr;
-        QHash<QString, long> participants = m_collaborationSessions[sessionName]->getSessionParticipants();
+        QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
 
-        for (itr = participants.begin(); itr != participants.end(); itr++)
+        for (itr = participants->begin(); itr != participants->end(); itr++)
         {
             //Don't send the picData to the drawer itself
             if (itr.key() == m_protocolHandler->getUserName()) continue;
+
+            qWarning() << "sent to the user : " << itr.key();
             emit sendUpdateDrawing(itr.key(), sessionName, picData);
         }
         //Send picData to the server

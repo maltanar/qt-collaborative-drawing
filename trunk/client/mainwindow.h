@@ -24,6 +24,7 @@ private:
     MessageTransceiver *mt;
 
 private slots:
+    void on_actionLeave_triggered();
     void on_actionConnect_triggered();
     void on_actionPenWidthDec_triggered();
     void on_actionPenWidthInc_triggered();
