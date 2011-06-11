@@ -28,6 +28,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendUpdateDrawing(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendUpdateDrawing(QString,QString,QByteArray)));
     connect(this, SIGNAL(sendUpdateDrawingServer(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendUpdateDrawingServer(QString,QString,QByteArray)));
     connect(this, SIGNAL(sendWritePermissionRequest(QString)), newProtocolHandler, SLOT(sendWritePermissionRequest(QString)));
+    connect(this, SIGNAL(sendSessionCreateRequest(QString,QString,QString)), newProtocolHandler, SLOT(sendSessionCreateRequest(QString,QString,QString)));
 
     connect(newProtocolHandler, SIGNAL(receivedLoginResponse(QString,QChar,QString)), this, SLOT(receivedLoginResponse(QString,QChar,QString)));
     connect(newProtocolHandler, SIGNAL(receivedPeerHandshake(QString,QString)), this, SLOT(receivedPeerHandshake(QString,QString)));
@@ -38,6 +39,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionMemberUpdate(QString,QString,char,QString)), this, SLOT(receivedSessionMemberUpdate(QString,QString,char,QString)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionStatus(QString,QChar)), this, SLOT(receivedWritePermissionStatus(QString,QChar)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionCreateResponse(QString,QString,QChar,QString)), this, SLOT(receivedSessionCreateResponse(QString,QString,QChar,QString)));
     m_protocolHandler = newProtocolHandler;
 }
 
@@ -126,6 +128,11 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
     {
         //Session join was successful.
         qWarning() << "Session Join by " << userName << " was successful";
+
+        //TODO to be removed!
+        this->activeSession = sessionName;
+
+        //Remove the user from the list of users not to send data to the user itself
         users.remove(m_protocolHandler->getUserName());
         m_currentState.insert(sessionName, JOIN_SESSION_STATE);
 
@@ -258,6 +265,31 @@ void CollaborationClient::receivedWritePermissionStatus(QString userName, QChar 
     //TODO so, change a state variable to show the permission accordingly
 }
 
+void CollaborationClient::receivedSessionCreateResponse(QString userName, QString sessionName, QChar result, QString password)
+{
+    //Check if the operation was successful
+    if (result == 0)
+    {
+        //Operation was unsuccessful
+        qWarning() << "Creation of session with session name : " << sessionName << " failed";
+        return;
+    }
+
+    qWarning() << "Session " << sessionName << " has been created";
+
+    //As the creator of the session is assumed to automatically join to that session
+    // it sends automatically session join request message
+    qWarning() << "Join with the password : " <<  password;
+    emit sendSessionJoinRequest(m_serverName, sessionName, password);
+}
+
+
+void CollaborationClient::createSession(QString sessionName, QString password)
+{
+    //Send session create message with encrypted password
+    emit sendSessionCreateRequest(m_serverName, sessionName, password);
+}
+
 void CollaborationClient::gotServiceBroadcast()
 {
     // receive collaborationserver service broadcasts over UDP
@@ -328,7 +360,7 @@ void CollaborationClient::refreshSessionList()
 
 void CollaborationClient::joinSession(QString sessionName, QString password)
 {
-    emit sendSessionJoinRequest(m_serverName, sessionName, password);
+    emit sendSessionJoinRequest(m_serverName, sessionName, QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5));
 }
 
 void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
@@ -351,4 +383,14 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
         //Send picData to the server
         emit sendUpdateDrawingServer(m_serverName, sessionName, picData);
     }
+}
+
+void CollaborationClient::leaveSession(QString sessionName)
+{
+    emit sendSessionLeaveRequest(m_serverName, sessionName);
+}
+
+QString CollaborationClient::getActiveSession()
+{
+    return this->activeSession;
 }

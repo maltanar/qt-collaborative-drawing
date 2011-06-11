@@ -23,7 +23,7 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     m_sessionList.append("Test1");
     m_sessionData["Test1"] = new CollaborationSession();
     m_sessionData["Test1"]->setSessionName("Test1");
-    m_sessionData["Test1"]->setSessionPassword("1234");
+    m_sessionData["Test1"]->setSessionPassword(QCryptographicHash::hash(QString("1234").toAscii(),QCryptographicHash::Md5));
     m_sessionList.append("Test2");
     m_sessionData["Test2"] = new CollaborationSession();
     m_sessionData["Test2"]->setSessionName("Test2");
@@ -137,7 +137,18 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
 
 void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString sessionName)
 {
-    // TODO
+    //Remove the user from the list of that session
+    QHash<QString, long> *userList = &(m_sessionData[sessionName]->getSessionParticipants());
+    userList->remove(userName);
+
+    //Warn each user in the aforementioned session that a user left
+    QHash<QString, long>::iterator iter;
+    for (iter = userList->begin(); iter != userList->end(); iter++)
+    {
+        emit sendSessionMemberUpdate(iter.key(), sessionName, UPDATE_SESSION_LEAVE, userName);
+    }
+    //TODO Probably to be removed, no need for acknowledgement
+    emit sendSessionLeaveResponse(userName, sessionName, 1);
 }
 
 void CollaborationServer::receivedSessionListRequest(QString userName)
@@ -176,6 +187,28 @@ void CollaborationServer::receivedWritePermissionRequest(QString userName)
     // TODO
 }
 
+void CollaborationServer::receivedSessionCreateRequest(QString userName, QString sessionName, QString password)
+{
+    //Check if a session with the same name exists
+    if (m_sessionList.contains(sessionName))
+    {
+        //The session already exists, respond negative
+        emit sendSessionCreateResponse(userName, sessionName, 0, "");
+        return;
+    }
+
+    //Create session with the given name
+    m_sessionList.append(sessionName);
+    m_sessionData[sessionName] = new CollaborationSession();
+    m_sessionData[sessionName]->setSessionName(sessionName);
+    m_sessionData[sessionName]->setSessionPassword(password);
+    qWarning() << "The password arrived at the server : " << password;
+
+    //Session creation is successful, send a positive response
+    emit sendSessionCreateResponse(userName, sessionName, 1, password);
+}
+
+
 // sets the ProtocolHandler for this CollaborationServer
 void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandler)
 {
@@ -198,6 +231,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(this, SIGNAL(sendSessionListResponse(QString,QStringList)), newProtocolHandler, SLOT(sendSessionListResponse(QString,QStringList)));
     connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,char,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,char,QString)));
     connect(this, SIGNAL(sendWritePermissionStatus(QString,QChar)),newProtocolHandler, SLOT(sendWritePermissionStatus(QString,QChar)));
+    connect(this, SIGNAL(sendSessionCreateResponse(QString,QString,QChar,QString)), newProtocolHandler, SLOT(sendSessionCreateResponse(QString,QString,QChar,QString)));
 
     // signals from protocol handler to server slots
     connect(newProtocolHandler, SIGNAL(receivedLoginRequest(QString)), this, SLOT(receivedLoginRequest(QString)));
@@ -208,6 +242,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedSessionListRequest(QString)), this, SLOT(receivedSessionListRequest(QString)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawingServer(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawingServer(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionRequest(QString)), this, SLOT(receivedWritePermissionRequest(QString)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionCreateRequest(QString,QString,QString)), this, SLOT(receivedSessionCreateRequest(QString,QString,QString)));
 
     // set protocol handler user name
     newProtocolHandler->setUserName(m_serverUserName);

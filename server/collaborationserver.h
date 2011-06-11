@@ -38,6 +38,7 @@ protected:
 signals:
     void sendLoginResponse(QString destUserName, char result, QString infoMsg);
     void sendPictureResponse(QString destUserName, QString sessionName, QByteArray picData);
+    void sendSessionCreateResponse(QString destUserName, QString sessionName, QChar result, QString password);
     void sendSessionJoinResponse(QString destUserName, QString sessionName, char result, QHash<QString, long> users);
     void sendSessionLeaveResponse(QString destUserName, QString sessionName, char result);
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
@@ -48,6 +49,7 @@ public slots:
     void receivedLoginRequest(QString userName);
     void receivedLogoutRequest(QString userName);
     void receivedPictureRequest(QString userName, QString sessionName);
+    void receivedSessionCreateRequest(QString userName, QString sessionName, QString password);
     void receivedSessionJoinRequest(QString userName, QString sessionName, QString password);
     void receivedSessionLeaveRequest(QString userName, QString sessionName);
     void receivedSessionListRequest(QString userName);

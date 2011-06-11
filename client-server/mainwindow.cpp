@@ -112,7 +112,7 @@ void MainWindow::on_startServerButton_clicked()
 
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
     connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
-    connect(client, SIGNAL(drawingArrived(QString,QByteArray,bool)), ui->graphicsView, SLOT(gotDrawingData(QString,QByteArray,bool)));
+    connect(client, SIGNAL(drawingArrived(QString,QByteArray,bool)), ui->graphicsView, SLOT(drawingArrived(QString,QByteArray,bool)));
 
     connect(client, SIGNAL(sessionListAvailable(QStringList)), this, SLOT(gotSessionList(QStringList)));
 
@@ -162,4 +162,15 @@ void MainWindow::on_actionRectangle_triggered()
 void MainWindow::on_actionStraightLine_triggered()
 {
     ui->graphicsView->setDrawingMode(DRAWINGMODE_STRAIGHTLINE);
+}
+
+void MainWindow::on_btn_createSession_clicked()
+{
+    client->createSession("sessozz", "1234");
+}
+
+void MainWindow::on_btn_leaveSession_clicked()
+{
+    client->leaveSession(client->getActiveSession());
+    ui->stackedWidget->setCurrentIndex(1);
 }

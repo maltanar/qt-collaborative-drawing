@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>483</width>
-    <height>385</height>
+    <height>412</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -97,6 +97,13 @@
        <widget class="QPushButton" name="joinSession">
         <property name="text">
          <string>Join selected session</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_createSession">
+        <property name="text">
+         <string>Create Session</string>
         </property>
        </widget>
       </item>

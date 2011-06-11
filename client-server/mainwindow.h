@@ -27,6 +27,8 @@ private:
     MessageTransceiver *mt;
 
 private slots:
+    void on_btn_leaveSession_clicked();
+    void on_btn_createSession_clicked();
     void on_actionStraightLine_triggered();
     void on_actionRectangle_triggered();
     void on_actionFreehand_triggered();

@@ -19,7 +19,7 @@ signals:
     void drawingCommited(QString sessionName, QPicture drawingData);
 
 public slots:
-    void gotDrawingData(QString sessionName, QByteArray picData, bool isInitialState);
+    void drawingArrived(QString sessionName, QByteArray picData, bool isInitialState);
 
 };
 

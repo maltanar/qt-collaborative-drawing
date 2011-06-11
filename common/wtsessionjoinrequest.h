@@ -2,6 +2,7 @@
 #define WTSESSIONJOINREQUEST_H
 
 #include <wtmessage.h>
+#include <QCryptographicHash>
 
 
 class WTSessionJoinRequest : public WTMessage

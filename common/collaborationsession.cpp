@@ -1,5 +1,6 @@
 #include "collaborationsession.h"
 #include <QPixmap>
+#include <QDebug>
 
 CollaborationSession::CollaborationSession(QObject *parent) :
     QObject(parent)
@@ -57,6 +58,7 @@ bool CollaborationSession::addSessionParticipant(QString userName, QString sessi
             return true;
         }
     } else
+        qWarning() << "expected md5 password = " << m_sessionPassword << " found : " << sessionPassword;
         // incorrect password
         return false;
 }

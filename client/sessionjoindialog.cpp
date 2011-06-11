@@ -77,3 +77,8 @@ void SessionJoinDialog::on_joinSession_clicked()
     this->hide();
     this->deleteLater();
 }
+
+void SessionJoinDialog::on_btn_createSession_clicked()
+{
+    m_client->createSession("sessozz","1234");
+}

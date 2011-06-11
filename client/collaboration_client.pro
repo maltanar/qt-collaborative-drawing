@@ -16,6 +16,8 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtlogoutrequest.cpp \
                      ../common/wtpicturerequest.cpp \
                      ../common/wtpictureresponse.cpp \
+		     ../common/wtsessioncreaterequest.cpp \
+		     ../common/wtsessioncreateresponse.cpp \
                      ../common/wtsessionjoinrequest.cpp \
                      ../common/wtsessionjoinresponse.cpp \
                      ../common/wtsessionleaverequest.cpp \
@@ -43,6 +45,8 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtlogoutrequest.h \
                      ../common/wtpicturerequest.h \
                      ../common/wtpictureresponse.h \
+		     ../common/wtsessioncreaterequest.h \
+		     ../common/wtsessioncreateresponse.h \
                      ../common/wtsessionjoinrequest.h \
                      ../common/wtsessionjoinresponse.h \
                      ../common/wtsessionleaverequest.h \

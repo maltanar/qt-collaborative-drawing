@@ -29,6 +29,11 @@ public:
     void refreshSessionList();
     void joinSession(QString sessionName, QString password);
     void sendDrawing(QString sessionName, QByteArray picData);
+    void createSession(QString sessionName, QString password);
+    void leaveSession(QString sessionName);
+
+    //TODO To be removed
+    QString getActiveSession();
 
 private:
     QString m_serverName;
@@ -45,6 +50,9 @@ private:
 
     //Number of peers who have acknowledged already
     QHash<QString, long> m_ackedPeers;
+
+    //TODO to be removed
+    QString activeSession;
 
 signals:
     // external signals that are meant to be used for the user interface
@@ -65,6 +73,7 @@ signals:
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
     void sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
+    void sendSessionCreateRequest(QString destUserName, QString sessionName, QString password);
 
 private slots:
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
@@ -76,6 +85,7 @@ private slots:
     void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionStatus(QString userName, QChar status);
+    void receivedSessionCreateResponse(QString userName, QString sessionName, QChar result, QString password);
 
 private slots:
     void gotServiceBroadcast();
