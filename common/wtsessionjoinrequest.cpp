@@ -12,7 +12,6 @@ QByteArray WTSessionJoinRequest::serialize()
     msgSize += 8 + 32;
     QByteArray data = WTMessage::serialize();
     data.append(sessionName.leftJustified(8,' ').toAscii());
-    //TODO Encrypt password
     data.append(password.leftJustified(32, ' ').toAscii());
     return data;
 }
