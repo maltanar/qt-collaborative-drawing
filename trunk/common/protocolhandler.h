@@ -10,6 +10,8 @@
 #include <wtlogoutrequest.h>
 #include <wtpicturerequest.h>
 #include <wtpictureresponse.h>
+#include <wtsessioncreaterequest.h>
+#include <wtsessioncreateresponse.h>
 #include <wtsessionjoinrequest.h>
 #include <wtsessionjoinresponse.h>
 #include <wtsessionleaverequest.h>
@@ -67,6 +69,8 @@ private:
     void handleWritePermissionRequest(WTWritePermissionRequest *msg);
     void handleWritePermissionStatus(WTWritePermissionStatus *msg);
     void handlePeerHandshake(WTPeerHandshake *msg, QString requestOrigin);
+    void handleSessionCreateRequest(WTSessionCreateRequest *msg);
+    void handleSessionCreateResponse(WTSessionCreateResponse *msg);
 
 
 signals:
@@ -90,6 +94,8 @@ signals:
     void receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
     void receivedWritePermissionStatus(QString userName, QChar status);
+    void receivedSessionCreateRequest(QString userName, QString sessionName, QString password);
+    void receivedSessionCreateResponse(QString userName, QString sessionName, QChar result, QString password);
 
 public slots:
     void receiveMessage(QString origin, QByteArray data);
@@ -111,6 +117,8 @@ public slots:
     void sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);
     void sendWritePermissionStatus(QString destUserName, QChar status);
+    void sendSessionCreateRequest(QString destUserName, QString sessionName, QString password);
+    void sendSessionCreateResponse(QString destUserName, QString sessionName, QChar result, QString password);
 };
 
 #endif // PROTOCOLHANDLER_H

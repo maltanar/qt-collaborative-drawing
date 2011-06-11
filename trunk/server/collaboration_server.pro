@@ -16,6 +16,8 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtlogoutrequest.cpp \
                      ../common/wtpicturerequest.cpp \
                      ../common/wtpictureresponse.cpp \
+		     ../common/wtsessioncreaterequest.cpp \
+		     ../common/wtsessioncreateresponse.cpp \
                      ../common/wtsessionjoinrequest.cpp \
                      ../common/wtsessionjoinresponse.cpp \
                      ../common/wtsessionleaverequest.cpp \
@@ -28,7 +30,8 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtloginresponse.cpp \
                      ../common/protocolhandler.cpp \
                      ../common/wtpeerhandshake.cpp \
-                     ../common/collaborationsession.cpp 
+                     ../common/collaborationsession.cpp \
+                     ../common/wtupdatedrawingserver.cpp \
 
 COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtloginmessage.h \
@@ -37,6 +40,8 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtlogoutrequest.h \
                      ../common/wtpicturerequest.h \
                      ../common/wtpictureresponse.h \
+		     ../common/wtsessioncreaterequest.h \
+		     ../common/wtsessioncreateresponse.h \
                      ../common/wtsessionjoinrequest.h \
                      ../common/wtsessionjoinresponse.h \
                      ../common/wtsessionleaverequest.h \
@@ -49,7 +54,8 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtloginresponse.h \
                      ../common/protocolhandler.h \
                      ../common/wtpeerhandshake.h \
-                     ../common/collaborationsession.h
+                     ../common/collaborationsession.h \
+                     ../common/wtupdatedrawingserver.h
 
 SOURCES += main.cpp \
            collaborationserver.cpp \

@@ -8,28 +8,27 @@ WTSessionJoinRequest::WTSessionJoinRequest(QObject *parent) :
 
 QByteArray WTSessionJoinRequest::serialize()
 {
-    //Size of sessionName + size of password
-    msgSize += 8 + 8;
+    //Size of sessionName + size of encrypted password
+    msgSize += 8 + 32;
     QByteArray data = WTMessage::serialize();
     data.append(sessionName.leftJustified(8,' ').toAscii());
     //TODO Encrypt password
-    data.append(password.leftJustified(8, ' ').toAscii());
+    data.append(password.leftJustified(32, ' ').toAscii());
     return data;
 }
 
 void WTSessionJoinRequest::deserialize(QByteArray data)
 {
     QDataStream dataStream(data);
-    char password[9];
+    char password[33];
     char sessionName[9];
     WTMessage::deserialize(data);
     //Skip header and username
     dataStream.skipRawData(HEADER_SIZE);
     dataStream.readRawData(sessionName, 8);
-    //TODO size has to be changed to size of encrypted password
-    dataStream.readRawData(password, 8);
+    dataStream.readRawData(password, 32);
     sessionName[8] = '\0';
-    password[8] = '\0';
+    password[32] = '\0';
     this->sessionName = QString(sessionName).trimmed();
     this->password = QString(password).trimmed();
 }
@@ -46,7 +45,9 @@ QString WTSessionJoinRequest::getSessionName()
 
 void WTSessionJoinRequest::setPassword(QString password)
 {
+    //Store the password as encrypted
     this->password = password;
+    //this->password = QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5);
 }
 
 QString WTSessionJoinRequest::getPassword()

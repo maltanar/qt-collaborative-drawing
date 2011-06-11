@@ -21,7 +21,7 @@ void CollaborativeDrawingWidget::commitDrawing(QPicture drawingPictureData)
 
 }
 
-void CollaborativeDrawingWidget::gotDrawingData(QString sessionName, QByteArray picData, bool isInitialState)
+void CollaborativeDrawingWidget::drawingArrived(QString sessionName, QByteArray picData, bool isInitialState)
 {
     // this slot will be invoked when the user joins a new session and the server
     // sends the current drawing state for this session

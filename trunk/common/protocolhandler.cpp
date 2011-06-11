@@ -154,6 +154,18 @@ void ProtocolHandler::receiveMessage(QString origin, QByteArray data)
         msg->deserialize(data);
         handlePeerHandshake(msg, origin);
     }
+    else if (candidateMsg.getCommand() == "SESCRTRQ")
+    {
+        WTSessionCreateRequest *msg = new WTSessionCreateRequest();
+        msg->deserialize(data);
+        handleSessionCreateRequest(msg);
+    }
+    else if (candidateMsg.getCommand() == "SESCRTRS")
+    {
+        WTSessionCreateResponse *msg = new WTSessionCreateResponse();
+        msg->deserialize(data);
+        handleSessionCreateResponse(msg);
+    }
 }
 
 // deliverMessage is responsible for handing the given message in byte array
@@ -325,6 +337,19 @@ void ProtocolHandler::handlePeerHandshake(WTPeerHandshake *msg, QString requestO
     emit receivedPeerHandshake(msg->getSrcUsername(), msg->getSessionName());
 }
 
+void ProtocolHandler::handleSessionCreateRequest(WTSessionCreateRequest *msg)
+{
+    //Local peer role: Server
+    emit receivedSessionCreateRequest(msg->getSrcUsername(),msg->getSessionName(), msg->getPassword());
+}
+
+void ProtocolHandler::handleSessionCreateResponse(WTSessionCreateResponse *msg)
+{
+    //Local peer role: Client
+    emit receivedSessionCreateResponse(msg->getSrcUsername(), msg->getSessionName(), msg->getResult(), msg->getPassword());
+}
+
+
 void ProtocolHandler::sendLoginRequest(QString destUserName)
 {
     WTLoginMessage *msg = new WTLoginMessage;
@@ -487,6 +512,28 @@ void ProtocolHandler::sendWritePermissionStatus(QString destUserName, QChar stat
     msg->setStatus(status.toAscii());
     deliverMessage(msg);
 }
+
+void ProtocolHandler::sendSessionCreateRequest(QString destUserName, QString sessionName, QString password)
+{
+    WTSessionCreateRequest *msg = new WTSessionCreateRequest;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setPassword(password);
+    deliverMessage(msg);
+}
+
+void ProtocolHandler::sendSessionCreateResponse(QString destUserName, QString sessionName, QChar result, QString password)
+{
+    WTSessionCreateResponse *msg = new WTSessionCreateResponse;
+    msg->setSrcUsername(this->userName);
+    msg->setDestUsername(destUserName);
+    msg->setSessionName(sessionName);
+    msg->setResult(result);
+    msg->setPassword(password);
+    deliverMessage(msg);
+}
+
 
 void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTransceiver)
 {
