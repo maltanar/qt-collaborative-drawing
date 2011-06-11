@@ -35,6 +35,8 @@ public:
     //TODO To be removed
     QString getActiveSession();
 
+    void sendBufferedData(QString sessionName, QString user);
+
 private:
     QString m_serverName;
     QStringList m_userList;
@@ -53,6 +55,9 @@ private:
 
     //TODO to be removed
     QString activeSession;
+
+    //While a user is joining, the client keeps its data in here
+    QHash<QString, QVector<QByteArray> *> m_drawingBuffer;
 
 signals:
     // external signals that are meant to be used for the user interface

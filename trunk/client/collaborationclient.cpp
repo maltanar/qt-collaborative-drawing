@@ -135,6 +135,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Remove the user from the list of users not to send data to the user itself
         users.remove(m_protocolHandler->getUserName());
         m_currentState.insert(sessionName, JOIN_SESSION_STATE);
+        m_drawingBuffer.insert(sessionName, new QVector<QByteArray>);
 
         //Create a new session
         CollaborationSession *collaborationSession = new CollaborationSession;
@@ -145,7 +146,6 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
         //Map it with its sessionName
         m_collaborationSessions.insert(sessionName, collaborationSession);
 
-        //TODO Remove this?
         // the sole user in the session is this user, so no handshakes needed
         // we can directly send the current state request to the server
         if (users.size() == 0)
@@ -191,7 +191,7 @@ void CollaborationClient::receivedSessionLeaveResponse(QString userName, QString
 
 void CollaborationClient::receivedSessionListResponse(QString userName, QStringList sessionList)
 {
-    //TODO List the sessions so that a client can decide which one to join
+    //List the sessions so that a client can decide which one to join
     int size = sessionList.size();
     qWarning() << "Current sessions:\n";
 
@@ -219,27 +219,21 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     {
         qWarning() << "New member wants to join : " << user;
         m_currentState[sessionName] = MEMBER_UPDATE_JOIN_BEGIN_RECEIVED;
-        //TODO - This client first should complete what it is sending and stop sending
-        //TODO - Open connections to the members in the list "users"
-        // check if we already received a handshake for this user and session
-        if(m_pendingHandshakes.contains(user) && m_pendingHandshakes.value(user, "") == sessionName) {
-            // acknowledge peer
-            receivedPeerHandshake(user, sessionName);
-            // clear pending ack
-            m_pendingHandshakes.remove(user);
-        }
+        //The client here finishes what it is sending and stops sending
+        // - All what it draws is stored in a buffer
     }
     //The users in the list "users" have completely joined the session
     else if (updateType == UPDATE_SESSION_JOIN_END)
     {
         m_currentState[sessionName] = MEMBER_UPDATE_JOIN_END_RECEIVED;
-        //TODO - This client resumes sending
+        //Client resumes sending as the new participant is ready
+        sendBufferedData(sessionName, user);
+
     }
     //The users in the list "users" have left the session
     else if (updateType == UPDATE_SESSION_LEAVE)
     {
-        qWarning() << "User " << user << "has been removed";
-
+        //Delete the user from the list of participants of the session
         QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
         QHash<QString, long>::iterator iter;
         for (iter = participants->begin(); iter != participants->end(); iter++)
@@ -250,13 +244,6 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
                 break;
             }
         }
-
-        //.remove(user);
-        if (m_collaborationSessions[sessionName]->getSessionParticipants().contains(user))
-        {
-            qWarning() << "User could not be removed :S";
-        }
-        //TODO - Close connections to the users in the list "users"
     }
 }
 
@@ -382,11 +369,13 @@ void CollaborationClient::joinSession(QString sessionName, QString password)
 
 void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
 {
-    //TODO- Check if a user is connecting...
-    //TODO If member update is join begin then cannot send drawings
-    //Send the picData to all the peers in the session
 
-    //if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+    //Send the picData to all the peers in the session
+    //Check if there is a member joining, if so, store what is drawn in a buffer
+    //Here it is checked if the buffer is empty, as if it is not, there are still some data being sent
+    // - and do not send before it finishes, in order not to mix the order up. Instead, store it in the
+    // - buffer too
+    if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED && m_drawingBuffer[sessionName]->isEmpty())
     {
         QHash<QString, long>::iterator itr;
         QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
@@ -402,6 +391,11 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
         //Send picData to the server
         emit sendUpdateDrawingServer(m_serverName, sessionName, picData);
     }
+    else
+    {
+        //Store the picData in order to send it later
+        m_drawingBuffer[sessionName]->push_back(picData);
+    }
 }
 
 void CollaborationClient::leaveSession(QString sessionName)
@@ -413,3 +407,41 @@ QString CollaborationClient::getActiveSession()
 {
     return this->activeSession;
 }
+
+void CollaborationClient::sendBufferedData(QString sessionName, QString user)
+{
+    QHash<QString, long>::iterator itr;
+    QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
+
+    QVector<QByteArray> *drawingBuffer = m_drawingBuffer[sessionName];
+
+    //Send all the drawing data up to now to the users
+    QVector<QByteArray>::iterator iterBuffer = drawingBuffer->begin();
+    while(iterBuffer != drawingBuffer->end())
+    {
+        for (itr = participants->begin(); itr != participants->end(); itr++)
+        {
+            //Don't send the picData to the drawer itself
+            if (itr.key() == m_protocolHandler->getUserName()) continue;
+
+            qWarning() << "sent to the user : " << itr.key();
+            emit sendUpdateDrawing(itr.key(), sessionName, *iterBuffer);
+        }
+        //Send picData to the server
+        emit sendUpdateDrawingServer(m_serverName, sessionName, *iterBuffer);
+        drawingBuffer->erase(iterBuffer);
+    }
+
+    //If a user was joining, let it know that you finished sending finally.
+    if (m_currentState[sessionName] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+    {
+        // check if we already received a handshake for this user and session
+        if(m_pendingHandshakes.contains(user) && m_pendingHandshakes.value(user, "") == sessionName) {
+            // acknowledge peer
+            receivedPeerHandshake(user, sessionName);
+            // clear pending ack
+            m_pendingHandshakes.remove(user);
+        }
+    }
+}
+

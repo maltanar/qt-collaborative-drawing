@@ -18,16 +18,6 @@ CollaborationServer::CollaborationServer(QObject *parent) :
     m_serverUserName = COLLABORATION_SERVER_NAME;
     connect(&serviceBroadcastTimer, SIGNAL(timeout()), this, SLOT(serviceBroadcastTimeout()));
     serviceBroadcastTimer.start(SERVICE_BROADCAST_PERIOD_MS);
-
-    // TODO add create session messages and remove the lines below
-    m_sessionList.append("Test1");
-    m_sessionData["Test1"] = new CollaborationSession();
-    m_sessionData["Test1"]->setSessionName("Test1");
-    m_sessionData["Test1"]->setSessionPassword(QCryptographicHash::hash(QString("1234").toAscii(),QCryptographicHash::Md5));
-    m_sessionList.append("Test2");
-    m_sessionData["Test2"] = new CollaborationSession();
-    m_sessionData["Test2"]->setSessionName("Test2");
-    m_sessionData["Test2"]->setSessionPassword("1234");
 }
 
 void CollaborationServer::receivedLoginRequest(QString userName)
@@ -91,6 +81,8 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
 
     emit sendPictureResponse(userName, sessionName, QByteArray::fromRawData(tmpPic.data(), tmpPic.size()));
 
+
+    //TODO How do we know sending the picture has been completed?
     // send sessionMember update to the other clients in the session
 
     QHash<QString, long>::iterator itr;
