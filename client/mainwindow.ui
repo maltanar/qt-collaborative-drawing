@@ -42,6 +42,7 @@
    <addaction name="actionPenWidthInc"/>
    <addaction name="actionPenWidthDec"/>
    <addaction name="actionConnect"/>
+   <addaction name="actionLeave"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave">
@@ -157,6 +158,17 @@
   <action name="actionClear">
    <property name="text">
     <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionLeave">
+   <property name="text">
+    <string>Leave</string>
+   </property>
+   <property name="toolTip">
+    <string>Leave Session</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>

@@ -115,3 +115,8 @@ void MainWindow::on_actionClear_triggered()
 {
     ui->graphicsView->clear();
 }
+
+void MainWindow::on_actionLeave_triggered()
+{
+    client->leaveSession(client->getActiveSession());
+}
