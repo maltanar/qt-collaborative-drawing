@@ -1,7 +1,7 @@
 #include "wtwritepermissionrequest.h"
 
-WTWritePermissionRequest::WTWritePermissionRequest(QObject *parent) :
-    WTMessage(parent)
+WTWritePermissionRequest::WTWritePermissionRequest() :
+    WTMessage()
 {
     command = "WRTPRMRQ";
 }

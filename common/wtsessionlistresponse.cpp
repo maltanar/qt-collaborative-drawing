@@ -1,7 +1,7 @@
 #include "wtsessionlistresponse.h"
 
-WTSessionListResponse::WTSessionListResponse(QObject *parent) :
-    WTMessage(parent),
+WTSessionListResponse::WTSessionListResponse() :
+    WTMessage(),
     sesscnt(0)
 {
     command = "SESSLRES";

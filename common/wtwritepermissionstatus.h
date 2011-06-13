@@ -5,9 +5,8 @@
 
 class WTWritePermissionStatus : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTWritePermissionStatus(QObject *parent = 0);
+    explicit WTWritePermissionStatus();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

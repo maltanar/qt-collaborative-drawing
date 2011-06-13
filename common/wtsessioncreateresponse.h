@@ -5,9 +5,8 @@
 
 class WTSessionCreateResponse : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTSessionCreateResponse(QObject *parent = 0);
+    explicit WTSessionCreateResponse();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

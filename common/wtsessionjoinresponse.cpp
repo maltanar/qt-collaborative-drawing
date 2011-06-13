@@ -1,7 +1,7 @@
 #include "wtsessionjoinresponse.h"
 
-WTSessionJoinResponse::WTSessionJoinResponse(QObject *parent) :
-    WTMessage(parent),
+WTSessionJoinResponse::WTSessionJoinResponse() :
+    WTMessage(),
     userCount(0)
 {
         command = "SESSRESP";

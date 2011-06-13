@@ -1,7 +1,7 @@
 #include "wtpeerhandshake.h"
 
-WTPeerHandshake::WTPeerHandshake(QObject *parent) :
-    WTMessage(parent)
+WTPeerHandshake::WTPeerHandshake() :
+    WTMessage()
 {
     command = "HELLOPAL";
 }

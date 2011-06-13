@@ -5,9 +5,8 @@
 
 class WTPictureRequest : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTPictureRequest(QObject *parent = 0);
+    explicit WTPictureRequest();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

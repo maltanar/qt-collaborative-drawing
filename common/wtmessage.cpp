@@ -1,7 +1,7 @@
 #include "wtmessage.h"
 
-WTMessage::WTMessage(QObject *parent) :
-        QObject(parent), msgSize(HEADER_SIZE) //Constant header size + username
+WTMessage::WTMessage() :
+        msgSize(HEADER_SIZE) //Constant header size + username
 {
         version = "WTC1";
 }

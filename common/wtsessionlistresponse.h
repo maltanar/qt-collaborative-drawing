@@ -5,10 +5,8 @@
 
 class WTSessionListResponse : public WTMessage
 {
-    Q_OBJECT
-
 public:
-    explicit WTSessionListResponse(QObject *parent = 0);
+    explicit WTSessionListResponse();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

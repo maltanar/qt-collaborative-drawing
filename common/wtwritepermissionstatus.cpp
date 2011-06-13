@@ -1,7 +1,7 @@
 #include "wtwritepermissionstatus.h"
 
-WTWritePermissionStatus::WTWritePermissionStatus(QObject *parent) :
-    WTMessage(parent)
+WTWritePermissionStatus::WTWritePermissionStatus() :
+    WTMessage()
 {
     command = "WRTPRMST";
 }

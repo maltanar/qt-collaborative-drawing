@@ -5,9 +5,8 @@
 
 class WTLoginMessage : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTLoginMessage(QObject *parent = 0);
+    explicit WTLoginMessage();
 
 signals:
 
