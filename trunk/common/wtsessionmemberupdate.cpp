@@ -1,7 +1,7 @@
 #include "wtsessionmemberupdate.h"
 
-WTSessionMemberUpdate::WTSessionMemberUpdate(QObject *parent) :
-    WTMessage(parent)
+WTSessionMemberUpdate::WTSessionMemberUpdate() :
+    WTMessage()
 {
     command = "SESSMUPD";
 }

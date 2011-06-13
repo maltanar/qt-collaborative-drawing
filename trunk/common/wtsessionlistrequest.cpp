@@ -1,7 +1,7 @@
 #include "wtsessionlistrequest.h"
 
-WTSessionListRequest::WTSessionListRequest(QObject *parent) :
-    WTMessage(parent)
+WTSessionListRequest::WTSessionListRequest() :
+    WTMessage()
 {
     command = "SESSLREQ";
 }

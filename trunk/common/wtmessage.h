@@ -1,19 +1,17 @@
 #ifndef WTMESSAGE_H
 #define WTMESSAGE_H
 
-#include <QObject>
 #include <QDataStream>
 #include <QDebug>
 #include <QStringList>
 
 #define HEADER_SIZE 32
 
-class WTMessage : public QObject
+class WTMessage
 {
-    Q_OBJECT
 
 public:
-    explicit WTMessage(QObject *parent = 0);
+    explicit WTMessage();
     ~WTMessage();
     virtual QByteArray serialize();
     virtual void deserialize(QByteArray data);

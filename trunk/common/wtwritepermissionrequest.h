@@ -5,9 +5,8 @@
 
 class WTWritePermissionRequest : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTWritePermissionRequest(QObject *parent = 0);
+    explicit WTWritePermissionRequest();
 
 };
 

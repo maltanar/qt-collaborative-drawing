@@ -7,9 +7,8 @@
 
 class WTSessionJoinRequest : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTSessionJoinRequest(QObject *parent = 0);
+    explicit WTSessionJoinRequest();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

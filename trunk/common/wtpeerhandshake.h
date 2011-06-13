@@ -5,9 +5,8 @@
 
 class WTPeerHandshake : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTPeerHandshake(QObject *parent = 0);
+    explicit WTPeerHandshake();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

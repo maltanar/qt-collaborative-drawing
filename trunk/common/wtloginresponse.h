@@ -5,9 +5,8 @@
 
 class WTLoginResponse : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTLoginResponse(QObject *parent = 0);
+    explicit WTLoginResponse();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

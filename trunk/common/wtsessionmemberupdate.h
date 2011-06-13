@@ -9,9 +9,8 @@
 
 class WTSessionMemberUpdate : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTSessionMemberUpdate(QObject *parent = 0);
+    explicit WTSessionMemberUpdate();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

@@ -1,7 +1,7 @@
 #include "wtsessioncreateresponse.h"
 
-WTSessionCreateResponse::WTSessionCreateResponse(QObject *parent) :
-    WTMessage(parent)
+WTSessionCreateResponse::WTSessionCreateResponse() :
+    WTMessage()
 {
         command = "SESCRTRS";
 }

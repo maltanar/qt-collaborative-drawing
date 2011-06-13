@@ -5,9 +5,8 @@
 
 class WTSessionListRequest : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTSessionListRequest(QObject *parent = 0);
+    explicit WTSessionListRequest();
 
 signals:
 

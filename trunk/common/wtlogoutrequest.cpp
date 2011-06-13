@@ -1,7 +1,7 @@
 #include "wtlogoutrequest.h"
 
-WTLogoutRequest::WTLogoutRequest(QObject *parent) :
-    WTMessage(parent)
+WTLogoutRequest::WTLogoutRequest() :
+    WTMessage()
 {
     command = "LOGOUTRQ";
 }

@@ -2,8 +2,8 @@
 
 // exactly the same as WTUpdateDrawing but meant for the server
 
-WTUpdateDrawingServer::WTUpdateDrawingServer(QObject *parent) :
-    WTMessage(parent)
+WTUpdateDrawingServer::WTUpdateDrawingServer() :
+    WTMessage()
 {
     command = "DRAWSUPD";
 }

@@ -5,9 +5,8 @@
 
 class WTUpdateDrawing : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTUpdateDrawing(QObject *parent = 0);
+    explicit WTUpdateDrawing();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

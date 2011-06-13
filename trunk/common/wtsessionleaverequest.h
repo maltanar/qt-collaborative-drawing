@@ -5,9 +5,8 @@
 
 class WTSessionLeaveRequest : public WTMessage
 {
-    Q_OBJECT
 public:
-    explicit WTSessionLeaveRequest(QObject *parent = 0);
+    explicit WTSessionLeaveRequest();
 
     QByteArray serialize();
     void deserialize(QByteArray data);

@@ -1,7 +1,7 @@
 #include "wtpicturerequest.h"
 
-WTPictureRequest::WTPictureRequest(QObject *parent) :
-    WTMessage(parent)
+WTPictureRequest::WTPictureRequest() :
+    WTMessage()
 {
     command = "COLSTARQ";
 }

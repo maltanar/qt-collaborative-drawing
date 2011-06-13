@@ -1,7 +1,7 @@
 #include "wtupdatedrawing.h"
 
-WTUpdateDrawing::WTUpdateDrawing(QObject *parent) :
-    WTMessage(parent)
+WTUpdateDrawing::WTUpdateDrawing() :
+    WTMessage()
 {
     command = "DRAWUPDT";
 }

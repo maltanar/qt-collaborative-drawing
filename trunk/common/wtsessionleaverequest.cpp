@@ -1,7 +1,7 @@
 #include "wtsessionleaverequest.h"
 
-WTSessionLeaveRequest::WTSessionLeaveRequest(QObject *parent) :
-    WTMessage(parent)
+WTSessionLeaveRequest::WTSessionLeaveRequest() :
+    WTMessage()
 {
     command = "SESSQUIT";
 }

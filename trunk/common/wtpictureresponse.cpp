@@ -1,7 +1,7 @@
 #include "wtpictureresponse.h"
 
-WTPictureResponse::WTPictureResponse(QObject *parent) :
-    WTMessage(parent)
+WTPictureResponse::WTPictureResponse() :
+    WTMessage()
 {
     command = "COLSTARS";
 }

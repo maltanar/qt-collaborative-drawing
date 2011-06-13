@@ -1,7 +1,7 @@
 #include "wtsessionleaveresponse.h"
 
-WTSessionLeaveResponse::WTSessionLeaveResponse(QObject *parent) :
-    WTMessage(parent)
+WTSessionLeaveResponse::WTSessionLeaveResponse() :
+    WTMessage()
 {
     command = "SESSQACK";
 }

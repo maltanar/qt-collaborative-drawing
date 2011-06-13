@@ -1,7 +1,7 @@
 #include "wtsessionjoinrequest.h"
 
-WTSessionJoinRequest::WTSessionJoinRequest(QObject *parent) :
-    WTMessage(parent)
+WTSessionJoinRequest::WTSessionJoinRequest() :
+    WTMessage()
 {
     command = "SESSJOIN";
 }

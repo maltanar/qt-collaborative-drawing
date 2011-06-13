@@ -1,8 +1,8 @@
 #include "wtsessioncreaterequest.h"
 
 
-WTSessionCreateRequest::WTSessionCreateRequest(QObject *parent) :
-    WTMessage(parent)
+WTSessionCreateRequest::WTSessionCreateRequest() :
+    WTMessage()
 {
     command = "SESCRTRQ";
 }

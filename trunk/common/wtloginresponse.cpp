@@ -1,7 +1,7 @@
 #include "wtloginresponse.h"
 
-WTLoginResponse::WTLoginResponse(QObject *parent) :
-    WTMessage(parent)
+WTLoginResponse::WTLoginResponse() :
+    WTMessage()
 {
     command = "LOGINRES";
 }
