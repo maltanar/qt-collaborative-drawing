@@ -23,9 +23,13 @@ protected:
     QHash<QString, QByteArray> originBuffers;
     QHash<QString, QByteArray> destBuffers;
     QHash<QString, unsigned int> originExpectedDataSize;
+    QHash<QString, bool> mAliveConnections;
+    QHash<QString, int> mTimeouts;
 
     void sendMessageNoHeader(QTcpSocket*,QByteArray msg);
     void processOriginBuffer(QString origin);
+
+    void clearKeepAlives();
 
 signals:
     void gotNewData(QString origin, QByteArray data);
@@ -39,6 +43,7 @@ private slots:
     void connected();
     void disconnected();
     void dataArrived();
+    void sendKeepAlive();
     void socketError(QAbstractSocket::SocketError err);
 
 };

@@ -24,6 +24,13 @@ void MessageTransceiver::run()
     mServer = new QTcpServer();
     // forward incoming connection requests from the tcp server to us
     connect(mServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+
+    //Start the timer for sending Keep Alive message to the peers every second
+    QTimer *timer = new QTimer(this);
+    qWarning() << "TIMER HAS BEEN INITIATED";
+    connect(timer, SIGNAL(timeout()), this, SLOT(sendKeepAlive()));
+    timer->start(1000);
+
     // start listening for connection
     if(!mServer->listen(QHostAddress::Any, TRANSCEIVER_TCP_PORT)) {
         // listening on this specified port failed
@@ -102,6 +109,9 @@ void MessageTransceiver::newConnection()
         mOpenConnections.insert(newSocket->peerAddress().toString(), newSocket);
         originBuffers.insert(newSocket->peerAddress().toString(), QByteArray());
         originExpectedDataSize.insert(newSocket->peerAddress().toString(), 0);
+        //insert new client's ip address to the list of clients to be kept alived
+        mAliveConnections.insert(newSocket->peerAddress().toString(), false);
+        mTimeouts.insert(newSocket->peerAddress().toString(), 0);
         // connect signals for newly arrived connection
         connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataArrived()));
         connect(newSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
@@ -120,6 +130,10 @@ void MessageTransceiver::connected()
         mOpenConnections.insert(destination, newConnection);
         originBuffers.insert(destination, QByteArray());
         originExpectedDataSize.insert(destination, 0);
+        //insert new client's ip address to the list of clients to be kept alived
+        mAliveConnections.insert(destination, false);
+        mTimeouts.insert(destination, 0);
+
         connect(newConnection, SIGNAL(readyRead()), this, SLOT(dataArrived()));
 
         // if there is data waiting to be sent in the buffer to this destination,
@@ -130,8 +144,61 @@ void MessageTransceiver::connected()
             // clear the send queue
             destBuffers[destination] = QByteArray();
         }
+
+        //Start the timer for sending Keep Alive message to the peers every second
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), this, SLOT(sendKeepAlive()));
+        timer->start(1000);
     }
 }
+
+void MessageTransceiver::sendKeepAlive()
+{
+    //Construct a keep alive message and send it to each peer
+    //TODO write a message class for this
+    QHash<QString, QTcpSocket *>::iterator iter;
+    for (iter = mOpenConnections.begin(); iter != mOpenConnections.end(); iter++)
+    {
+        sendMessage(iter.key(), QString("WTC1KEEPALVE").toAscii());
+        qWarning() << "Keep alive has been sent to : " << iter.key();
+    }
+
+    //Clear the keepalives in order to be able to send it again
+    clearKeepAlives();
+
+}
+
+void MessageTransceiver::clearKeepAlives()
+{
+    //Before clearing, check if any of the keep alive acknowledgments are missing
+    QHash<QString, bool>::iterator iter;
+    for (iter = mAliveConnections.begin(); iter != mAliveConnections.end(); iter++)
+    {
+        //If the keep alive is not acknowledged, make it known that it hasn't been
+        // - acknowledged
+        if (!(iter.value()))
+        {
+            //Increase the amount of time in seconds that the peer hasn't been acknowledging!
+            mTimeouts[iter.key()]++;
+            qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answers!";
+
+            //TODO Decide how many seconds should be a timeout!
+            //TODO Here I assume it is 3 seconds
+            if (mTimeouts[iter.key()] >= 3)
+            {
+                //TODO Emit signal that this client has been disconnected
+                qWarning() << "No answer from the peer with ip address : " << iter.key();
+            }
+        }
+        else
+        {
+            //Clear by refreshing the acknowledgements and timeouts
+            mAliveConnections[iter.key()] = false;
+            mTimeouts[iter.key()] = 0;
+        }
+    }
+}
+
 
 void MessageTransceiver::disconnected()
 {
@@ -197,7 +264,20 @@ void MessageTransceiver::processOriginBuffer(QString origin)
             // message is complete
             currentMessage = originBuffer.left(currentMessageSize).right(currentMessageSize-12); // discard msgtxrx header
             qWarning() << "length of current message" << currentMessage.length();
-            emit gotNewData(origin, currentMessage);
+
+            //Check if the message is of type keep alive, and if so, do not need to
+            // inform upper layers for this.
+            //TODO Make it reasonable by not giving static string here and
+            // - maybe a class for keep alive message would be better
+            if (currentMessage.startsWith("WTC1KEEPALVE"))
+            {
+                mAliveConnections[origin] = true;
+                qWarning() << "User with ip address " << origin << " is acknowledged!";
+            }
+            else
+            {
+                emit gotNewData(origin, currentMessage);
+            }
             // truncate the origin buffer
             originBuffers[origin] = originBuffer.right(originBuffer.length() - currentMessageSize);
             originBuffer = originBuffers[origin];
