@@ -199,7 +199,7 @@ void MessageTransceiver::clearKeepAlives()
 
             //TODO Decide how many seconds should be a timeout!
             //TODO Here I assume it is 3 seconds
-            if (mTimeouts[iter.key()] >= 3)
+            if (mTimeouts[iter.key()] >= 10)
             {
                 //Emit signal that a particular client has been disconnected
                 emit clientDisconnected(iter.key());
@@ -215,15 +215,17 @@ void MessageTransceiver::clearKeepAlives()
                 //Check if the element is in the beginning of the list
                 //- then we should not move the iterator back as it is out
                 //- of bounds.
+
+                iter = mAliveConnections.erase(iter);
+
                 if (iter == mAliveConnections.begin())
                 {
-                    mAliveConnections.erase(iter);
                     if (iter == mAliveConnections.end())
                         break;
                     isFirst = true;
                     continue;
                 }
-                mAliveConnections.erase(iter);
+
                 iter--;
                 if (iter == mAliveConnections.end())
                     break;
