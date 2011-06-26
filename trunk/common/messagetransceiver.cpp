@@ -198,8 +198,7 @@ void MessageTransceiver::clearKeepAlives()
             qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answer from" << iter.key() <<" !";
 
             //TODO Decide how many seconds should be a timeout!
-            //TODO Here I assume it is 3 seconds
-            if (mTimeouts[iter.key()] >= 10)
+            if (mTimeouts[iter.key()] >= TIMEOUT)
             {
                 //Emit signal that a particular client has been disconnected
                 emit clientDisconnected(iter.key());
