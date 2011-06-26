@@ -9,6 +9,7 @@
 
 #define     TRANSCEIVER_TCP_PORT      45454
 #define     TRANSCEIVER_HEADER        "MSGTXRX1"
+#define     TIMEOUT                   60
 
 class MessageTransceiver : public QThread
 {
