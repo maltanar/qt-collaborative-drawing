@@ -455,12 +455,15 @@ void CollaborationClient::memberDisconnected(QString username)
     //Session iterator
     QHash<QString, CollaborationSession *>::iterator sessItr;
 
+    QHash<QString, long> *participants;
+
     for (sessItr = m_collaborationSessions.begin(); sessItr != m_collaborationSessions.end(); sessItr++)
     {
+        participants = &(sessItr.value()->getSessionParticipants());
         //Remove the user from each session
-        if (sessItr.value()->getSessionParticipants().find(username) != sessItr.value()->getSessionParticipants().end())
+        if (participants->contains(username))
         {
-            (sessItr.value())->getSessionParticipants().remove(username);
+            participants->erase(participants->find(username));
             qWarning() << username << "has been removed from" << sessItr.value();
         }
 
