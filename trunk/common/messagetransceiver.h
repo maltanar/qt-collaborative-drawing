@@ -33,6 +33,7 @@ protected:
 
 signals:
     void gotNewData(QString origin, QByteArray data);
+    void clientDisconnected(QString clientIpAddress);
 
 public slots:
     void connectTo(QString destination);

@@ -40,6 +40,8 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionStatus(QString,QChar)), this, SLOT(receivedWritePermissionStatus(QString,QChar)));
     connect(newProtocolHandler, SIGNAL(receivedSessionCreateResponse(QString,QString,QChar,QString)), this, SLOT(receivedSessionCreateResponse(QString,QString,QChar,QString)));
+
+    connect(newProtocolHandler, SIGNAL(memberDisconnected(QString)), this, SLOT(memberDisconnected(QString)));
     m_protocolHandler = newProtocolHandler;
 }
 
@@ -441,6 +443,32 @@ void CollaborationClient::sendBufferedData(QString sessionName, QString user)
             receivedPeerHandshake(user, sessionName);
             // clear pending ack
             m_pendingHandshakes.remove(user);
+        }
+    }
+}
+
+void CollaborationClient::memberDisconnected(QString username)
+{
+    //Search for the member in all the sessions
+    //- and remove it.
+
+    //Session iterator
+    QHash<QString, CollaborationSession *>::iterator sessItr;
+
+    for (sessItr = m_collaborationSessions.begin(); sessItr != m_collaborationSessions.end(); sessItr++)
+    {
+        //Remove the user from each session
+        if (sessItr.value()->getSessionParticipants().find(username) != sessItr.value()->getSessionParticipants().end())
+        {
+            (sessItr.value())->getSessionParticipants().remove(username);
+            qWarning() << username << "has been removed from" << sessItr.value();
+        }
+
+        //If the user was joining and got disconnected
+        // - resume like it was never joining
+        if (m_currentState[sessItr.key()] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+        {
+            m_currentState[sessItr.key()] = MEMBER_UPDATE_JOIN_END_RECEIVED;
         }
     }
 }

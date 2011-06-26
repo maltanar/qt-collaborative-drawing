@@ -236,6 +236,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionRequest(QString)), this, SLOT(receivedWritePermissionRequest(QString)));
     connect(newProtocolHandler, SIGNAL(receivedSessionCreateRequest(QString,QString,QString)), this, SLOT(receivedSessionCreateRequest(QString,QString,QString)));
 
+    connect(newProtocolHandler, SIGNAL(memberDisconnected(QString)), this, SLOT(memberDisconnected(QString)));
     // set protocol handler user name
     newProtocolHandler->setUserName(m_serverUserName);
 
@@ -277,4 +278,26 @@ void CollaborationServer::setServerUserName(QString newUserName)
 QString CollaborationServer::getServerUserName()
 {
     return m_serverUserName;
+}
+
+void CollaborationServer::memberDisconnected(QString userName)
+{
+    //Remove the disconnected user from the list
+    m_userList.removeOne(userName);
+
+    //Remove the user from the sessions
+    QHash<QString, CollaborationSession *>::iterator iter;
+    QHash<QString, long> *participants;
+
+    for (iter = m_sessionData.begin(); iter != m_sessionData.end(); iter++)
+    {
+        participants = &(iter.value()->getSessionParticipants());
+        if (participants->contains(userName))
+        {
+            //Then remove the user
+            participants->erase(participants->find(userName));
+            qWarning() << userName << "has been removed from sessions on server side";
+        }
+    }
+
 }

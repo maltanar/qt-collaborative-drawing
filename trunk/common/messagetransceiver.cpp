@@ -29,6 +29,7 @@ void MessageTransceiver::run()
     QTimer *timer = new QTimer(this);
     qWarning() << "TIMER HAS BEEN INITIATED";
     connect(timer, SIGNAL(timeout()), this, SLOT(sendKeepAlive()));
+    //Set the frequency of the message to 1000 msecs
     timer->start(1000);
 
     // start listening for connection
@@ -172,22 +173,60 @@ void MessageTransceiver::clearKeepAlives()
 {
     //Before clearing, check if any of the keep alive acknowledgments are missing
     QHash<QString, bool>::iterator iter;
+    bool isFirst = false;
+
     for (iter = mAliveConnections.begin(); iter != mAliveConnections.end(); iter++)
     {
+        //This is the case when the first element of the mAliveConnections
+        //- has been erased. So we should move the iterator back to the beginning
+        //- of the list.
+        if (isFirst)
+        {
+            iter = mAliveConnections.begin();
+            isFirst = false;
+            //If it is already at the end:
+            if (iter == mAliveConnections.end()) break;
+        }
+
+
         //If the keep alive is not acknowledged, make it known that it hasn't been
         // - acknowledged
         if (!(iter.value()))
         {
             //Increase the amount of time in seconds that the peer hasn't been acknowledging!
             mTimeouts[iter.key()]++;
-            qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answers!";
+            qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answer from" << iter.key() <<" !";
 
             //TODO Decide how many seconds should be a timeout!
             //TODO Here I assume it is 3 seconds
             if (mTimeouts[iter.key()] >= 3)
             {
-                //TODO Emit signal that this client has been disconnected
+                //Emit signal that a particular client has been disconnected
+                emit clientDisconnected(iter.key());
+                //Remove this client from all the lists
+
+                mTimeouts.remove(iter.key());
+                mOpenConnections.remove(iter.key());
+                originBuffers.remove(iter.key());
+                originExpectedDataSize.remove(iter.key());
+                destBuffers.remove(iter.key());
                 qWarning() << "No answer from the peer with ip address : " << iter.key();
+
+                //Check if the element is in the beginning of the list
+                //- then we should not move the iterator back as it is out
+                //- of bounds.
+                if (iter == mAliveConnections.begin())
+                {
+                    mAliveConnections.erase(iter);
+                    if (iter == mAliveConnections.end())
+                        break;
+                    isFirst = true;
+                    continue;
+                }
+                mAliveConnections.erase(iter);
+                iter--;
+                if (iter == mAliveConnections.end())
+                    break;
             }
         }
         else

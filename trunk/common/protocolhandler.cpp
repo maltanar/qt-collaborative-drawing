@@ -545,9 +545,31 @@ void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTran
     // connect signals and slots
     connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
     connect(newMesssageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
+    connect(newMesssageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(clientDisconnected(QString)));
 }
 
 MessageTransceiver* ProtocolHandler::getMessageTransceiver()
 {
     return m_messageTransceiver;
+}
+
+void ProtocolHandler::clientDisconnected(QString origin)
+{
+    //TODO Do recovery instead of removing the user directly
+
+    //Find the username with the ip = origin
+    QHash<QString, QString>::iterator iter;
+    for (iter = peerMap.begin(); iter != peerMap.end(); iter++)
+    {
+        if (iter.value() == origin)
+        {
+
+            //This is the client which got disconnected
+            qWarning() << "User with username" << iter.key() << "got disconnected!";
+            emit memberDisconnected(iter.key());
+            //So remove it
+            peerMap.erase(iter);
+            break;
+        }
+    }
 }
