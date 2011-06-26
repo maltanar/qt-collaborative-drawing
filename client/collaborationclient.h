@@ -81,6 +81,8 @@ signals:
     void sendSessionCreateRequest(QString destUserName, QString sessionName, QString password);
 
 private slots:
+    void memberDisconnected(QString username);
+
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedPeerHandshake(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);

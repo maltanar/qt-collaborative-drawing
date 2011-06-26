@@ -76,6 +76,7 @@ private:
 signals:
     void sendMessage(QString destination, QByteArray data);
     void sendMessageLoopback(QString desination, QByteArray data);
+    void memberDisconnected(QString username);
 
     void receivedLoginRequest(QString userName);
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
@@ -99,6 +100,7 @@ signals:
 
 public slots:
     void receiveMessage(QString origin, QByteArray data);
+    void clientDisconnected(QString origin);
 
     void sendLoginRequest(QString destUserName);
     void sendLoginResponse(QString destUserName, char result, QString infoMsg);

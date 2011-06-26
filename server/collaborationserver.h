@@ -55,6 +55,7 @@ public slots:
     void receivedSessionListRequest(QString userName);
     void receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
+    void memberDisconnected(QString userName);
 
 private slots:
     void serviceBroadcastTimeout();
