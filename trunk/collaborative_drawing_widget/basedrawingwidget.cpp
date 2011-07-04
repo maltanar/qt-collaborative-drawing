@@ -308,8 +308,12 @@ void BaseDrawingWidget::decreasePenWidth()
 
 void BaseDrawingWidget::clear()
 {
+    QPainter::CompositionMode prevCompMode;
     picturePainter.begin(&picture);
-    picturePainter.fillRect(sceneRect(), Qt::white);
+    prevCompMode = picturePainter.compositionMode();
+    picturePainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    picturePainter.fillRect(sceneRect(), Qt::transparent);
+    picturePainter.setCompositionMode(prevCompMode);
     picturePainter.end();
 
     commitDrawing(picture);
