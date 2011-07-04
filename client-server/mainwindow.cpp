@@ -116,7 +116,6 @@ void MainWindow::on_startServerButton_clicked()
 
     connect(client, SIGNAL(sessionListAvailable(QStringList)), this, SLOT(gotSessionList(QStringList)));
 
-
     ui->startServerButton->setEnabled(false);
     ui->statusLabel->setText("Running");
     server->setServerUserName(ui->userName->text());
