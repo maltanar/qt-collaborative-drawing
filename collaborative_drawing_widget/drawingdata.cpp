@@ -2,7 +2,7 @@
 
 #include <QDateTime>
 #include <QPainter>
-
+#include <QGraphicsPixmapItem>
 #include "appglobals.h"
 
 
@@ -81,6 +81,15 @@ void DrawingData::clear()
 
     // clear the stage pixmap
     stage->fill(Qt::transparent);
+
+    // temporary addition - remove this part! ---------
+    QPixmap bkg;
+    if(!bkg.load(qApp->applicationDirPath() + "/background.jpeg"))
+        bkg.load("/sdcard/background.jpeg");
+    QGraphicsPixmapItem * backgroundItem = addPixmap(bkg);
+    qWarning() << "pic size" << backgroundItem->boundingRect();
+    backgroundItem->setZValue(-10);
+    // -------------------------------------------------
 }
 
 QPixmap * DrawingData::getStage()
@@ -88,7 +97,7 @@ QPixmap * DrawingData::getStage()
     return stage;
 }
 
-void DrawingData::drawBackground ( QPainter * painter, const QRectF & rect )
+void DrawingData::drawForeground ( QPainter * painter, const QRectF & rect )
 {
     // draw the stage pixmap as the scene background
     // the stage pixmap is where we do all the user-created drawing
