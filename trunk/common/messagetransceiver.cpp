@@ -30,7 +30,7 @@ void MessageTransceiver::run()
     qWarning() << "TIMER HAS BEEN INITIATED";
     connect(timer, SIGNAL(timeout()), this, SLOT(sendKeepAlive()));
     //Set the frequency of the message to 1000 msecs
-    timer->start(1000);
+    timer->start(KEEP_ALIVE_PERIOD);
 
     // start listening for connection
     if(!mServer->listen(QHostAddress::Any, TRANSCEIVER_TCP_PORT)) {
@@ -149,7 +149,7 @@ void MessageTransceiver::connected()
         //Start the timer for sending Keep Alive message to the peers every second
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(sendKeepAlive()));
-        timer->start(1000);
+        timer->start(KEEP_ALIVE_PERIOD);
     }
 }
 
@@ -312,7 +312,7 @@ void MessageTransceiver::processOriginBuffer(QString origin)
             if (currentMessage.startsWith("WTC1KEEPALVE"))
             {
                 mAliveConnections[origin] = true;
-                qWarning() << "User with ip address " << origin << " is acknowledged!";
+                //qWarning() << "User with ip address " << origin << " is acknowledged!";
             }
             else
             {

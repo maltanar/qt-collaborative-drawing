@@ -9,7 +9,8 @@
 
 #define     TRANSCEIVER_TCP_PORT      45454
 #define     TRANSCEIVER_HEADER        "MSGTXRX1"
-#define     TIMEOUT                   60
+#define     TIMEOUT                   20    // 20 * 3000 milliseconds = 60 seconds
+#define     KEEP_ALIVE_PERIOD      3000 //Milliseconds
 
 class MessageTransceiver : public QThread
 {
