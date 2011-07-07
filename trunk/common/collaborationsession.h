@@ -27,19 +27,21 @@ public:
     bool addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress);
     void removeSessionParticipant(QString userName);
 
-    QPicture getSessionDrawingState();
+    QImage getSessionDrawingState();
     void addDrawingStep(QPicture newDrawingStep);
 
     void acknowledgePeer(QString userName);
     bool isAcknowledged(QString userName);
     bool isAllAcknowledged();
 
+    void setSessionImage(QImage sessImg);
+
 protected:
     QString m_sessionName;
     QString m_sessionPassword;
     QHash<QString, long> m_sessionParticipants;
     QHash<QString, bool> m_sessionAcknowledgements;
-    QPicture m_sessionDrawingData;
+    QImage m_sessionDrawingData;
     QPainter m_picturePainter;
 
 signals:

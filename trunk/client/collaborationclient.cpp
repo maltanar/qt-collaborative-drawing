@@ -106,12 +106,18 @@ void CollaborationClient::receivedPeerHandshake(QString userName, QString sessio
 void CollaborationClient::receivedPictureResponse(QString userName, QString sessionName, QByteArray picData)
 {
     //Show the pictureData on screen
-    QPicture sessState;
-    sessState.setData(picData.constData(), picData.size());
+    QImage tmpPic;
+    //Load the image from png formatted byte array
+    if (!(tmpPic.loadFromData(picData)))
+        qWarning() << "Image could not be loaded";
+    else
+        qWarning() << "Picture acquired with size " << tmpPic.size();
+
     //Set the current picture data of the session for this client
-    m_collaborationSessions[sessionName]->addDrawingStep(sessState);
+    m_collaborationSessions[sessionName]->setSessionImage(tmpPic);
+    //m_collaborationSessions[sessionName]->addDrawingStep(sessState);
     //TODO this will be emitted in collaboration session
-    emit drawingArrived(sessionName, picData, true);
+    emit initialSessionState(sessionName, tmpPic);
     //Joining to the session has been completed.
     m_currentState[sessionName] = JOIN_SESSION_COMPLETED;
     emit sessionJoinResult(sessionName, 1, m_collaborationSessions[sessionName]->getSessionParticipants());

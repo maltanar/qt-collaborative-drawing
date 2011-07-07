@@ -66,6 +66,7 @@ signals:
     void sessionListAvailable(QStringList newSessionList);
     void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
     void drawingArrived(QString sessionName, QByteArray picData, bool initialState);
+    void initialSessionState(QString sessionName, QImage img);
 
     // internal signals that will be connected to the ProtocolHandler
     void sendLoginRequest(QString destUserName);

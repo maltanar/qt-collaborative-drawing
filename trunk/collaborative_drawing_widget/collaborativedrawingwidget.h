@@ -20,6 +20,7 @@ signals:
 
 public slots:
     void drawingArrived(QString sessionName, QByteArray picData, bool isInitialState);
+    void initialSessionState(QString sessionName, QImage img);
 
 };
 

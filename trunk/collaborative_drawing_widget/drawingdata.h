@@ -28,6 +28,7 @@ public:
 
     QPixmap * getStage();
 
+
 protected:
     void drawForeground ( QPainter * painter, const QRectF & rect );
 

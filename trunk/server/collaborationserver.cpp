@@ -86,11 +86,18 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     }
 
     // everything OK, we can send the session drawing state
-    QPicture tmpPic = m_sessionData[sessionName]->getSessionDrawingState();
+    QImage tmpPic = m_sessionData[sessionName]->getSessionDrawingState();
 
     qWarning() << "sending picture response" << userName << sessionName << tmpPic.size();
 
-    emit sendPictureResponse(userName, sessionName, QByteArray::fromRawData(tmpPic.data(), tmpPic.size()));
+    //Serialize image data
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    tmpPic.save(&buffer, "PNG");
+    buffer.close();
+
+    emit sendPictureResponse(userName, sessionName, ba);
 
 
     //TODO How do we know sending the picture has been completed?
@@ -271,7 +278,7 @@ void CollaborationServer::serviceBroadcastTimeout()
     QList<QHostAddress> IpList = interface.allAddresses();
 
     for (int i = 0; i < IpList.size(); i++)
-        if (IpList.at(i) != QHostAddress("127.0.0.1") && IpList.at(i).protocol() == QAbstractSocket::IPv4Protocol) { // local loopback isn't useful for others
+        if (!(IpList.at(i).toString().startsWith("169")) && IpList.at(i) != QHostAddress("127.0.0.1") && IpList.at(i).protocol() == QAbstractSocket::IPv4Protocol) { // local loopback isn't useful for others
             packageStream << IpList.at(i);
         }
 
