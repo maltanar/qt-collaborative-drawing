@@ -11,15 +11,15 @@ DrawingData::DrawingData(QObject *parent) :
 {
     currentAction = new DrawingAction(this);
     modified = false;
-    stage = new QPixmap(SCREEN_WIDTH, SCREEN_HEIGHT);
-    stage->fill(Qt::transparent);
+    stage = QImage(SCREEN_WIDTH, SCREEN_HEIGHT, QImage::Format_ARGB32_Premultiplied);
+    stage.fill(Qt::transparent);
 }
 
 void DrawingData::saveImage(QString fileName)
 {
     // TODO do not save anything if annotation is empty, maybe delete old file?
     qWarning() << "saving to" << fileName;
-    stage->save(fileName, "png");
+    stage.save(fileName, "png");
     setModified(false);
 }
 
@@ -27,7 +27,9 @@ void DrawingData::loadImage(QString fileName)
 {
     clear();
     // TODO should check for the file's resolution and upscale/downscale to current if needed
-    stage->load(fileName, "png");
+    stage.load(fileName, "png");
+
+    stage = stage.scaled(sceneRect().size().toSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     setModified(false);
 }
@@ -50,8 +52,7 @@ void DrawingData::registerAction(QPicture actions)
     if(boundingRect.y() > height())
         boundingRect.setY(height());
     // backup the area to be painted, to be used for undo'ing later
-    QPixmap areaToChange = stage->copy(boundingRect);
-    areaToChange.save("undo.png");
+    QPixmap areaToChange = QPixmap::fromImage(stage.copy(boundingRect));
     // set the properties of this drawing step for undo/redo
     currentAction->setActions(actions);
     currentAction->setPrevPixmap(areaToChange, boundingRect);
@@ -80,7 +81,7 @@ void DrawingData::clear()
     currentAction =  new DrawingAction(this);
 
     // clear the stage pixmap
-    stage->fill(Qt::transparent);
+    stage.fill(Qt::transparent);
 
     // temporary addition - remove this part! ---------
     QPixmap bkg;
@@ -92,9 +93,9 @@ void DrawingData::clear()
     // -------------------------------------------------
 }
 
-QPixmap * DrawingData::getStage()
+QImage * DrawingData::getStage()
 {
-    return stage;
+    return &stage;
 }
 
 void DrawingData::drawForeground ( QPainter * painter, const QRectF & rect )
@@ -102,5 +103,10 @@ void DrawingData::drawForeground ( QPainter * painter, const QRectF & rect )
     // draw the stage pixmap as the scene background
     // the stage pixmap is where we do all the user-created drawing
     painter->setClipRect(rect);
-    painter->drawPixmap(0,0, *stage);
+    painter->drawImage(0,0, stage);
+}
+
+void DrawingData::setImage(QImage img)
+{
+    stage = img;
 }

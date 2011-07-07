@@ -50,9 +50,5 @@ void CollaborativeDrawingWidget::initialSessionState(QString sessionName, QImage
     //The widget should be enabled now
     setEnabled(true);
 
-    img.save("temp.png", "PNG");
-    qWarning() << "Temporary image has been saved" << img.size();
-    this->getDrawingData()->loadImage("temp.png");
-    qWarning() << "Temporary image has been loaded";
-    //QFile::remove("temp.png");
+    getDrawingData()->setImage(img);
 }
