@@ -26,7 +26,8 @@ public:
     bool isModified();
     void setModified(bool newValue);
 
-    QPixmap * getStage();
+    QImage * getStage();
+    void setImage(QImage img);
 
 
 protected:
@@ -36,7 +37,7 @@ private:
     QUndoStack undoStack;
     DrawingAction *currentAction;
     bool modified;
-    QPixmap *stage;
+    QImage stage;
 
 signals:
 
