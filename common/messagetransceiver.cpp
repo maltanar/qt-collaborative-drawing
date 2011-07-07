@@ -161,7 +161,7 @@ void MessageTransceiver::sendKeepAlive()
     for (iter = mOpenConnections.begin(); iter != mOpenConnections.end(); iter++)
     {
         sendMessage(iter.key(), QString("WTC1KEEPALVE").toAscii());
-        qWarning() << "Keep alive has been sent to : " << iter.key();
+        //qWarning() << "Keep alive has been sent to : " << iter.key();
     }
 
     //Clear the keepalives in order to be able to send it again
@@ -195,7 +195,7 @@ void MessageTransceiver::clearKeepAlives()
         {
             //Increase the amount of time in seconds that the peer hasn't been acknowledging!
             mTimeouts[iter.key()]++;
-            qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answer from" << iter.key() <<" !";
+            //qWarning() << "For " << mTimeouts[iter.key()] << "seconds, no answer from" << iter.key() <<" !";
 
             //TODO Decide how many seconds should be a timeout!
             if (mTimeouts[iter.key()] >= TIMEOUT)
