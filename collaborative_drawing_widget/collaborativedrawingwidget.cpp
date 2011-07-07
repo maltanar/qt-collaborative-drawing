@@ -40,3 +40,19 @@ void CollaborativeDrawingWidget::drawingArrived(QString sessionName, QByteArray 
     // commit the new data
     BaseDrawingWidget::commitDrawing(pic);
 }
+
+void CollaborativeDrawingWidget::initialSessionState(QString sessionName, QImage img)
+{
+    //Set the session name
+    m_currentSession = sessionName;
+    //Clear up any old data
+    getDrawingData()->clear();
+    //The widget should be enabled now
+    setEnabled(true);
+
+    img.save("temp.png", "PNG");
+    qWarning() << "Temporary image has been saved" << img.size();
+    this->getDrawingData()->loadImage("temp.png");
+    qWarning() << "Temporary image has been loaded";
+    //QFile::remove("temp.png");
+}

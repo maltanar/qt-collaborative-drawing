@@ -5,6 +5,7 @@
 CollaborationSession::CollaborationSession(QObject *parent) :
     QObject(parent)
 {
+    m_sessionDrawingData = QImage(800, 600, QImage::Format_ARGB32_Premultiplied);
 }
 
 void CollaborationSession::setSessionName(QString newName)
@@ -69,29 +70,17 @@ void CollaborationSession::removeSessionParticipant(QString userName)
         m_sessionParticipants.remove(userName);
 }
 
-QPicture CollaborationSession::getSessionDrawingState()
+QImage CollaborationSession::getSessionDrawingState()
 {
     return m_sessionDrawingData;
 }
 
 void CollaborationSession::addDrawingStep(QPicture newDrawingStep)
 {
-    QPicture tmpPicture;
-    m_picturePainter.begin(&tmpPicture);
-    m_picturePainter.drawPicture(0,0,m_sessionDrawingData);
+    m_picturePainter.begin(&m_sessionDrawingData);
+    //m_picturePainter.drawPicture(0,0,m_sessionDrawingData);
     m_picturePainter.drawPicture(0,0,newDrawingStep);
     m_picturePainter.end();
-
-    m_sessionDrawingData = tmpPicture;
-
-    //TODO Remove this
-    QPixmap hede(800,480);
-    hede.fill(Qt::white);
-    m_picturePainter.begin(&hede);
-    m_picturePainter.drawPicture(0,0, m_sessionDrawingData);
-    m_picturePainter.end();
-    hede.save("state.png");
-
 }
 
 
@@ -113,4 +102,10 @@ bool CollaborationSession::isAllAcknowledged()
         if (!itr.value()) return false;
     }
     return true;
+}
+
+
+void CollaborationSession::setSessionImage(QImage sessImg)
+{
+    this->m_sessionDrawingData = sessImg;
 }
