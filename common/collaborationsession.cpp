@@ -28,17 +28,17 @@ QString CollaborationSession::getSessionPassword()
     return m_sessionPassword;
 }
 
-QHash<QString, qint32> CollaborationSession::getSessionParticipants()
+QMap<QString, qint32> CollaborationSession::getSessionParticipants()
 {
     return m_sessionParticipants;
 }
 
-void CollaborationSession::setSessionParticipants(QHash<QString, qint32> participantList)
+void CollaborationSession::setSessionParticipants(QMap<QString, qint32> participantList)
 {
     m_sessionParticipants = participantList;
 
     //Initialize all session members as unacknowledged
-    QHash<QString, qint32>::iterator itr;
+    QMap<QString, qint32>::iterator itr;
     for (itr = participantList.begin(); itr != participantList.end(); itr++)
     {
         m_sessionAcknowledgements.insert(itr.key(),false);
@@ -49,9 +49,11 @@ bool CollaborationSession::addSessionParticipant(QString userName, QString sessi
 {
     if(sessionPassword == m_sessionPassword) {
         // password is correct, check if participant already exists in this session
-        if(m_sessionParticipants.contains(userName))
+        if(m_sessionParticipants.contains(userName)) {
             //participant already exists in session
+            qWarning() << "User" << userName << "could not be added as a participant as it already exists";
             return false;
+        }
         else {
             // everything in order, we can add this participant to the session
             m_sessionParticipants[userName] = userIpAddress;
@@ -59,7 +61,7 @@ bool CollaborationSession::addSessionParticipant(QString userName, QString sessi
             return true;
         }
     } else
-        qWarning() << "expected md5 password = " << m_sessionPassword << " found : " << sessionPassword;
+        qWarning() << "Session password is wrong!";
         // incorrect password
         return false;
 }
@@ -96,7 +98,7 @@ bool CollaborationSession::isAcknowledged(QString userName)
 
 bool CollaborationSession::isAllAcknowledged()
 {
-    QHash<QString, bool>::iterator itr;
+    QMap<QString, bool>::iterator itr;
     for (itr = m_sessionAcknowledgements.begin(); itr != m_sessionAcknowledgements.end(); itr++)
     {
         if (!itr.value()) return false;

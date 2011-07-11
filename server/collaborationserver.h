@@ -2,7 +2,7 @@
 #define COLLABORATIONSERVER_H
 
 #include <QObject>
-#include <QHash>
+#include <QMap>
 #include <QList>
 
 #include "sharedcanvasprotocolhandler.h"
@@ -32,14 +32,14 @@ protected:
     SharedCanvasProtocolHandler * m_protocolHandler;
     QUdpSocket serviceBroadcastSocket;
     QTimer serviceBroadcastTimer;
-    QHash<QString, CollaborationSession *> m_sessionData;
+    QMap<QString, CollaborationSession *> m_sessionData;
 
 
 signals:
     void sendLoginResponse(QString destUserName, QChar result, QString infoMsg);
     void sendPictureResponse(QString destUserName, QString sessionName, QByteArray picData);
     void sendSessionCreateResponse(QString destUserName, QString sessionName, QChar result, QString password);
-    void sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QHash<QString, qint32> users);
+    void sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QMap<QString, qint32> users);
     void sendSessionLeaveResponse(QString destUserName, QString sessionName, QChar result);
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
     void sendSessionMemberUpdate(QString destUserName, QString sessionName, QChar updateType, QString users);

@@ -103,8 +103,9 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     //TODO How do we know sending the picture has been completed?
     // send sessionMember update to the other clients in the session
 
-    QHash<QString, qint32>::iterator itr;
-    QHash<QString, qint32> clients = m_sessionData[sessionName]->getSessionParticipants();
+    qWarning() << "reporting the members that the sesion join of the new member ended";
+    QMap<QString, qint32>::iterator itr;
+    QMap<QString, qint32> clients = m_sessionData[sessionName]->getSessionParticipants();
     for (itr = clients.begin(); itr != clients.end(); itr++)
     {
         if(itr.key() != userName)
@@ -114,6 +115,7 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
 
 void CollaborationServer::receivedSessionJoinRequest(QString userName, QString sessionName, QString password)
 {
+    qWarning() << "User with username" << userName << "requests to join to" << sessionName;
     QHostAddress userAddress(m_protocolHandler->getUserMapping(userName));
     // first, check if the session with given name exists
     if(!m_sessionList.contains(sessionName)) {
@@ -124,10 +126,11 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
     }
 
     if(m_sessionData[sessionName]->addSessionParticipant(userName, password, userAddress.toIPv4Address())) {
+        qWarning() << userName << "has successfully joined the sesion" << sessionName;
         // user successfully joined the session
-        QHash<QString, qint32> participants = m_sessionData[sessionName]->getSessionParticipants();
+        QMap<QString, qint32> participants = m_sessionData[sessionName]->getSessionParticipants();
         // send session member update to all other clients
-        QHashIterator<QString, qint32> i(participants);
+        QMapIterator<QString, qint32> i(participants);
          while (i.hasNext()) {
              i.next();
              if(i.key() != userName)
@@ -138,7 +141,7 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
          return;
      } else {
          // there was a problem with the user joining the session
-         emit sendSessionJoinResponse(userName, sessionName, 0, QHash<QString, qint32>());
+         emit sendSessionJoinResponse(userName, sessionName, 0, QMap<QString, qint32>());
          qWarning() << "receivedSessionJoinRequest error: user" << userName << "could not join session" << sessionName;
          // TODO send error message to client
          return;
@@ -147,12 +150,16 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
 
 void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString sessionName)
 {
+    qWarning() << "User with username" << userName << "requests to leave the session" << sessionName;
     //Remove the user from the list of that session
-    QHash<QString, qint32> *userList = &(m_sessionData[sessionName]->getSessionParticipants());
-    userList->remove(userName);
+    QMap<QString, qint32> *userList;
+
+    m_sessionData[sessionName]->removeSessionParticipant(userName);
+
+    userList = &(m_sessionData[sessionName]->getSessionParticipants());
 
     //Warn each user in the aforementioned session that a user left
-    QHash<QString, qint32>::iterator iter;
+    QMap<QString, qint32>::iterator iter;
     for (iter = userList->begin(); iter != userList->end(); iter++)
     {
         emit sendSessionMemberUpdate(iter.key(), sessionName, UPDATE_SESSION_LEAVE, userName);
@@ -203,16 +210,17 @@ void CollaborationServer::receivedSessionCreateRequest(QString userName, QString
     if (m_sessionList.contains(sessionName))
     {
         //The session already exists, respond negative
+        qWarning() << "Session" << sessionName << "could not be created: it already exists";
         emit sendSessionCreateResponse(userName, sessionName, 0, "");
         return;
     }
 
+    qWarning() << "Session" << sessionName << "has been successfully created by" << userName;
     //Create session with the given name
     m_sessionList.append(sessionName);
     m_sessionData[sessionName] = new CollaborationSession();
     m_sessionData[sessionName]->setSessionName(sessionName);
     m_sessionData[sessionName]->setSessionPassword(password);
-    qWarning() << "The password arrived at the server : " << password;
 
     //Session creation is successful, send a positive response
     emit sendSessionCreateResponse(userName, sessionName, 1, password);
@@ -236,7 +244,7 @@ void CollaborationServer::setProtocolHandler(SharedCanvasProtocolHandler * newPr
     // signals from server to the protocol handler slots
     connect(this, SIGNAL(sendLoginResponse(QString,QChar,QString)), newProtocolHandler, SLOT(sendLoginResponse(QString,QChar,QString)));
     connect(this, SIGNAL(sendPictureResponse(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendPictureResponse(QString,QString,QByteArray)));
-    connect(this, SIGNAL(sendSessionJoinResponse(QString,QString,QChar,QHash<QString,qint32>)), newProtocolHandler, SLOT(sendSessionJoinResponse(QString,QString,QChar,QHash<QString,qint32>)));
+    connect(this, SIGNAL(sendSessionJoinResponse(QString,QString,QChar,QMap<QString,qint32>)), newProtocolHandler, SLOT(sendSessionJoinResponse(QString,QString,QChar,QMap<QString,qint32>)));
     connect(this, SIGNAL(sendSessionLeaveResponse(QString,QString,QChar)), newProtocolHandler, SLOT(sendSessionLeaveResponse(QString,QString,QChar)));
     connect(this, SIGNAL(sendSessionListResponse(QString,QStringList)), newProtocolHandler, SLOT(sendSessionListResponse(QString,QStringList)));
     connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,QChar,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,QChar,QString)));
@@ -304,8 +312,8 @@ void CollaborationServer::memberDisconnected(QString userName)
     m_userList.removeOne(userName);
 
     //Remove the user from the sessions
-    QHash<QString, CollaborationSession *>::iterator iter;
-    QHash<QString, qint32> *participants;
+    QMap<QString, CollaborationSession *>::iterator iter;
+    QMap<QString, qint32> *participants;
 
     for (iter = m_sessionData.begin(); iter != m_sessionData.end(); iter++)
     {
@@ -314,7 +322,7 @@ void CollaborationServer::memberDisconnected(QString userName)
         {
             //Then remove the user
             participants->erase(participants->find(userName));
-            qWarning() << userName << "has been removed from sessions on server side";
+            qWarning() << userName << "has been removed from sessions";
         }
     }
 

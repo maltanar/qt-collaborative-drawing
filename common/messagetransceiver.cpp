@@ -157,7 +157,7 @@ void MessageTransceiver::sendKeepAlive()
 {
     //Construct a keep alive message and send it to each peer
     //TODO write a message class for this
-    QHash<QString, QTcpSocket *>::iterator iter;
+    QMap<QString, QTcpSocket *>::iterator iter;
     for (iter = mOpenConnections.begin(); iter != mOpenConnections.end(); iter++)
     {
         sendMessage(iter.key(), QString("WTC1KEEPALVE").toAscii());
@@ -172,7 +172,7 @@ void MessageTransceiver::sendKeepAlive()
 void MessageTransceiver::clearKeepAlives()
 {
     //Before clearing, check if any of the keep alive acknowledgments are missing
-    QHash<QString, bool>::iterator iter;
+    QMap<QString, bool>::iterator iter;
     bool isFirst = false;
 
     for (iter = mAliveConnections.begin(); iter != mAliveConnections.end(); iter++)
@@ -265,7 +265,7 @@ void MessageTransceiver::dataArrived()
     qint32 expectedLength = 0;
 
     if(connection) {
-        qWarning() << "got new data from" << origin;
+        //qWarning() << "got new data from" << origin;
         newData = connection->readAll();
         // TODO check if origin buffer for this origin exists
         if(!originBuffers.contains(origin))
@@ -312,7 +312,6 @@ void MessageTransceiver::processOriginBuffer(QString origin)
             if (currentMessage.startsWith("WTC1KEEPALVE"))
             {
                 mAliveConnections[origin] = true;
-                //qWarning() << "User with ip address " << origin << " is acknowledged!";
             }
             else
             {

@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QtNetwork>
-#include <QHash>
+#include <QMap>
 #include <QString>
 #include <QByteArray>
 
@@ -20,13 +20,13 @@ public:
     void run();
 
 protected:
-    QHash<QString, QTcpSocket *> mOpenConnections;
+    QMap<QString, QTcpSocket *> mOpenConnections;
     QTcpServer * mServer;
-    QHash<QString, QByteArray> originBuffers;
-    QHash<QString, QByteArray> destBuffers;
-    QHash<QString, qint32> originExpectedDataSize;
-    QHash<QString, bool> mAliveConnections;
-    QHash<QString, int> mTimeouts;
+    QMap<QString, QByteArray> originBuffers;
+    QMap<QString, QByteArray> destBuffers;
+    QMap<QString, qint32> originExpectedDataSize;
+    QMap<QString, bool> mAliveConnections;
+    QMap<QString, int> mTimeouts;
 
     void sendMessageNoHeader(QTcpSocket*,QByteArray msg);
     void processOriginBuffer(QString origin);

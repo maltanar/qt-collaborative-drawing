@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <protocolhandler.h>
-#include <QHash>
+#include <QMap>
 
 class MessageDispatcher : public QObject
 {
@@ -17,7 +17,7 @@ public:
     MessageTransceiver *getMessageTransceiver();
 
 private:
-    QHash<QString, ProtocolHandler *> m_protocolHandlers;
+    QMap<QString, ProtocolHandler *> m_protocolHandlers;
     MessageTransceiver *m_messageTransceiver;
 
 signals:
