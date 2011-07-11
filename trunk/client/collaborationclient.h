@@ -2,7 +2,7 @@
 #define COLLABORATIONCLIENT_H
 
 #include <QObject>
-#include <QHash>
+#include <QMap>
 #include <QStringList>
 
 #include <sharedcanvasprotocolhandler.h>
@@ -42,29 +42,29 @@ private:
     QStringList m_userList;
     QStringList m_sessionList;
     SharedCanvasProtocolHandler *m_protocolHandler;
-    QHash<QString, CollaborationSession *> m_collaborationSessions;
-    QHash<QString, QString> m_pendingHandshakes;
+    QMap<QString, CollaborationSession *> m_collaborationSessions;
+    QMap<QString, QString> m_pendingHandshakes;
 
     QUdpSocket serviceBroadcastReceiver;
 
     //State of the client in a session
-    QHash<QString, int> m_currentState;
+    QMap<QString, int> m_currentState;
 
     //Number of peers who have acknowledged already
-    QHash<QString, qint32> m_ackedPeers;
+    QMap<QString, qint32> m_ackedPeers;
 
     //TODO to be removed
     QString activeSession;
 
     //While a user is joining, the client keeps its data in here
-    QHash<QString, QVector<QByteArray> *> m_drawingBuffer;
+    QMap<QString, QVector<QByteArray> *> m_drawingBuffer;
 
 signals:
     // external signals that are meant to be used for the user interface
     void foundCollaborationServer(QHostAddress serverAddress, QString serverUserName);
     void loginResult(bool result, QString infoMsg);
     void sessionListAvailable(QStringList newSessionList);
-    void sessionJoinResult(QString sessionName, QChar result, QHash<QString, qint32> users);
+    void sessionJoinResult(QString sessionName, QChar result, QMap<QString, qint32> users);
     void drawingArrived(QString sessionName, QByteArray picData, bool initialState);
     void initialSessionState(QString sessionName, QImage img);
 
@@ -87,7 +87,7 @@ private slots:
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedPeerHandshake(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);
-    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QHash<QString, qint32> users);
+    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QMap<QString, qint32> users);
     void receivedSessionLeaveResponse(QString userName, QString sessionName, QChar result);
     void receivedSessionListResponse(QString userName, QStringList sessionList);
     void receivedSessionMemberUpdate(QString userName, QString sessionName, QChar updateType, QString user);

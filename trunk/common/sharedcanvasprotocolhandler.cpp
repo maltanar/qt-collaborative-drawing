@@ -7,7 +7,7 @@ SharedCanvasProtocolHandler::SharedCanvasProtocolHandler() :
     m_messageDispatcher = NULL;
 
     // connect the loopback signal-slot pair
-    connect(this, SIGNAL(sendMessageLoopback(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
+    connect(this, SIGNAL(sendMessageLoopback(QString,QByteArray)), this, SLOT(receiveData(QString,QByteArray)));
 }
 
 void SharedCanvasProtocolHandler::addUserMapping(QString userName, QString IP)
@@ -419,7 +419,7 @@ void SharedCanvasProtocolHandler::sendSessionJoinRequest(QString destUserName, Q
     deliverMessage(msg);
 }
 
-void SharedCanvasProtocolHandler::sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QHash<QString, qint32> users)
+void SharedCanvasProtocolHandler::sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QMap<QString, qint32> users)
 {
     WTSessionJoinResponse *msg = new WTSessionJoinResponse;
     msg->setSrcUsername(this->userName);
@@ -559,7 +559,7 @@ void SharedCanvasProtocolHandler::clientDisconnected(QString origin)
     //TODO Do recovery instead of removing the user directly
 
     //Find the username with the ip = origin
-    QHash<QString, QString>::iterator iter;
+    QMap<QString, QString>::iterator iter;
     for (iter = peerMap.begin(); iter != peerMap.end(); iter++)
     {
         if (iter.value() == origin)
@@ -575,10 +575,6 @@ void SharedCanvasProtocolHandler::clientDisconnected(QString origin)
     }
 }
 
-void SharedCanvasProtocolHandler::receiveMessage(QString origin, QByteArray data)
-{
-    receiveData(origin, data);
-}
 
 void SharedCanvasProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher)
 {

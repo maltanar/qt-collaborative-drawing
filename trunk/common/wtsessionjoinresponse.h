@@ -18,14 +18,14 @@ public:
     qint32 getUserCount();
     void addUser(QString username, qint32 userIP);
     qint32 getUserIP(QString username);
-    void setUsers(QHash<QString, qint32> users);
-    QHash<QString, qint32> getUsers();
+    void setUsers(QMap<QString, qint32> users);
+    QMap<QString, qint32> getUsers();
 
 private:
     QChar result;
     QString sessionName;
     qint32 userCount;
-    QHash<QString, qint32> users;
+    QMap<QString, qint32> users;
 };
 
 #endif // WTSESSIONJOINRESPONSE_H

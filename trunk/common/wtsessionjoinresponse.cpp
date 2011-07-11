@@ -57,17 +57,17 @@ void WTSessionJoinResponse::addUser(QString username, qint32 userIP)
 
 qint32 WTSessionJoinResponse::getUserIP(QString username)
 {
-    QHash<QString,qint32>::const_iterator iter = users.find(username);
+    QMap<QString,qint32>::const_iterator iter = users.find(username);
     return iter.value();
 }
 
-void WTSessionJoinResponse::setUsers(QHash<QString, qint32> users)
+void WTSessionJoinResponse::setUsers(QMap<QString, qint32> users)
 {
     this->users = users;
     this->userCount = users.size();
 }
 
-QHash<QString, qint32> WTSessionJoinResponse::getUsers()
+QMap<QString, qint32> WTSessionJoinResponse::getUsers()
 {
     return this->users;
 }

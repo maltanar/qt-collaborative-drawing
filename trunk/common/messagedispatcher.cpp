@@ -22,7 +22,7 @@ void MessageDispatcher::unsubscribe(ProtocolHandler *protocolHandler)
 {
     //Remove all the prefixes that belong to the mentioned protocol handler
     //TODO Might be a logical mistake with comparison of pointers
-    QHash<QString, ProtocolHandler *>::iterator itr;
+    QMap<QString, ProtocolHandler *>::iterator itr;
     for (itr = m_protocolHandlers.begin(); itr != m_protocolHandlers.end(); itr++)
     {
         if (itr.value() == protocolHandler)
@@ -41,9 +41,10 @@ void MessageDispatcher::receiveMessage(QString origin, QByteArray msg)
     QString message;
     QDataStream deserializer(&msg, QIODevice::ReadOnly);
     deserializer >> message;
+
     //Check according to the prefix of the message
     // to which protocol handler the message belongs to
-    QHash<QString, ProtocolHandler *>::iterator itr;
+    QMap<QString, ProtocolHandler *>::iterator itr;
 
     for (itr = m_protocolHandlers.begin(); itr != m_protocolHandlers.end(); itr++)
     {

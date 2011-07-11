@@ -2,7 +2,7 @@
 #define SHAREDCANVASPROTOCOLHANDLER_H
 
 #include <QObject>
-#include <QHash>
+#include <QMap>
 
 #include "wtmessage.h"
 #include <wtloginmessage.h>
@@ -47,13 +47,11 @@ public:
     QString getUserName();
     void setUserName(QString username);
 
-    void receiveData(QString origin, QByteArray data);
-
 private:
     MessageTransceiver * m_messageTransceiver;
     MessageDispatcher * m_messageDispatcher;
-    QHash<QString, QString> peerMap;
-    QHash<QString, QString> pendingMapRequests;
+    QMap<QString, QString> peerMap;
+    QMap<QString, QString> pendingMapRequests;
     QString userName;
 
     bool deliverMessage(WTMessage * msg);
@@ -93,7 +91,7 @@ signals:
     void receivedPictureRequest(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);
     void receivedSessionJoinRequest(QString userName, QString sessionName, QString password);
-    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QHash<QString, qint32> users);
+    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QMap<QString, qint32> users);
     void receivedSessionLeaveRequest(QString userName, QString sessionName);
     void receivedSessionLeaveResponse(QString userName, QString sessionName, QChar result);
     void receivedSessionListRequest(QString userName);
@@ -107,7 +105,7 @@ signals:
     void receivedSessionCreateResponse(QString userName, QString sessionName, QChar result, QString password);
 
 public slots:
-    void receiveMessage(QString origin, QByteArray data);
+    void receiveData(QString origin, QByteArray data);
     void clientDisconnected(QString origin);
 
     void sendLoginRequest(QString destUserName);
@@ -117,7 +115,7 @@ public slots:
     void sendPictureRequest(QString destUserName, QString sessionName);
     void sendPictureResponse(QString destUserName, QString sessionName, QByteArray picData);
     void sendSessionJoinRequest(QString destUserName, QString sessionName, QString password);
-    void sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QHash<QString, qint32> users);
+    void sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QMap<QString, qint32> users);
     void sendSessionLeaveRequest(QString destUserName, QString sessionName);
     void sendSessionLeaveResponse(QString destUserName, QString sessionName, QChar result);
     void sendSessionListRequest(QString destUserName);
