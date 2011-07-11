@@ -10,7 +10,7 @@ CollaborationClient::CollaborationClient(QObject *parent) :
     connect(&serviceBroadcastReceiver, SIGNAL(readyRead()), this, SLOT(gotServiceBroadcast()));
 }
 
-void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandler)
+void CollaborationClient::setProtocolHandler(SharedCanvasProtocolHandler * newProtocolHandler)
 {
     if (m_protocolHandler)
     {
@@ -45,7 +45,7 @@ void CollaborationClient::setProtocolHandler(ProtocolHandler * newProtocolHandle
     m_protocolHandler = newProtocolHandler;
 }
 
-ProtocolHandler * CollaborationClient::getProtocolHandler()
+SharedCanvasProtocolHandler * CollaborationClient::getProtocolHandler()
 {
     return m_protocolHandler;
 }
@@ -474,7 +474,7 @@ void CollaborationClient::memberDisconnected(QString username)
         }
 
         //If the user was joining and got disconnected
-        // - resume like it was never joining
+        // - resume as if it was never joining
         if (m_currentState[sessItr.key()] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
         {
             m_currentState[sessItr.key()] = MEMBER_UPDATE_JOIN_END_RECEIVED;

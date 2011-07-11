@@ -5,7 +5,7 @@
 #include <QHash>
 #include <QList>
 
-#include "protocolhandler.h"
+#include "sharedcanvasprotocolhandler.h"
 #include "collaborationsession.h"
 
 //TODO move into a common header file with client
@@ -19,8 +19,8 @@ class CollaborationServer : public QObject
 public:
     explicit CollaborationServer(QObject *parent = 0);
 
-    void setProtocolHandler(ProtocolHandler * newProtocolHandler);
-    ProtocolHandler * getProtocolHandler();
+    void setProtocolHandler(SharedCanvasProtocolHandler * newProtocolHandler);
+    SharedCanvasProtocolHandler * getProtocolHandler();
 
     void setServerUserName(QString newUserName);
     QString getServerUserName();
@@ -29,7 +29,7 @@ protected:
     QString m_serverUserName;
     QList<QString> m_userList;
     QList<QString> m_sessionList;
-    ProtocolHandler * m_protocolHandler;
+    SharedCanvasProtocolHandler * m_protocolHandler;
     QUdpSocket serviceBroadcastSocket;
     QTimer serviceBroadcastTimer;
     QHash<QString, CollaborationSession *> m_sessionData;

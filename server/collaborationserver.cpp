@@ -220,7 +220,7 @@ void CollaborationServer::receivedSessionCreateRequest(QString userName, QString
 
 
 // sets the ProtocolHandler for this CollaborationServer
-void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandler)
+void CollaborationServer::setProtocolHandler(SharedCanvasProtocolHandler * newProtocolHandler)
 {
     if(!newProtocolHandler) {
         qWarning() << "Cannot set a null protocol handler for CollaborationServer!";
@@ -261,7 +261,7 @@ void CollaborationServer::setProtocolHandler(ProtocolHandler * newProtocolHandle
     m_protocolHandler = newProtocolHandler;
 }
 
-ProtocolHandler * CollaborationServer::getProtocolHandler()
+SharedCanvasProtocolHandler * CollaborationServer::getProtocolHandler()
 {
     return m_protocolHandler;
 }

@@ -101,8 +101,11 @@ void MainWindow::on_actionSessions_triggered()
 void MainWindow::on_startServerButton_clicked()
 {
     mt = new MessageTransceiver();
-    ph = new ProtocolHandler();
+    mp = new MessageDispatcher();
+    ph = new SharedCanvasProtocolHandler();
+    mp->setMessageTransceiver(mt);
     ph->setMessageTransceiver(mt);
+    ph->setMessageDispatcher(mp);
     server = new CollaborationServer();
     server->setProtocolHandler(ph);
     client = new CollaborationClient();
