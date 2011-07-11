@@ -12,7 +12,7 @@
 #define     TIMEOUT                   20    // 20 * 3000 milliseconds = 60 seconds
 #define     KEEP_ALIVE_PERIOD      3000 //Milliseconds
 
-class MessageTransceiver : public QThread
+class MessageTransceiver : public QObject
 {
     Q_OBJECT
 public:

@@ -121,7 +121,7 @@ void MainWindow::on_startServerButton_clicked()
     ui->startServerButton->setEnabled(false);
     ui->statusLabel->setText("Running");
     server->setServerUserName(ui->userName->text());
-    mt->start();
+    mt->run();
 
     client->loginToServer(QHostAddress("127.0.0.1"), ui->userName->text(), ui->userName->text());
     client->refreshSessionList();

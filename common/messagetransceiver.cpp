@@ -11,7 +11,7 @@
 
 
 MessageTransceiver::MessageTransceiver(QObject *parent) :
-    QThread(parent)
+    QObject(parent)
 {
     // the transciever will act both as a server and a client
     // client behaviour is triggered by the connectTo slot
@@ -39,7 +39,7 @@ void MessageTransceiver::run()
         qWarning() << "QTcpServer failed to listen!";
         return;
     }
-    exec();
+    //exec();
 }
 
 void MessageTransceiver::connectTo(QString destination)
