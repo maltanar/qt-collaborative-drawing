@@ -24,7 +24,7 @@ protected:
     QTcpServer * mServer;
     QHash<QString, QByteArray> originBuffers;
     QHash<QString, QByteArray> destBuffers;
-    QHash<QString, unsigned int> originExpectedDataSize;
+    QHash<QString, qint32> originExpectedDataSize;
     QHash<QString, bool> mAliveConnections;
     QHash<QString, int> mTimeouts;
 

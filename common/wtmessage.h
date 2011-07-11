@@ -2,8 +2,10 @@
 #define WTMESSAGE_H
 
 #include <QDataStream>
+#include <QByteArray>
 #include <QDebug>
 #include <QStringList>
+#include <QBuffer>
 
 #define HEADER_SIZE 32
 
@@ -30,7 +32,9 @@ protected:
     int msgSize;
     QString srcUsername;
     QString destUsername;
-
+    QByteArray m_serializedData;
+    QBuffer m_serializerBuffer;
+    QDataStream m_serializer;
 
 };
 

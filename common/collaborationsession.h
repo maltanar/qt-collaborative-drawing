@@ -21,10 +21,10 @@ public:
     void setSessionPassword(QString newPassword);
     QString getSessionPassword();
 
-    QHash<QString, long> getSessionParticipants();
-    void setSessionParticipants(QHash<QString, long> participantList);
+    QHash<QString, qint32> getSessionParticipants();
+    void setSessionParticipants(QHash<QString, qint32> participantList);
 
-    bool addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress);
+    bool addSessionParticipant(QString userName, QString sessionPassword, qint32 userIpAddress);
     void removeSessionParticipant(QString userName);
 
     QImage getSessionDrawingState();
@@ -39,7 +39,7 @@ public:
 protected:
     QString m_sessionName;
     QString m_sessionPassword;
-    QHash<QString, long> m_sessionParticipants;
+    QHash<QString, qint32> m_sessionParticipants;
     QHash<QString, bool> m_sessionAcknowledgements;
     QImage m_sessionDrawingData;
     QPainter m_picturePainter;

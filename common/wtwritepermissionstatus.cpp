@@ -10,26 +10,24 @@ QByteArray WTWritePermissionStatus::serialize()
 {
     //Size of status
     msgSize += 1;
-    QByteArray data = WTMessage::serialize();
-    data.append(status);
-    return data;
+    WTMessage::serialize();
+    m_serializer << status;
+
+    return m_serializedData;
 }
 
 void WTWritePermissionStatus::deserialize(QByteArray data)
 {
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(&status, 1);
+    m_serializer >> status;
 }
 
-char WTWritePermissionStatus::getStatus()
+QChar WTWritePermissionStatus::getStatus()
 {
     return this->status;
 }
 
-void WTWritePermissionStatus::setStatus(char status)
+void WTWritePermissionStatus::setStatus(QChar status)
 {
     this->status = status;
 }

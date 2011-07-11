@@ -12,31 +12,14 @@ QByteArray WTSessionCreateResponse::serialize()
     //Size of common header + result + session name + encrypted password
     msgSize += 8 + 1 + 32;
     QByteArray data = WTMessage::serialize();
-    data.append(result);
-    data.append(sessionName.leftJustified(8, ' ').toAscii());
-    data.append(password.leftJustified(32, ' ').toAscii());
-    return data;
+    m_serializer << result << sessionName << password;
+    return m_serializedData;
 }
 
 void WTSessionCreateResponse::deserialize(QByteArray data)
 {
-    char sessionName[9];
-    char password[33];
-    char result;
-
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username as they have already been deserialized above
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(&result, 1);
-    dataStream.readRawData(sessionName, 8);
-    sessionName[8] = '\0';
-    dataStream.readRawData(password, 32);
-    password[32] = '\0';
-
-    this->sessionName = QString(sessionName).trimmed();
-    this->result = QChar(result);
-    this->password = QString(password).trimmed();
+    m_serializer >> result >> sessionName >> password;
 }
 
 QString WTSessionCreateResponse::getSessionName()

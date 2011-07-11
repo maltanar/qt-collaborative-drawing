@@ -11,49 +11,25 @@ QByteArray WTSessionJoinResponse::serialize()
 {
     //Size of result + size of sessionname + size of usercount + size of usernames and ips
     msgSize += 1 + 8 + 4 + 12 * userCount;
-    QByteArray data = WTMessage::serialize();
-    data.append(result);
-    data.append(sessionName.leftJustified(8,' ').toAscii());
-    data.append(QByteArray::fromRawData((const char *)&userCount,4));
-    QHash<QString, long>::iterator iter;
-    for (iter = users.begin(); iter != users.end(); iter++)
-    {
-        data.append(QString(iter.key()).leftJustified(8, ' ').toAscii());
-        data.append(QByteArray::fromRawData((const char *)&(iter.value()),4));
-    }
-    return data;
+    WTMessage::serialize();
+    m_serializer << result << sessionName << userCount << users;
+
+    return m_serializedData;
 }
 
 void WTSessionJoinResponse::deserialize(QByteArray data)
 {
-    char sessionName[9];
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(&result,1);
-    dataStream.readRawData(sessionName, 8);
-    sessionName[8] = '\0';
-    dataStream.readRawData((char *)&userCount, 4);
-    for (unsigned int i = 0; i < userCount; i++)
-    {
-        char username[9];
-        long userIP;
-        dataStream.readRawData(username,8);
-        username[8] = '\0';
-        dataStream.readRawData((char *)&userIP, 4);
-        users.insert(QString(username).trimmed(), userIP);
-    }
-    this->sessionName = QString(sessionName).trimmed();
+    m_serializer >> result >> sessionName >> userCount >> users;
 }
 
 
-void WTSessionJoinResponse::setResult(char result)
+void WTSessionJoinResponse::setResult(QChar result)
 {
     this->result = result;
 }
 
-char WTSessionJoinResponse::getResult()
+QChar WTSessionJoinResponse::getResult()
 {
     return this->result;
 }
@@ -68,30 +44,30 @@ QString WTSessionJoinResponse::getSessionName()
     return this->sessionName;
 }
 
-unsigned int WTSessionJoinResponse::getUserCount()
+qint32 WTSessionJoinResponse::getUserCount()
 {
     return this->userCount;
 }
 
-void WTSessionJoinResponse::addUser(QString username, long userIP)
+void WTSessionJoinResponse::addUser(QString username, qint32 userIP)
 {
     this->userCount++;
     users.insert(username, userIP);
 }
 
-long WTSessionJoinResponse::getUserIP(QString username)
+qint32 WTSessionJoinResponse::getUserIP(QString username)
 {
-    QHash<QString,long>::const_iterator iter = users.find(username);
+    QHash<QString,qint32>::const_iterator iter = users.find(username);
     return iter.value();
 }
 
-void WTSessionJoinResponse::setUsers(QHash<QString, long> users)
+void WTSessionJoinResponse::setUsers(QHash<QString, qint32> users)
 {
     this->users = users;
     this->userCount = users.size();
 }
 
-QHash<QString, long> WTSessionJoinResponse::getUsers()
+QHash<QString, qint32> WTSessionJoinResponse::getUsers()
 {
     return this->users;
 }

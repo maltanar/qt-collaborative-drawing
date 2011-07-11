@@ -51,7 +51,7 @@ private:
     QHash<QString, int> m_currentState;
 
     //Number of peers who have acknowledged already
-    QHash<QString, long> m_ackedPeers;
+    QHash<QString, qint32> m_ackedPeers;
 
     //TODO to be removed
     QString activeSession;
@@ -64,7 +64,7 @@ signals:
     void foundCollaborationServer(QHostAddress serverAddress, QString serverUserName);
     void loginResult(bool result, QString infoMsg);
     void sessionListAvailable(QStringList newSessionList);
-    void sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users);
+    void sessionJoinResult(QString sessionName, QChar result, QHash<QString, qint32> users);
     void drawingArrived(QString sessionName, QByteArray picData, bool initialState);
     void initialSessionState(QString sessionName, QImage img);
 
@@ -87,10 +87,10 @@ private slots:
     void receivedLoginResponse(QString userName, QChar result, QString infoMsg);
     void receivedPeerHandshake(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);
-    void receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users);
-    void receivedSessionLeaveResponse(QString userName, QString sessionName, char result);
+    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QHash<QString, qint32> users);
+    void receivedSessionLeaveResponse(QString userName, QString sessionName, QChar result);
     void receivedSessionListResponse(QString userName, QStringList sessionList);
-    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
+    void receivedSessionMemberUpdate(QString userName, QString sessionName, QChar updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionStatus(QString userName, QChar status);
     void receivedSessionCreateResponse(QString userName, QString sessionName, QChar result, QString password);

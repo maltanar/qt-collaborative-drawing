@@ -8,40 +8,37 @@ WTMessage::WTMessage() :
 
 WTMessage::~WTMessage()
 {
-
+    m_serializerBuffer.close();
 }
 
 QByteArray WTMessage::serialize()
 {
-    QByteArray data(version.toAscii());
-    data.append(command.toAscii());
-    data.append(QByteArray::fromRawData((const char*)&msgSize, 4));
-    data.append(srcUsername.leftJustified(8, ' ').toAscii());
-    data.append(destUsername.leftJustified(8, ' ').toAscii());
-    return data;
+    // serialize the message
+    // first, clear any existing serialized data in the buffer
+    m_serializedData.clear();
+    m_serializerBuffer.close();
+    m_serializerBuffer.setBuffer(&m_serializedData);
+    m_serializerBuffer.open(QIODevice::ReadWrite);
+    m_serializer.unsetDevice();
+    m_serializer.setDevice(&m_serializerBuffer);
+
+    // use Qt's QDataStream << operator to serialize the fields
+    m_serializer << version << command << msgSize << srcUsername << destUsername;
+
+    return m_serializedData;
 }
 
 void WTMessage::deserialize(QByteArray data)
 {
-    //Assuming the header is always of the same size.
-    char version[5];
-    char command[9];
-    char srcUsername[9];
-    char destUsername[9];
-    QDataStream dataStream(data);
-    dataStream.readRawData(version, 4);
-    version[4] = '\0';
-    dataStream.readRawData(command, 8);
-    command[8] = '\0';
-    dataStream.readRawData((char *)&msgSize, 4);
-    dataStream.readRawData(srcUsername, 8);
-    srcUsername[8] = '\0';
-    dataStream.readRawData(destUsername, 8);
-    destUsername[8] = '\0';
-    this->version = QString(version);
-    this->command = QString(command);
-    this->srcUsername = QString(srcUsername).trimmed();
-    this->destUsername = QString(destUsername).trimmed();
+    // deserialize using Qt QDataStream >> operator
+    m_serializedData = data;
+    m_serializerBuffer.close();
+    m_serializerBuffer.setBuffer(&m_serializedData);
+    m_serializerBuffer.open(QIODevice::ReadWrite);
+    m_serializer.unsetDevice();
+    m_serializer.setDevice(&m_serializerBuffer);
+
+    m_serializer >> version >> command >> msgSize >> srcUsername >> destUsername;
 }
 
 

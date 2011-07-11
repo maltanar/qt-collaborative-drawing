@@ -12,28 +12,16 @@ QByteArray WTSessionCreateRequest::serialize()
 {
     //Message size is the size of common header + session name + password in md5
     msgSize += 8 + 32;
-    QByteArray data = WTMessage::serialize();
-    data.append(sessionName.leftJustified(8, ' ').toAscii());
-    //Send md5 code of the password
-    data.append(password.leftJustified(32, ' ').toAscii());
-    return data;
+    WTMessage::serialize();
+    m_serializer << sessionName << password;
+
+    return m_serializedData;
 }
 
 void WTSessionCreateRequest::deserialize(QByteArray data)
 {
-    char sessionName[9];
-    char password[33];
-
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username as they have already been deserialized above
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(sessionName, 8);
-    sessionName[8] = '\0';
-    dataStream.readRawData(password, 32);
-    password[32] = '\0';
-    this->sessionName = QString(sessionName).trimmed();
-    this->password = QString(password).trimmed();
+    m_serializer >> sessionName >> password;
 }
 
 QString WTSessionCreateRequest::getSessionName()

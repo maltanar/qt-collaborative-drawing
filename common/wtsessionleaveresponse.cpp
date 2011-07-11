@@ -10,31 +10,24 @@ QByteArray WTSessionLeaveResponse::serialize()
 {
     //Size of sessionName + size of result
     msgSize += 8 + 1;
-    QByteArray data = WTMessage::serialize();
-    data.append(sessionName.leftJustified(8, ' ').toAscii());
-    data.append(result);
-    return data;
+    WTMessage::serialize();
+    m_serializer << sessionName << result;
+
+    return m_serializedData;
 }
 
 void WTSessionLeaveResponse::deserialize(QByteArray data)
 {
-    char sessionName[9];
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(sessionName, 8);
-    sessionName[8] = '\0';
-    dataStream.readRawData(&result,1);
-    this->sessionName = QString(sessionName).trimmed();
+    m_serializer >> sessionName >> result;
 }
 
-char WTSessionLeaveResponse::getResult()
+QChar WTSessionLeaveResponse::getResult()
 {
     return this->result;
 }
 
-void WTSessionLeaveResponse::setResult(char result)
+void WTSessionLeaveResponse::setResult(QChar result)
 {
     this->result = result;
 }

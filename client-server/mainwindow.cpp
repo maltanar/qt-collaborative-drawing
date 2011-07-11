@@ -66,7 +66,7 @@ void MainWindow::on_actionEraser_triggered()
     ui->graphicsView->setDrawingMode(DRAWINGMODE_ERASER);
 }
 
-void MainWindow::sessionJoinResult(QString sessionName, QChar result, QHash<QString, long> users)
+void MainWindow::sessionJoinResult(QString sessionName, QChar result, QHash<QString, qint32> users)
 {
     QMessageBox m;
     if(result == 1) {
@@ -111,7 +111,7 @@ void MainWindow::on_startServerButton_clicked()
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
 
-    connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,long>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,long>)));
+    connect(client, SIGNAL(sessionJoinResult(QString,QChar,QHash<QString,qint32>)), this, SLOT(sessionJoinResult(QString,QChar,QHash<QString,qint32>)));
     connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
     connect(client, SIGNAL(drawingArrived(QString,QByteArray,bool)), ui->graphicsView, SLOT(drawingArrived(QString,QByteArray,bool)));
     connect(client, SIGNAL(initialSessionState(QString, QImage)), ui->graphicsView, SLOT(initialSessionState(QString, QImage)));

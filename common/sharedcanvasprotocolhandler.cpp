@@ -359,12 +359,12 @@ void SharedCanvasProtocolHandler::sendLoginRequest(QString destUserName)
     deliverMessage(msg);
 }
 
-void SharedCanvasProtocolHandler::sendLoginResponse(QString destUserName, char result, QString infoMsg)
+void SharedCanvasProtocolHandler::sendLoginResponse(QString destUserName, QChar result, QString infoMsg)
 {
     // Local peer role: server
     // if login was OK, add pending mapping
     // TODO encode this '1' in a more meaningful way
-    handleMapRequestStatus(destUserName, (bool) result);
+    handleMapRequestStatus(destUserName, (bool) result.toAscii());
     WTLoginResponse *msg = new WTLoginResponse;
     msg->setSrcUsername(this->userName);
     msg->setDestUsername(destUserName);
@@ -419,7 +419,7 @@ void SharedCanvasProtocolHandler::sendSessionJoinRequest(QString destUserName, Q
     deliverMessage(msg);
 }
 
-void SharedCanvasProtocolHandler::sendSessionJoinResponse(QString destUserName, QString sessionName, char result, QHash<QString, long> users)
+void SharedCanvasProtocolHandler::sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QHash<QString, qint32> users)
 {
     WTSessionJoinResponse *msg = new WTSessionJoinResponse;
     msg->setSrcUsername(this->userName);
@@ -439,7 +439,7 @@ void SharedCanvasProtocolHandler::sendSessionLeaveRequest(QString destUserName, 
     deliverMessage(msg);
 }
 
-void SharedCanvasProtocolHandler::sendSessionLeaveResponse(QString destUserName, QString sessionName, char result)
+void SharedCanvasProtocolHandler::sendSessionLeaveResponse(QString destUserName, QString sessionName, QChar result)
 {
     WTSessionLeaveResponse *msg = new WTSessionLeaveResponse;
     msg->setSrcUsername(this->userName);
@@ -466,7 +466,7 @@ void SharedCanvasProtocolHandler::sendSessionListResponse(QString destUserName, 
     deliverMessage(msg);
 }
 
-void SharedCanvasProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString user)
+void SharedCanvasProtocolHandler::sendSessionMemberUpdate(QString destUserName, QString sessionName, QChar updateType, QString user)
 {
     WTSessionMemberUpdate *msg = new WTSessionMemberUpdate;
     msg->setSrcUsername(this->userName);

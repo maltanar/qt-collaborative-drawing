@@ -11,15 +11,15 @@ public:
     void deserialize(QByteArray data);
     QByteArray serialize();
 
-    char getResult();
-    void setResult(char result);
+    QChar getResult();
+    void setResult(QChar result);
 
     void setSessionName(QString sessionName);
     QString getSessionName();
 
 private:
     QString sessionName;
-    char result;
+    QChar result;
 
 };
 
