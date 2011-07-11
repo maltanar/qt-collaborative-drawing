@@ -14,11 +14,11 @@ public:
     void setInfomsg(QString msg);
     QString getInfomsg();
 
-    void setResult(char result);
-    char getResult();
+    void setResult(QChar result);
+    QChar getResult();
 
 private:
-    char result;
+    QChar result;
     QString infomsg;
     short infomsgSize;
 };

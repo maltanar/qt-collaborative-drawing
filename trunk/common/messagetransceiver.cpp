@@ -69,7 +69,7 @@ void MessageTransceiver::connectTo(QString destination)
 
 void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
 {
-    unsigned int messageSize = msg.length() + 12;   // TODO header size should be defined
+    qint32 messageSize = msg.length() + 12;   // TODO header size should be defined
     QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
 
     if(!destinationSocket) {
@@ -262,7 +262,7 @@ void MessageTransceiver::dataArrived()
     QString origin = connection->peerAddress().toString();
     QByteArray newData;
     QByteArray bufferContent;
-    unsigned int expectedLength = 0;
+    qint32 expectedLength = 0;
 
     if(connection) {
         qWarning() << "got new data from" << origin;
@@ -280,7 +280,7 @@ void MessageTransceiver::processOriginBuffer(QString origin)
 {
     QByteArray originBuffer = originBuffers[origin];
     QByteArray currentMessage;
-    unsigned int currentMessageSize = 0;
+    qint32 currentMessageSize = 0;
     bool remainingMessages = true;
 
     while(remainingMessages) {

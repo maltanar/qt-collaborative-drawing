@@ -11,11 +11,11 @@ public:
     QByteArray serialize();
     void deserialize(QByteArray data);
 
-    char getStatus();
-    void setStatus(char status);
+    QChar getStatus();
+    void setStatus(QChar status);
 
 private:
-    char status;
+    QChar status;
 };
 
 #endif // WTWRITEPERMISSIONSTATUS_H

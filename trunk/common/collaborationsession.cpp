@@ -28,24 +28,24 @@ QString CollaborationSession::getSessionPassword()
     return m_sessionPassword;
 }
 
-QHash<QString, long> CollaborationSession::getSessionParticipants()
+QHash<QString, qint32> CollaborationSession::getSessionParticipants()
 {
     return m_sessionParticipants;
 }
 
-void CollaborationSession::setSessionParticipants(QHash<QString, long> participantList)
+void CollaborationSession::setSessionParticipants(QHash<QString, qint32> participantList)
 {
     m_sessionParticipants = participantList;
 
     //Initialize all session members as unacknowledged
-    QHash<QString, long>::iterator itr;
+    QHash<QString, qint32>::iterator itr;
     for (itr = participantList.begin(); itr != participantList.end(); itr++)
     {
         m_sessionAcknowledgements.insert(itr.key(),false);
     }
 }
 
-bool CollaborationSession::addSessionParticipant(QString userName, QString sessionPassword, long userIpAddress)
+bool CollaborationSession::addSessionParticipant(QString userName, QString sessionPassword, qint32 userIpAddress)
 {
     if(sessionPassword == m_sessionPassword) {
         // password is correct, check if participant already exists in this session

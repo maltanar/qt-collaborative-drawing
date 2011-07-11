@@ -16,7 +16,7 @@ public:
     void addSession(QString sessionName);
 
 private:
-    uint sesscnt;
+    qint32 sesscnt;
     QStringList sessionList;
 
 };

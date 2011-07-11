@@ -11,32 +11,16 @@ QByteArray WTSessionListResponse::serialize()
 {
     //size of sesscnt + total size of session names
     msgSize += 4 + sesscnt * 8;
-    QByteArray data = WTMessage::serialize();
-    data.append(QByteArray::fromRawData((const char *)&sesscnt, 4));
+    WTMessage::serialize();
+    m_serializer << sesscnt << sessionList;
 
-    int size = sessionList.size();
-    for (int i = 0; i < size; i++)
-    {
-        data.append(((QString)sessionList.at(i)).leftJustified(8, ' ').toAscii());
-    }
-    return data;
+    return m_serializedData;
 }
 
 void WTSessionListResponse::deserialize(QByteArray data)
 {
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData((char *)&sesscnt, 4);
-    qWarning() << sesscnt;
-    for (unsigned int i = 0; i < sesscnt; i++)
-    {
-        char sessionName[9];
-        dataStream.readRawData(sessionName, 8);
-        sessionName[8] = '\0';
-        sessionList.append(QString(sessionName).trimmed());
-    }
+    m_serializer >> sesscnt >> sessionList;
 }
 
 QStringList WTSessionListResponse::getSessionList()

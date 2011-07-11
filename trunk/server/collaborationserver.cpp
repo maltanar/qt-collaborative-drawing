@@ -103,8 +103,8 @@ void CollaborationServer::receivedPictureRequest(QString userName, QString sessi
     //TODO How do we know sending the picture has been completed?
     // send sessionMember update to the other clients in the session
 
-    QHash<QString, long>::iterator itr;
-    QHash<QString, long> clients = m_sessionData[sessionName]->getSessionParticipants();
+    QHash<QString, qint32>::iterator itr;
+    QHash<QString, qint32> clients = m_sessionData[sessionName]->getSessionParticipants();
     for (itr = clients.begin(); itr != clients.end(); itr++)
     {
         if(itr.key() != userName)
@@ -125,9 +125,9 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
 
     if(m_sessionData[sessionName]->addSessionParticipant(userName, password, userAddress.toIPv4Address())) {
         // user successfully joined the session
-        QHash<QString, long> participants = m_sessionData[sessionName]->getSessionParticipants();
+        QHash<QString, qint32> participants = m_sessionData[sessionName]->getSessionParticipants();
         // send session member update to all other clients
-        QHashIterator<QString, long> i(participants);
+        QHashIterator<QString, qint32> i(participants);
          while (i.hasNext()) {
              i.next();
              if(i.key() != userName)
@@ -138,7 +138,7 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
          return;
      } else {
          // there was a problem with the user joining the session
-         emit sendSessionJoinResponse(userName, sessionName, 0, QHash<QString, long>());
+         emit sendSessionJoinResponse(userName, sessionName, 0, QHash<QString, qint32>());
          qWarning() << "receivedSessionJoinRequest error: user" << userName << "could not join session" << sessionName;
          // TODO send error message to client
          return;
@@ -148,11 +148,11 @@ void CollaborationServer::receivedSessionJoinRequest(QString userName, QString s
 void CollaborationServer::receivedSessionLeaveRequest(QString userName, QString sessionName)
 {
     //Remove the user from the list of that session
-    QHash<QString, long> *userList = &(m_sessionData[sessionName]->getSessionParticipants());
+    QHash<QString, qint32> *userList = &(m_sessionData[sessionName]->getSessionParticipants());
     userList->remove(userName);
 
     //Warn each user in the aforementioned session that a user left
-    QHash<QString, long>::iterator iter;
+    QHash<QString, qint32>::iterator iter;
     for (iter = userList->begin(); iter != userList->end(); iter++)
     {
         emit sendSessionMemberUpdate(iter.key(), sessionName, UPDATE_SESSION_LEAVE, userName);
@@ -234,12 +234,12 @@ void CollaborationServer::setProtocolHandler(SharedCanvasProtocolHandler * newPr
     }
     // connect signals and slots for new protocol handler
     // signals from server to the protocol handler slots
-    connect(this, SIGNAL(sendLoginResponse(QString,char,QString)), newProtocolHandler, SLOT(sendLoginResponse(QString,char,QString)));
+    connect(this, SIGNAL(sendLoginResponse(QString,QChar,QString)), newProtocolHandler, SLOT(sendLoginResponse(QString,QChar,QString)));
     connect(this, SIGNAL(sendPictureResponse(QString,QString,QByteArray)), newProtocolHandler, SLOT(sendPictureResponse(QString,QString,QByteArray)));
-    connect(this, SIGNAL(sendSessionJoinResponse(QString,QString,char,QHash<QString,long>)), newProtocolHandler, SLOT(sendSessionJoinResponse(QString,QString,char,QHash<QString,long>)));
-    connect(this, SIGNAL(sendSessionLeaveResponse(QString,QString,char)), newProtocolHandler, SLOT(sendSessionLeaveResponse(QString,QString,char)));
+    connect(this, SIGNAL(sendSessionJoinResponse(QString,QString,QChar,QHash<QString,qint32>)), newProtocolHandler, SLOT(sendSessionJoinResponse(QString,QString,QChar,QHash<QString,qint32>)));
+    connect(this, SIGNAL(sendSessionLeaveResponse(QString,QString,QChar)), newProtocolHandler, SLOT(sendSessionLeaveResponse(QString,QString,QChar)));
     connect(this, SIGNAL(sendSessionListResponse(QString,QStringList)), newProtocolHandler, SLOT(sendSessionListResponse(QString,QStringList)));
-    connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,char,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,char,QString)));
+    connect(this, SIGNAL(sendSessionMemberUpdate(QString,QString,QChar,QString)), newProtocolHandler, SLOT(sendSessionMemberUpdate(QString,QString,QChar,QString)));
     connect(this, SIGNAL(sendWritePermissionStatus(QString,QChar)),newProtocolHandler, SLOT(sendWritePermissionStatus(QString,QChar)));
     connect(this, SIGNAL(sendSessionCreateResponse(QString,QString,QChar,QString)), newProtocolHandler, SLOT(sendSessionCreateResponse(QString,QString,QChar,QString)));
 
@@ -305,7 +305,7 @@ void CollaborationServer::memberDisconnected(QString userName)
 
     //Remove the user from the sessions
     QHash<QString, CollaborationSession *>::iterator iter;
-    QHash<QString, long> *participants;
+    QHash<QString, qint32> *participants;
 
     for (iter = m_sessionData.begin(); iter != m_sessionData.end(); iter++)
     {

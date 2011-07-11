@@ -33,10 +33,10 @@ void CollaborationClient::setProtocolHandler(SharedCanvasProtocolHandler * newPr
     connect(newProtocolHandler, SIGNAL(receivedLoginResponse(QString,QChar,QString)), this, SLOT(receivedLoginResponse(QString,QChar,QString)));
     connect(newProtocolHandler, SIGNAL(receivedPeerHandshake(QString,QString)), this, SLOT(receivedPeerHandshake(QString,QString)));
     connect(newProtocolHandler, SIGNAL(receivedPictureResponse(QString,QString,QByteArray)), this, SLOT(receivedPictureResponse(QString,QString,QByteArray)));
-    connect(newProtocolHandler, SIGNAL(receivedSessionJoinResponse(QString,QString,char,uint,QHash<QString,long>)), this, SLOT(receivedSessionJoinResponse(QString,QString,char,uint,QHash<QString,long>)));
-    connect(newProtocolHandler, SIGNAL(receivedSessionLeaveResponse(QString,QString,char)), this, SLOT(receivedSessionLeaveResponse(QString,QString,char)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionJoinResponse(QString,QString,QChar,qint32,QHash<QString,qint32>)), this, SLOT(receivedSessionJoinResponse(QString,QString,QChar,qint32,QHash<QString,qint32>)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionLeaveResponse(QString,QString,QChar)), this, SLOT(receivedSessionLeaveResponse(QString,QString,QChar)));
     connect(newProtocolHandler, SIGNAL(receivedSessionListResponse(QString,QStringList)), this, SLOT(receivedSessionListResponse(QString,QStringList)));
-    connect(newProtocolHandler, SIGNAL(receivedSessionMemberUpdate(QString,QString,char,QString)), this, SLOT(receivedSessionMemberUpdate(QString,QString,char,QString)));
+    connect(newProtocolHandler, SIGNAL(receivedSessionMemberUpdate(QString,QString,QChar,QString)), this, SLOT(receivedSessionMemberUpdate(QString,QString,QChar,QString)));
     connect(newProtocolHandler, SIGNAL(receivedUpdateDrawing(QString,QString,QByteArray)), this, SLOT(receivedUpdateDrawing(QString,QString,QByteArray)));
     connect(newProtocolHandler, SIGNAL(receivedWritePermissionStatus(QString,QChar)), this, SLOT(receivedWritePermissionStatus(QString,QChar)));
     connect(newProtocolHandler, SIGNAL(receivedSessionCreateResponse(QString,QString,QChar,QString)), this, SLOT(receivedSessionCreateResponse(QString,QString,QChar,QString)));
@@ -123,7 +123,7 @@ void CollaborationClient::receivedPictureResponse(QString userName, QString sess
     emit sessionJoinResult(sessionName, 1, m_collaborationSessions[sessionName]->getSessionParticipants());
 }
 
-void CollaborationClient::receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users)
+void CollaborationClient::receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QHash<QString, qint32> users)
 {
     if (result == 0)
     {
@@ -164,7 +164,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
 
         //Add all members to the list that is going to which
         // - this client will establish TCP connections
-        QHash<QString, long>::iterator itr;
+        QHash<QString, qint32>::iterator itr;
         for (itr = users.begin(); itr != users.end(); itr++)
         {
             //Send handshake messages to the users in the session
@@ -179,7 +179,7 @@ void CollaborationClient::receivedSessionJoinResponse(QString userName, QString 
     }
 }
 
-void CollaborationClient::receivedSessionLeaveResponse(QString userName, QString sessionName, char result)
+void CollaborationClient::receivedSessionLeaveResponse(QString userName, QString sessionName, QChar result)
 {
     if (result == 0)
     {
@@ -219,7 +219,7 @@ void CollaborationClient::receivedSessionListResponse(QString userName, QStringL
     emit sessionListAvailable(sessionList);
 }
 
-void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user)
+void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString sessionName, QChar updateType, QString user)
 {
 
     //The users in the list "users" have started to join to the session
@@ -242,8 +242,8 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     else if (updateType == UPDATE_SESSION_LEAVE)
     {
         //Delete the user from the list of participants of the session
-        QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
-        QHash<QString, long>::iterator iter;
+        QHash<QString, qint32> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
+        QHash<QString, qint32>::iterator iter;
         for (iter = participants->begin(); iter != participants->end(); iter++)
         {
             if (iter.key() == user)
@@ -385,8 +385,8 @@ void CollaborationClient::sendDrawing(QString sessionName, QByteArray picData)
     // - buffer too
     if (m_currentState[sessionName] != MEMBER_UPDATE_JOIN_BEGIN_RECEIVED && m_drawingBuffer[sessionName]->isEmpty())
     {
-        QHash<QString, long>::iterator itr;
-        QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
+        QHash<QString, qint32>::iterator itr;
+        QHash<QString, qint32> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
 
         for (itr = participants->begin(); itr != participants->end(); itr++)
         {
@@ -418,8 +418,8 @@ QString CollaborationClient::getActiveSession()
 
 void CollaborationClient::sendBufferedData(QString sessionName, QString user)
 {
-    QHash<QString, long>::iterator itr;
-    QHash<QString, long> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
+    QHash<QString, qint32>::iterator itr;
+    QHash<QString, qint32> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
 
     QVector<QByteArray> *drawingBuffer = m_drawingBuffer[sessionName];
 
@@ -461,7 +461,7 @@ void CollaborationClient::memberDisconnected(QString username)
     //Session iterator
     QHash<QString, CollaborationSession *>::iterator sessItr;
 
-    QHash<QString, long> *participants;
+    QHash<QString, qint32> *participants;
 
     for (sessItr = m_collaborationSessions.begin(); sessItr != m_collaborationSessions.end(); sessItr++)
     {

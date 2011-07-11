@@ -18,15 +18,15 @@ public:
     QString getSessionName();
     void setSessionName(QString sessionName);
 
-    char getUpdateType();
-    void setUpdateType(char updateType);
+    QChar getUpdateType();
+    void setUpdateType(QChar updateType);
 
     QString getUser();
     void setUser(QString user);
 
 private:
     QString sessionName;
-    char updateType;
+    QChar updateType;
     QString user;
 };
 

@@ -11,21 +11,21 @@ public:
     QByteArray serialize();
     void deserialize(QByteArray data);
 
-    void setResult(char result);
-    char getResult();
+    void setResult(QChar result);
+    QChar getResult();
     void setSessionName(QString sessionName);
     QString getSessionName();
-    unsigned int getUserCount();
-    void addUser(QString username, long userIP);
-    long getUserIP(QString username);
-    void setUsers(QHash<QString, long> users);
-    QHash<QString, long> getUsers();
+    qint32 getUserCount();
+    void addUser(QString username, qint32 userIP);
+    qint32 getUserIP(QString username);
+    void setUsers(QHash<QString, qint32> users);
+    QHash<QString, qint32> getUsers();
 
 private:
-    char result;
+    QChar result;
     QString sessionName;
-    unsigned int userCount;
-    QHash<QString, long> users;
+    qint32 userCount;
+    QHash<QString, qint32> users;
 };
 
 #endif // WTSESSIONJOINRESPONSE_H

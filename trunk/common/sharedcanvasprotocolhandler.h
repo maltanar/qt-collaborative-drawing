@@ -93,12 +93,12 @@ signals:
     void receivedPictureRequest(QString userName, QString sessionName);
     void receivedPictureResponse(QString userName, QString sessionName, QByteArray picData);
     void receivedSessionJoinRequest(QString userName, QString sessionName, QString password);
-    void receivedSessionJoinResponse(QString userName, QString sessionName, char result, unsigned int userCount, QHash<QString, long> users);
+    void receivedSessionJoinResponse(QString userName, QString sessionName, QChar result, qint32 userCount, QHash<QString, qint32> users);
     void receivedSessionLeaveRequest(QString userName, QString sessionName);
-    void receivedSessionLeaveResponse(QString userName, QString sessionName, char result);
+    void receivedSessionLeaveResponse(QString userName, QString sessionName, QChar result);
     void receivedSessionListRequest(QString userName);
     void receivedSessionListResponse(QString userName, QStringList sessionList);
-    void receivedSessionMemberUpdate(QString userName, QString sessionName, char updateType, QString user);
+    void receivedSessionMemberUpdate(QString userName, QString sessionName, QChar updateType, QString user);
     void receivedUpdateDrawing(QString userName, QString sessionName, QByteArray picData);
     void receivedUpdateDrawingServer(QString userName, QString sessionName, QByteArray picData);
     void receivedWritePermissionRequest(QString userName);
@@ -111,18 +111,18 @@ public slots:
     void clientDisconnected(QString origin);
 
     void sendLoginRequest(QString destUserName);
-    void sendLoginResponse(QString destUserName, char result, QString infoMsg);
+    void sendLoginResponse(QString destUserName, QChar result, QString infoMsg);
     void sendLogoutRequest(QString destUserName);
     void sendPeerHandshake(QString destUserName, QString sessionName);
     void sendPictureRequest(QString destUserName, QString sessionName);
     void sendPictureResponse(QString destUserName, QString sessionName, QByteArray picData);
     void sendSessionJoinRequest(QString destUserName, QString sessionName, QString password);
-    void sendSessionJoinResponse(QString destUserName, QString sessionName, char result, QHash<QString, long> users);
+    void sendSessionJoinResponse(QString destUserName, QString sessionName, QChar result, QHash<QString, qint32> users);
     void sendSessionLeaveRequest(QString destUserName, QString sessionName);
-    void sendSessionLeaveResponse(QString destUserName, QString sessionName, char result);
+    void sendSessionLeaveResponse(QString destUserName, QString sessionName, QChar result);
     void sendSessionListRequest(QString destUserName);
     void sendSessionListResponse(QString destUserName, QStringList sessionList);
-    void sendSessionMemberUpdate(QString destUserName, QString sessionName, char updateType, QString users);
+    void sendSessionMemberUpdate(QString destUserName, QString sessionName, QChar updateType, QString users);
     void sendUpdateDrawing(QString destUserName, QString sessionName, QByteArray picData);
     void sendUpdateDrawingServer(QString destUserName, QString sessionName, QByteArray picData);
     void sendWritePermissionRequest(QString destUserName);

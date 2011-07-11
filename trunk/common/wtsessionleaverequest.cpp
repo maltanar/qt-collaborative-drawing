@@ -10,21 +10,16 @@ QByteArray WTSessionLeaveRequest::serialize()
 {
     //Size of sessionName
     msgSize += 8;
-    QByteArray data = WTMessage::serialize();
-    data.append(sessionName.leftJustified(8, ' ').toAscii());
-    return data;
+    WTMessage::serialize();
+    m_serializer << sessionName;
+
+    return m_serializedData;
 }
 
 void WTSessionLeaveRequest::deserialize(QByteArray data)
 {
-    char sessionName[9];
-    QDataStream dataStream(data);
     WTMessage::deserialize(data);
-    //Skip header and username
-    dataStream.skipRawData(HEADER_SIZE);
-    dataStream.readRawData(sessionName, 8);
-    sessionName[8] = '\0';
-    this->sessionName = QString(sessionName).trimmed();
+    m_serializer >> sessionName;
 }
 
 QString WTSessionLeaveRequest::getSessionName()
