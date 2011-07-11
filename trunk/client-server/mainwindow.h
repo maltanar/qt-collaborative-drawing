@@ -6,6 +6,8 @@
 #include "collaborationclient.h"
 #include "collaborationserver.h"
 #include "sessionjoindialog.h"
+#include <messagedispatcher.h>
+#include <sharedcanvasprotocolhandler.h>
 
 namespace Ui {
     class MainWindow;
@@ -23,8 +25,9 @@ private:
     Ui::MainWindow *ui;
     CollaborationClient *client;
     CollaborationServer *server;
-    ProtocolHandler *ph;
+    SharedCanvasProtocolHandler *ph;
     MessageTransceiver *mt;
+    MessageDispatcher *mp;
 
 private slots:
     void on_btn_leaveSession_clicked();

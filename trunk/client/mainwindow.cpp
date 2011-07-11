@@ -7,6 +7,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include "collaborativedrawingwidget.h"
+#include <sharedcanvasprotocolhandler.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionRedo,SIGNAL(triggered()),ui->graphicsView->getDrawingData()->getUndoStack(), SLOT(redo()));
 
     mt = new MessageTransceiver();
-    ph = new ProtocolHandler();
+    mp = new MessageDispatcher();
+    ph = new SharedCanvasProtocolHandler();
+    mp->setMessageTransceiver(mt);
     ph->setMessageTransceiver(mt);
+    ph->setMessageDispatcher(mp);
+
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
 

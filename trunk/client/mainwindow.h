@@ -5,6 +5,8 @@
 #include <QtNetwork/QTcpSocket>
 #include "collaborationclient.h"
 #include "sessionjoindialog.h"
+#include <messagedispatcher.h>
+
 namespace Ui {
     class MainWindow;
 }
@@ -20,8 +22,10 @@ public:
 private:
     Ui::MainWindow *ui;
     CollaborationClient *client;
-    ProtocolHandler *ph;
+    SharedCanvasProtocolHandler *ph;
     MessageTransceiver *mt;
+    MessageDispatcher *mp;
+
 
 private slots:
     void on_actionLeave_triggered();

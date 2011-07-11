@@ -31,7 +31,9 @@ COMMON_SOURCES +=   ../common/wtmessage.cpp \
                      ../common/wtloginresponse.cpp \
                      ../common/protocolhandler.cpp \
                      ../common/wtpeerhandshake.cpp \
-                     ../common/collaborationsession.cpp 
+                     ../common/collaborationsession.cpp \
+                     ../common/sharedcanvasprotocolhandler.cpp \
+                     ../common/messagedispatcher.cpp
 
 CWIDGET_SOURCES += ../collaborative_drawing_widget/basedrawingwidget.cpp \
 	               ../collaborative_drawing_widget/drawingdata.cpp \
@@ -60,7 +62,9 @@ COMMON_HEADERS +=    ../common/wtmessage.h \
                      ../common/wtloginresponse.h \
                      ../common/protocolhandler.h \
                      ../common/wtpeerhandshake.h \
-                     ../common/collaborationsession.h
+                     ../common/collaborationsession.h \
+                     ../common/sharedcanvasprotocolhandler.h \
+                     ../common/messagedispatcher.h
 
 CWIDGET_HEADERS += ../collaborative_drawing_widget/basedrawingwidget.h \
 	               ../collaborative_drawing_widget/drawingdata.h \
