@@ -38,7 +38,9 @@ void MessageDispatcher::unsubscribe(ProtocolHandler *protocolHandler)
 
 void MessageDispatcher::receiveMessage(QString origin, QByteArray msg)
 {
-    QString message = QString(msg);
+    QString message;
+    QDataStream deserializer(&msg, QIODevice::ReadOnly);
+    deserializer >> message;
     //Check according to the prefix of the message
     // to which protocol handler the message belongs to
     QHash<QString, ProtocolHandler *>::iterator itr;

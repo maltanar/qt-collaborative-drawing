@@ -11,6 +11,7 @@ WTUpdateDrawingServer::WTUpdateDrawingServer() :
 QByteArray WTUpdateDrawingServer::serialize()
 {
     msgSize += 8 + picData.size();
+    WTMessage::serialize();
     m_serializer << sessionName << picData;
     return m_serializedData;
 }

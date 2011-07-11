@@ -3,7 +3,10 @@
 WTMessage::WTMessage() :
         msgSize(HEADER_SIZE) //Constant header size + username
 {
-        version = "WTC1";
+    version = "WTC1";
+    m_serializerBuffer.setBuffer(&m_serializedData);
+    m_serializerBuffer.open(QIODevice::ReadWrite);
+    m_serializer.setDevice(&m_serializerBuffer);
 }
 
 WTMessage::~WTMessage()
