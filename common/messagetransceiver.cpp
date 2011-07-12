@@ -250,8 +250,15 @@ void MessageTransceiver::disconnected()
 
     if(oldConnection) {
         qWarning() << "peer disconnected:" << destination;
-        // remove from connection list
+        //Emit signal that a particular client has been disconnected
+        emit clientDisconnected(destination);
+        //Remove this client from all the lists
+
+        mTimeouts.remove(destination);
         mOpenConnections.remove(destination);
+        originBuffers.remove(destination);
+        originExpectedDataSize.remove(destination);
+        destBuffers.remove(destination);
     }
 }
 
