@@ -243,17 +243,8 @@ void CollaborationClient::receivedSessionMemberUpdate(QString userName, QString 
     else if (updateType == UPDATE_SESSION_LEAVE)
     {
         //Delete the user from the list of participants of the session
-        QMap<QString, qint32> *participants = &(m_collaborationSessions[sessionName]->getSessionParticipants());
-        QMap<QString, qint32>::iterator iter;
-        for (iter = participants->begin(); iter != participants->end(); iter++)
-        {
-            if (iter.key() == user)
-            {
-                qWarning() << user << "has left the session " << sessionName << "";
-                participants->erase(iter);
-                break;
-            }
-        }
+        qWarning() << user << "has left the session " << sessionName << "";
+        m_collaborationSessions[sessionName]->removeSessionParticipant(user);
     }
 }
 
@@ -461,25 +452,21 @@ void CollaborationClient::memberDisconnected(QString username)
     //- and remove it.
 
     //Session iterator
-    QMap<QString, CollaborationSession *>::iterator sessItr;
+    QMap<QString, CollaborationSession *>::iterator iter;
 
-    QMap<QString, qint32> *participants;
-
-    for (sessItr = m_collaborationSessions.begin(); sessItr != m_collaborationSessions.end(); sessItr++)
+    for (iter = m_collaborationSessions.begin(); iter != m_collaborationSessions.end(); iter++)
     {
-        participants = &(sessItr.value()->getSessionParticipants());
-        //Remove the user from each session
-        if (participants->contains(username))
-        {
-            participants->erase(participants->find(username));
-            qWarning() << username << "has been removed from" << sessItr.value();
+        if (((CollaborationSession *)iter.value())->getSessionParticipants().contains(username)) {
+            //If the session contains the username, delete it
+            ((CollaborationSession *)iter.value())->removeSessionParticipant(username);
+            qWarning() << username << "has been removed from the session" << ((CollaborationSession *)iter.value())->getSessionName();
         }
 
         //If the user was joining and got disconnected
         // - resume as if it was never joining
-        if (m_currentState[sessItr.key()] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
+        if (m_currentState[iter.key()] == MEMBER_UPDATE_JOIN_BEGIN_RECEIVED)
         {
-            m_currentState[sessItr.key()] = MEMBER_UPDATE_JOIN_END_RECEIVED;
+            m_currentState[iter.key()] = MEMBER_UPDATE_JOIN_END_RECEIVED;
         }
     }
 }

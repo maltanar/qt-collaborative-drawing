@@ -313,16 +313,13 @@ void CollaborationServer::memberDisconnected(QString userName)
 
     //Remove the user from the sessions
     QMap<QString, CollaborationSession *>::iterator iter;
-    QMap<QString, qint32> *participants;
 
     for (iter = m_sessionData.begin(); iter != m_sessionData.end(); iter++)
     {
-        participants = &(iter.value()->getSessionParticipants());
-        if (participants->contains(userName))
-        {
-            //Then remove the user
-            participants->erase(participants->find(userName));
-            qWarning() << userName << "has been removed from sessions";
+        if (((CollaborationSession *)iter.value())->getSessionParticipants().contains(userName)) {
+            //If the session contains the username, delete it
+            ((CollaborationSession *)iter.value())->removeSessionParticipant(userName);
+            qWarning() << userName << "has been removed from the session" << ((CollaborationSession *)iter.value())->getSessionName();
         }
     }
 
