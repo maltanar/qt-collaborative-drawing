@@ -83,13 +83,15 @@ SOURCES += main.cpp\
         ../server/collaborationserver.cpp \
         ../client/collaborationclient.cpp \
         $$COMMON_SOURCES \
-        $$CWIDGET_SOURCES
+        $$CWIDGET_SOURCES \
+    ../common/usermanager.cpp
 
 
 HEADERS  += mainwindow.h \
     ../server/collaborationserver.h \
     ../client/collaborationclient.h \
     $$COMMON_HEADERS \
-    $$CWIDGET_HEADERS
+    $$CWIDGET_HEADERS \
+    ../common/usermanager.h
 
 FORMS    += mainwindow.ui
