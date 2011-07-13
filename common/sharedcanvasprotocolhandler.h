@@ -38,18 +38,12 @@ public:
     void addUserMapping(QString userName, QString IP);
     QString getUserMapping(QString userName);
 
-    void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
-    MessageTransceiver* getMessageTransceiver();
-
     void setMessageDispatcher(MessageDispatcher * messageDispatcher);
-    MessageDispatcher* getMessageDispatcher();
 
     QString getUserName();
     void setUserName(QString username);
 
 private:
-    MessageTransceiver * m_messageTransceiver;
-    MessageDispatcher * m_messageDispatcher;
     QMap<QString, QString> peerMap;
     QMap<QString, QString> pendingMapRequests;
     QString userName;
