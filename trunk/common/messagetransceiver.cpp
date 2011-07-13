@@ -67,21 +67,22 @@ void MessageTransceiver::connectTo(QString destination)
     newConnection->connectToHost(destination, TRANSCEIVER_TCP_PORT);
 }
 
-void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
+void MessageTransceiver::sendMessage(QString destinationAddress, QByteArray msg)
 {
     qint32 messageSize = msg.length() + 12;   // TODO header size should be defined
-    QTcpSocket * destinationSocket = mOpenConnections.value(destination, NULL);
+    QTcpSocket * destinationSocket = mOpenConnections.value(destinationAddress, NULL);
 
     if(!destinationSocket) {
-        qWarning() << "Connection for destination" << destination << "does not exist, put data into queue";
+        qWarning() << "Connection for destination" << destinationAddress << "does not exist, put data into queue";
         // queue data, will be sent when connection is established
-        if(!destBuffers.contains(destination))
-            destBuffers[destination] = QByteArray();
-        destBuffers[destination].append(TRANSCEIVER_HEADER);
-        destBuffers[destination].append((const char *) &messageSize, 4);
-        destBuffers[destination].append(msg);
+        if(!destBuffers.contains(destinationAddress))
+            destBuffers[destinationAddress] = QByteArray();
+        // construct the packet with the transceiver header and message size
+        destBuffers[destinationAddress].append(TRANSCEIVER_HEADER);
+        destBuffers[destinationAddress].append((const char *) &messageSize, 4);
+        destBuffers[destinationAddress].append(msg);
         // open a connection to this peer
-        connectTo(destination);
+        connectTo(destinationAddress);
         return;
     }
     // attach the transceiver-level header with message size info
@@ -89,6 +90,7 @@ void MessageTransceiver::sendMessage(QString destination, QByteArray msg)
     destinationSocket->write((const char *) &messageSize, 4);
     // TODO add checksum?
     destinationSocket->write(msg);
+    destinationSocket->flush();
 }
 
 void MessageTransceiver::sendMessageNoHeader(QTcpSocket* destinationSocket,QByteArray msg)
@@ -97,6 +99,7 @@ void MessageTransceiver::sendMessageNoHeader(QTcpSocket* destinationSocket,QByte
     // meaning that the transceiver-level header is already attached
     // only used internally for queued data transmission
     destinationSocket->write(msg);
+    destinationSocket->flush();
 }
 
 void MessageTransceiver::newConnection()

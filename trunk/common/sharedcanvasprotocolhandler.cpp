@@ -535,25 +535,6 @@ void SharedCanvasProtocolHandler::sendSessionCreateResponse(QString destUserName
     deliverMessage(msg);
 }
 
-
-void SharedCanvasProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTransceiver)
-{
-    if(m_messageTransceiver) {
-        // disconnect all signals and slots from previous MessageTransceiver
-        disconnect(this);
-        disconnect(m_messageTransceiver);
-    }
-    // connect signals and slots
-    connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
-    //connect(newMesssageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
-    connect(newMesssageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(clientDisconnected(QString)));
-}
-
-MessageTransceiver* SharedCanvasProtocolHandler::getMessageTransceiver()
-{
-    return m_messageTransceiver;
-}
-
 void SharedCanvasProtocolHandler::clientDisconnected(QString origin)
 {
     //TODO Do recovery instead of removing the user directly
@@ -578,14 +559,7 @@ void SharedCanvasProtocolHandler::clientDisconnected(QString origin)
 
 void SharedCanvasProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher)
 {
-    //This protocol handler has already been subscribed to the message dispatcher
-    //- unsubscribe it!
-    if (m_messageDispatcher)
-    {
-        m_messageDispatcher->unsubscribe(this);
-    }
-
-    m_messageDispatcher = messageDispatcher;
+    ProtocolHandler::setMessageDispatcher(messageDispatcher);
 
     //Subscribe the protocol handler with the prefixes
 
@@ -594,7 +568,3 @@ void SharedCanvasProtocolHandler::setMessageDispatcher(MessageDispatcher * messa
     m_messageDispatcher->subscribe(this, prefixes);
 }
 
-MessageDispatcher* SharedCanvasProtocolHandler::getMessageDispatcher()
-{
-    return m_messageDispatcher;
-}

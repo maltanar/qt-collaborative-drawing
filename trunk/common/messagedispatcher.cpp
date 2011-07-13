@@ -4,6 +4,8 @@
 MessageDispatcher::MessageDispatcher(QObject *parent) :
     QObject(parent)
 {
+    m_userManager = NULL;
+    m_messageTransceiver = NULL;
 }
 
 void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList prefixes)
@@ -14,21 +16,36 @@ void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList 
     int size = prefixes.size();
     for (int i = 0; i < size; i++)
     {
-        m_protocolHandlers.insert(prefixes.at(i), protocolHandler);
+        m_subscriptionList.insertMulti(prefixes.at(i), protocolHandler);
     }
+
+    // we want all ProtocolHandler instances to be connected to the message broadcast signal
+    // check if we have this particular ProtocolHandler in record
+    if(!m_protocolHandlers.contains(protocolHandler)) {
+        // add to our list of known handlers...
+        m_protocolHandlers.append(protocolHandler);
+        // .. and connect the broadcast message signal to its reception socket
+        connect(this, SIGNAL(messageBroadcastSignal(QString,QByteArray)), protocolHandler, SLOT(receiveData(QString,QByteArray)));
+    }
+}
+
+void MessageDispatcher::broadcastRequestSlot(QString origin, QByteArray msg)
+{
+    Q_UNUSED(origin)
+    // emit the broadcast message signal, which should be received by all ProtocolHandler instances
+    emit signalMessageBroadcast(PROTOCOLHANDLER_BROADCAST, msg);
 }
 
 void MessageDispatcher::unsubscribe(ProtocolHandler *protocolHandler)
 {
     //Remove all the prefixes that belong to the mentioned protocol handler
-    //TODO Might be a logical mistake with comparison of pointers
     QMap<QString, ProtocolHandler *>::iterator itr;
-    for (itr = m_protocolHandlers.begin(); itr != m_protocolHandlers.end(); itr++)
+    for (itr = m_subscriptionList.begin(); itr != m_subscriptionList.end(); itr++)
     {
         if (itr.value() == protocolHandler)
         {
             //Remove the item from the hash
-            itr = m_protocolHandlers.erase(itr);
+            itr = m_subscriptionList.erase(itr);
             //Move the iterator once backwards
             //- to compensate itr++
             itr--;
@@ -46,7 +63,7 @@ void MessageDispatcher::receiveMessage(QString origin, QByteArray msg)
     // to which protocol handler the message belongs to
     QMap<QString, ProtocolHandler *>::iterator itr;
 
-    for (itr = m_protocolHandlers.begin(); itr != m_protocolHandlers.end(); itr++)
+    for (itr = m_subscriptionList.begin(); itr != m_subscriptionList.end(); itr++)
     {
         if (message.startsWith(itr.key()))
         {
@@ -71,4 +88,48 @@ void MessageDispatcher::setMessageTransceiver(MessageTransceiver *messageTransce
 MessageTransceiver * MessageDispatcher::getMessageTransceiver()
 {
     return m_messageTransceiver;
+}
+
+void MessageDispatcher::sendMessage(QString destination, QByteArray msg)
+{
+    if(!m_userManager) {
+        qWarning() << "no UserManager set for MessageDispatcher, aborting...";
+        return;
+    }
+    // TODO Yaman: uncomment the lines about UserManager when it is implemented
+    QString destinationAddress;
+    destinationAddress = m_userManager->peerAddress(destination);
+    // check if the destination exists as a connected peer in UserManager
+    if(destinationAddress == "") {
+        // no connection for this peer yet exists, request a connection
+         m_userManager->requestConnection(destination);
+        // buffer the message, we'll deliver it when a connection is established
+        m_bufferedMessages.insertMulti(destination, msg);
+    } else {
+        // already an open connection, pass on to MessageTransceiver
+        m_messageTransceiver->sendMessage(destinationAddress, msg);
+    }
+
+}
+
+void MessageDispatcher::connectionEstablished(QString destination, QString destinationAddress)
+{
+    // we have a newly established connection to destination at destinationAddress
+    // check if we have any pending data towards this destination
+    while(m_bufferedMessages.count(destination)) {
+        // deliver the pending messages via MessageTransceiver
+        m_messageTransceiver->sendMessage(destinationAddress, m_bufferedMessages.take(destination));
+    }
+}
+
+void MessageDispatcher::setUserManager(UserManager *newUserManager)
+{
+    m_userManager = newUserManager;
+
+    // TODO Ozan: add new user connected signal to UserManager and connect signal here
+}
+
+UserManager* MessageDispatcher::getUserManager()
+{
+    return m_userManager;
 }

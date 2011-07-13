@@ -3,12 +3,31 @@
 
 #include <QObject>
 #include <messagetransceiver.h>
+#include "messagedispatcher.h"
+
+class MessageDispatcher;
 
 class ProtocolHandler : public QObject
 {
     Q_OBJECT
 public:
     explicit ProtocolHandler(QObject *parent = 0);
+
+    virtual void setMessageDispatcher(MessageDispatcher * messageDispatcher);
+
+    void setMessageTransceiver(MessageTransceiver * newMesssageTransceiver);
+    MessageTransceiver* getMessageTransceiver();
+
+protected:
+    MessageDispatcher * m_messageDispatcher;
+    MessageTransceiver * m_messageTransceiver;
+
+    void sendMessage(QString toUsername, QByteArray data);
+
+signals:
+
+
+public slots:
     virtual void receiveData(QString origin, QByteArray data);
 };
 
