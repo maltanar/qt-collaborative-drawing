@@ -343,3 +343,18 @@ void MessageTransceiver::socketError(QAbstractSocket::SocketError err)
 
     qWarning() << "socket error" << err << "for" << origin;
 }
+
+void MessageTransceiver::disconnectPeer(QString peerAddress)
+{
+    //Disconnect from the peer
+    if (mOpenConnections.value(peerAddress, NULL))
+    {
+        mOpenConnections.value(peerAddress)->disconnect();
+
+        mOpenConnections.remove(peerAddress);
+        mTimeouts.remove(peerAddress);
+        originBuffers.remove(peerAddress);
+        originExpectedDataSize.remove(peerAddress);
+        destBuffers.remove(peerAddress);
+    }
+}

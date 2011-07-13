@@ -48,6 +48,7 @@ private slots:
     void dataArrived();
     void sendKeepAlive();
     void socketError(QAbstractSocket::SocketError err);
+    void disconnectPeer(QString peerAddress);
 
 };
 
