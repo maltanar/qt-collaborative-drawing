@@ -111,6 +111,8 @@ void MainWindow::on_startServerButton_clicked()
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
 
+    mp->getUserManager()->setDiscoveryBroadcastActive(true);
+
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QMap<QString,qint32>)), this, SLOT(sessionJoinResult(QString,QChar,QMap<QString,qint32>)));
     connect(ui->graphicsView, SIGNAL(drawingCommited(QString,QPicture)), this, SLOT(drawingCommitted(QString,QPicture)));
     connect(client, SIGNAL(drawingArrived(QString,QByteArray,bool)), ui->graphicsView, SLOT(drawingArrived(QString,QByteArray,bool)));
