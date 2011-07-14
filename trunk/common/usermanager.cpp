@@ -52,7 +52,7 @@ void UserManager::requestConnection(QString userName)
     //We try to connect by using each ip address until the correct one is found
     if (!m_availableUsers.contains(userName))
     {
-        qWarning() << "Requested a connection to a non-existing user";
+        qWarning() << "Requested a connection to a non-existing user" << userName;
         return;
     }
 
