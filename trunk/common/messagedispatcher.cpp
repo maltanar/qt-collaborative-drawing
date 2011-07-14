@@ -10,7 +10,6 @@ MessageDispatcher::MessageDispatcher(QObject *parent) :
     connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
 
     m_userManager->setMessageTransceiver(m_messageTransceiver);
-    //TODO The username of this client should be set in user manager
 }
 
 void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList prefixes)

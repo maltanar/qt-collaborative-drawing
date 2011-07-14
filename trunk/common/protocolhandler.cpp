@@ -9,9 +9,8 @@ ProtocolHandler::ProtocolHandler(QObject *parent):
 
 void ProtocolHandler::receiveData(QString origin, QByteArray data)
 {
-
+    // default implementation does nothing
 }
-
 
 void ProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher)
 {
@@ -25,10 +24,12 @@ void ProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher
     m_messageDispatcher = messageDispatcher;
 
     connect(this, SIGNAL(sendMessage(QString, QByteArray)), m_messageDispatcher, SLOT(sendMessage(QString,QByteArray)));
+    // we don't have a message reception slot connection since MessageDispatcher handles that itself
 }
 
 void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTransceiver)
 {
+    // TODO ProtocolHandler won't have direct access to MessageTransceiver, remove this
     if(m_messageTransceiver) {
         // disconnect all signals and slots from previous MessageTransceiver
         disconnect(this);
@@ -50,6 +51,51 @@ MessageTransceiver* ProtocolHandler::getMessageTransceiver()
 void ProtocolHandler::receiveBroadcast(QByteArray data)
 {
     // receive broadcast
-    // TDOO Yaman: handle client disconnection message parsing here
     qWarning() << "ProtocolHandler::receiveBroadcast with data size" << data.size();
+
+    // read the broadcast signature
+    QString signature;
+    QDataStream deserializer(&data, QIODevice::ReadOnly);
+    deserializer >> signature;
+
+    qWarning() << "broadcast message sigature" << signature;
+
+    if(signature == BROADCAST_USER_DISCONNECT_SIGNATURE) {
+        // a user has disconnected, decode name and pass on to handler
+        QString userName;
+        deserializer >> userName;
+        userDisconnected(userName);
+    }
+
+    // TODO handle other broadcast types here
+}
+
+void ProtocolHandler::userDisconnected(QString userName)
+{
+    // the default disconnection handler does nothing
+    qWarning() << "peer with username" << userName << "disconnected";
+}
+
+QMap<QString, QStringList> ProtocolHandler::getAvailableUsers()
+{
+    if(m_messageDispatcher) {
+        return m_messageDispatcher->getUserManager()->getAvailableUsers();
+    } else
+        return QMap<QString, QStringList>();
+}
+
+QMap<QString, QString> ProtocolHandler::getConnectedUsers()
+{
+    if(m_messageDispatcher) {
+        return m_messageDispatcher->getUserManager()->getConnectedUsers();
+    } else
+        return QMap<QString, QString>();
+}
+
+QString ProtocolHandler::getLocalUserName()
+{
+    if(m_messageDispatcher)
+        return m_messageDispatcher->getUserManager()->getUserName();
+    else
+        return "";
 }
