@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     client = new CollaborationClient();
     client->setProtocolHandler(ph);
 
+    mp->getUserManager()->setDiscoveryBroadcastActive(true);
+
     mt->run();
 
     connect(client, SIGNAL(sessionJoinResult(QString,QChar,QMap<QString,qint32>)), this, SLOT(sessionJoinResult(QString,QChar,QMap<QString,qint32>)));
