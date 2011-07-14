@@ -10,6 +10,8 @@ MessageDispatcher::MessageDispatcher(QObject *parent) :
     connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
 
     m_userManager->setMessageTransceiver(m_messageTransceiver);
+    // create a default username
+    m_userManager->setUserName(QString::number((QDateTime::currentMSecsSinceEpoch())));
 }
 
 void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList prefixes)
