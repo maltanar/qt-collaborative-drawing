@@ -4,8 +4,13 @@
 MessageDispatcher::MessageDispatcher(QObject *parent) :
     QObject(parent)
 {
-    m_userManager = NULL;
     m_messageTransceiver = NULL;
+    m_userManager = new UserManager();
+
+    connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
+
+    m_userManager->setMessageTransceiver(m_messageTransceiver);
+    //TODO The username of this client should be set in user manager
 }
 
 void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList prefixes)
@@ -141,8 +146,12 @@ void MessageDispatcher::connectionEstablished(QString destination, QString desti
 
 void MessageDispatcher::setUserManager(UserManager *newUserManager)
 {
+    if (m_userManager)
+    {
+        m_userManager->disconnect();
+        disconnect(m_userManager);
+    }
     m_userManager = newUserManager;
-
     connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
 }
 
