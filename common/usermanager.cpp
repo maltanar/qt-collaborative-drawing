@@ -4,6 +4,9 @@ UserManager::UserManager(QObject *parent) :
     QObject(parent)
 {
     m_messageTransceiver = NULL;
+    // set up things for user discovery and announcement
+    m_discoveryListenerSocket.bind(DISCOVERY_BROADCAST_PORT, QUdpSocket::ShareAddress);
+    connect(&m_discoveryBroadcastTimer, SIGNAL(timeout()), this, SLOT(discoveryBroadcastTimeout()));
 }
 
 void UserManager::setUserName(QString userName)
@@ -173,11 +176,68 @@ void UserManager::setMessageTransceiver(MessageTransceiver * messageTransceiver)
     //Disconnect all the signals if there was already a message transceiver
     if (m_messageTransceiver)
     {
-        m_messageTransceiver->disconnect();
+        disconnect(this, SIGNAL(sendMessage(QString,QByteArray)), m_messageTransceiver, SLOT(sendMessage(QString,QByteArray)));
+        disconnect(m_messageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(peerDisconnected(QString)));
     }
 
     m_messageTransceiver = messageTransceiver;
 
     connect(this, SIGNAL(sendMessage(QString,QByteArray)), m_messageTransceiver, SLOT(sendMessage(QString,QByteArray)));
     connect(m_messageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(peerDisconnected(QString)));
+}
+
+void UserManager::discoveryBroadcastTimeout()
+{
+    QByteArray discoveryPacketData;
+    QDataStream serializer(&discoveryPacketData, QIODevice::ReadWrite);
+
+    // create a package to broadcast over UDP that announces the presence of this user
+    // to the network
+
+    serializer << DISCOVERY_BROADCAST_SIGNATURE << getUserName();
+
+    m_discoveryBroadcastSocket.writeDatagram(discoveryPacketData,QHostAddress::Broadcast, DISCOVERY_BROADCAST_PORT);
+}
+
+bool UserManager::isDiscoveryBroadcastActive()
+{
+    return m_discoveryBroadcastTimer.isActive();
+}
+
+void UserManager::setDiscoveryBroadcastActive(bool active)
+{
+    if(active)
+        m_discoveryBroadcastTimer.start(DISCOVERY_BROADCAST_PERIOD);
+    else
+        m_discoveryBroadcastTimer.stop();
+}
+
+void UserManager::discoveryBroadcastReceived()
+{
+    QByteArray discoveryPackage;
+    QString packageHeader;
+    QString peerName;
+    QHostAddress peerAddress;
+    QStringList peerAddressList;
+
+    while(m_discoveryBroadcastSocket.hasPendingDatagrams())
+    {
+        discoveryPackage.resize(m_discoveryBroadcastSocket.pendingDatagramSize());
+        m_discoveryBroadcastSocket.readDatagram(discoveryPackage.data(), discoveryPackage.size(), &peerAddress);
+        QDataStream packageStream(&discoveryPackage, QIODevice::ReadWrite);
+        packageStream >> packageHeader;
+
+        if (packageHeader == DISCOVERY_BROADCAST_SIGNATURE)
+        {
+            // this is indeed a peer discovery package, retrieve peer name from the data
+            packageStream >> peerName;
+            // insert entry into peer address list if it does not already exist
+            peerAddressList = m_availableUsers.value(peerName, QStringList());
+            if(!peerAddressList.contains(peerAddress.toString()))
+                peerAddressList.append(peerAddress.toString());
+            qWarning() << "UserManager address list for peer" << peerName << ":" << peerAddressList;
+            m_availableUsers[peerName] = peerAddressList;
+        } else
+            qWarning() << "UserManager received invalid discovery broadcast!";
+    }
 }
