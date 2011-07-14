@@ -25,21 +25,20 @@ void MessageDispatcher::subscribe(ProtocolHandler *protocolHandler, QStringList 
         // add to our list of known handlers...
         m_protocolHandlers.append(protocolHandler);
         // .. and connect the broadcast message signal to its reception socket
-        connect(this, SIGNAL(messageBroadcastSignal(QString,QByteArray)), protocolHandler, SLOT(receiveData(QString,QByteArray)));
+        connect(this, SIGNAL(broadcastMessage(QByteArray)), protocolHandler, SLOT(receiveBroadcast(QByteArray)));
     }
-}
-
-void MessageDispatcher::broadcastRequestSlot(QString origin, QByteArray msg)
-{
-    Q_UNUSED(origin)
-    // emit the broadcast message signal, which should be received by all ProtocolHandler instances
-    emit signalMessageBroadcast(PROTOCOLHANDLER_BROADCAST, msg);
 }
 
 void MessageDispatcher::unsubscribe(ProtocolHandler *protocolHandler)
 {
     //Remove all the prefixes that belong to the mentioned protocol handler
     QMap<QString, ProtocolHandler *>::iterator itr;
+
+    // remove from the list of ProtocolHandler instances
+    m_protocolHandlers.removeAll(protocolHandler);
+    // disconnect from the ProtocolHandler broadcast system
+    disconnect(this, SIGNAL(broadcastMessage(QByteArray)), protocolHandler, SLOT(receiveBroadcast(QByteArray)));
+
     for (itr = m_subscriptionList.begin(); itr != m_subscriptionList.end(); itr++)
     {
         if (itr.value() == protocolHandler)
@@ -105,7 +104,16 @@ void MessageDispatcher::sendMessage(QString destination, QByteArray msg)
         qWarning() << "no UserManager set for MessageDispatcher, aborting...";
         return;
     }
-    // TODO Yaman: uncomment the lines about UserManager when it is implemented
+
+    // we have a specially defined destination to broadcast to all fellow ProtocolHandler's
+    if(destination == PROTOCOLHANDLER_BROADCAST) {
+        // the signal is connected to ProtocolHandler::receiveBroadcast for all instances
+        emit broadcastMessage(msg);
+        // no need to forward this to MessageTransceiver, we can stop here
+        return;
+    }
+
+    // regular username destination, forward to MessageTransceiver
     QString destinationAddress;
     destinationAddress = m_userManager->peerAddress(destination);
     // check if the destination exists as a connected peer in UserManager
