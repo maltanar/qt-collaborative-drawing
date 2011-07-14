@@ -3,6 +3,7 @@
 UserManager::UserManager(QObject *parent) :
     QObject(parent)
 {
+    m_messageTransceiver = NULL;
 }
 
 void UserManager::setUserName(QString userName)

@@ -3,6 +3,8 @@
 ProtocolHandler::ProtocolHandler(QObject *parent):
     QObject(parent)
 {
+    m_messageTransceiver = NULL;
+    m_messageDispatcher = NULL;
 }
 
 void ProtocolHandler::receiveData(QString origin, QByteArray data)
@@ -10,11 +12,6 @@ void ProtocolHandler::receiveData(QString origin, QByteArray data)
 
 }
 
-
-void ProtocolHandler::sendMessage(QString toUsername, QByteArray data)
-{
-
-}
 
 void ProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher)
 {
@@ -26,6 +23,8 @@ void ProtocolHandler::setMessageDispatcher(MessageDispatcher * messageDispatcher
     }
 
     m_messageDispatcher = messageDispatcher;
+
+    connect(this, SIGNAL(sendMessage(QString, QByteArray)), m_messageDispatcher, SLOT(sendMessage(QString,QByteArray)));
 }
 
 void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTransceiver)
@@ -36,8 +35,9 @@ void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTran
         disconnect(m_messageTransceiver);
     }
     // connect signals and slots
-    connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
-    //connect(newMesssageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
+
+    //connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
+
     connect(newMesssageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(clientDisconnected(QString)));
 }
 
