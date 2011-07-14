@@ -22,9 +22,8 @@ protected:
     MessageDispatcher * m_messageDispatcher;
     MessageTransceiver * m_messageTransceiver;
 
-    void sendMessage(QString toUsername, QByteArray data);
-
 signals:
+    void sendMessage(QString toUsername, QByteArray data);
 
 
 public slots:
