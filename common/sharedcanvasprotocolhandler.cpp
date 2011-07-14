@@ -195,7 +195,7 @@ bool SharedCanvasProtocolHandler::deliverMessage(WTMessage * msg)
         return false;
     }
     // time for delivery!
-    emit sendMessage(destination, msgData);
+    emit sendMessage(msg->getDestUsername(), msgData);
     // we should be able to delete this message now
     // TODO handle the new - delete logic more carefully! what happens when errors
     // occur, for example?
