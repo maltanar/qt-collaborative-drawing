@@ -5,6 +5,10 @@
 #include <messagetransceiver.h>
 #include "messagedispatcher.h"
 
+// we define a special sender identity for broadcast messages sent to all protocol handlers
+// (e.g when a user is detected to be disconnected)
+#define PROTOCOLHANDLER_BROADCAST   QString("$protocol_handler_broadcast$")
+
 class MessageDispatcher;
 
 class ProtocolHandler : public QObject
@@ -28,6 +32,7 @@ signals:
 
 public slots:
     virtual void receiveData(QString origin, QByteArray data);
+    virtual void receiveBroadcast(QByteArray data);
 };
 
 #endif // PROTOCOLHANDLER_H

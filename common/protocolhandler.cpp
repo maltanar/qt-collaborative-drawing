@@ -38,10 +38,18 @@ void ProtocolHandler::setMessageTransceiver(MessageTransceiver * newMesssageTran
 
     //connect(this, SIGNAL(sendMessage(QString,QByteArray)), newMesssageTransceiver, SLOT(sendMessage(QString,QByteArray)));
 
+    // TODO remove the line below - ProtocolHandler itself gets disconnection info from broadcast
     connect(newMesssageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(clientDisconnected(QString)));
 }
 
 MessageTransceiver* ProtocolHandler::getMessageTransceiver()
 {
     return m_messageTransceiver;
+}
+
+void ProtocolHandler::receiveBroadcast(QByteArray data)
+{
+    // receive broadcast
+    // TDOO Yaman: handle client disconnection message parsing here
+    qWarning() << "ProtocolHandler::receiveBroadcast with data size" << data.size();
 }
