@@ -17,7 +17,7 @@
 // the period in ms with which UDP discovery messages from this client are broadcast
 #define DISCOVERY_BROADCAST_PERIOD      1000
 #define DISCOVERY_BROADCAST_SIGNATURE   QString("EKTUSERDISCOVERY")
-#define DISCOVERY_BROADCAST_PORT        45455
+#define DISCOVERY_BROADCAST_PORT        45460
 
 class UserManager : public QObject
 {
