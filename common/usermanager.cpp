@@ -155,7 +155,7 @@ void UserManager::peerDisconnected(QString peerUserName)
     stream.setDevice(&buffer);
     buffer.open(QIODevice::ReadWrite);
 
-    stream << QString(USER_DISCONNECT_SIGNATURE) << peerUserName;
+    stream << QString(BROADCAST_USER_DISCONNECT_SIGNATURE) << peerUserName;
 
     buffer.close();
 

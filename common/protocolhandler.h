@@ -9,6 +9,9 @@
 // (e.g when a user is detected to be disconnected)
 #define PROTOCOLHANDLER_BROADCAST   QString("$protocol_handler_broadcast$")
 
+// the signature for broadcast messages are defined here
+#define BROADCAST_USER_DISCONNECT_SIGNATURE "EKTPD"     // user has disconnected
+
 class MessageDispatcher;
 
 class ProtocolHandler : public QObject
@@ -26,13 +29,17 @@ protected:
     MessageDispatcher * m_messageDispatcher;
     MessageTransceiver * m_messageTransceiver;
 
+    QMap<QString, QStringList> getAvailableUsers();
+    QMap<QString, QString> getConnectedUsers();
+    QString getLocalUserName();
+
 signals:
     void sendMessage(QString toUsername, QByteArray data);
-
 
 public slots:
     virtual void receiveData(QString origin, QByteArray data);
     virtual void receiveBroadcast(QByteArray data);
+    virtual void userDisconnected(QString userName);
 };
 
 #endif // PROTOCOLHANDLER_H
