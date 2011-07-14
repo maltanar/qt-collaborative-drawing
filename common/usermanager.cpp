@@ -7,6 +7,7 @@ UserManager::UserManager(QObject *parent) :
     // set up things for user discovery and announcement
     m_discoveryListenerSocket.bind(DISCOVERY_BROADCAST_PORT, QUdpSocket::ShareAddress);
     connect(&m_discoveryBroadcastTimer, SIGNAL(timeout()), this, SLOT(discoveryBroadcastTimeout()));
+    connect(&m_discoveryListenerSocket, SIGNAL(readyRead()), this, SLOT(discoveryBroadcastReceived()));
 }
 
 void UserManager::setUserName(QString userName)
