@@ -5,11 +5,10 @@ MessageDispatcher::MessageDispatcher(QObject *parent) :
     QObject(parent)
 {
     m_messageTransceiver = NULL;
-    m_userManager = new UserManager();
+    m_userManager = NULL;
 
-    connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
+    setUserManager(new UserManager());
 
-    m_userManager->setMessageTransceiver(m_messageTransceiver);
     // create a default username
     m_userManager->setUserName(QString::number((QDateTime::currentMSecsSinceEpoch())));
 }
@@ -91,12 +90,15 @@ void MessageDispatcher::setMessageTransceiver(MessageTransceiver *messageTransce
 {
     if(m_messageTransceiver) {
         // disconnect all signals and slots from previous MessageTransceiver
-        disconnect(this);
-        disconnect(m_messageTransceiver);
-        m_messageTransceiver = messageTransceiver;
+        disconnect(messageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
     }
+
+    m_messageTransceiver = messageTransceiver;
+
     // connect signals and slots
     connect(messageTransceiver, SIGNAL(gotNewData(QString,QByteArray)), this, SLOT(receiveMessage(QString,QByteArray)));
+
+    m_userManager->setMessageTransceiver(m_messageTransceiver);
 }
 
 MessageTransceiver * MessageDispatcher::getMessageTransceiver()
@@ -153,7 +155,8 @@ void MessageDispatcher::setUserManager(UserManager *newUserManager)
         disconnect(m_userManager);
     }
     m_userManager = newUserManager;
-    connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
+
+    connect(m_userManager, SIGNAL(peerConnected(QString,QString)), this, SLOT(connectionEstablished(QString,QString)));
 }
 
 UserManager* MessageDispatcher::getUserManager()
