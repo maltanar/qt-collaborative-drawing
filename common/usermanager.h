@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QBuffer>
 #include <QDebug>
+#include "messagetransceiver.h"
 
 #define USER_HANDSHAKE_SIGNATURE "EKTHS"
 
@@ -25,6 +26,9 @@ public:
 
     void requestConnection(QString userName);
 
+    MessageTransceiver * getMessageTransceiver();
+    void setMessageTransceiver(MessageTransceiver * messageTransceiver);
+
 protected:
     void sendHandshake(QString destIp);
     void receiveHandshake(QString srcUserName, QString srcIp);
@@ -36,8 +40,12 @@ private:
     QMap<QString, QString> m_connectedUsers;
     QStringList m_pendingUsers;
 
+    MessageTransceiver *m_messageTransceiver;
+
+
 signals:
     void sendMessage(QString destIp, QByteArray data);
+    void peerConnected(QString destination, QString destinationAddress);
 
 public slots:
     void peerDisconnected(QString peerUserName);

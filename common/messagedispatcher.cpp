@@ -63,14 +63,23 @@ void MessageDispatcher::receiveMessage(QString origin, QByteArray msg)
     // to which protocol handler the message belongs to
     QMap<QString, ProtocolHandler *>::iterator itr;
 
+    //Check if this message belongs to user manager
+    if (message.startsWith(USER_HANDSHAKE_SIGNATURE))
+    {
+        m_userManager->receiveData(origin, msg);
+    }
+
     for (itr = m_subscriptionList.begin(); itr != m_subscriptionList.end(); itr++)
     {
         if (message.startsWith(itr.key()))
         {
             ((ProtocolHandler *)(itr.value()))->receiveData(origin, msg);
-            break;
+            //No break here as there might be more than one protocol handlers
+            //- expecting the same prefix
         }
     }
+
+
 }
 
 void MessageDispatcher::setMessageTransceiver(MessageTransceiver *messageTransceiver)
@@ -126,7 +135,7 @@ void MessageDispatcher::setUserManager(UserManager *newUserManager)
 {
     m_userManager = newUserManager;
 
-    // TODO Ozan: add new user connected signal to UserManager and connect signal here
+    connect(m_userManager, SIGNAL(peerConnected(QString)), this, SLOT(connectionEstablished(QString,QString)));
 }
 
 UserManager* MessageDispatcher::getUserManager()

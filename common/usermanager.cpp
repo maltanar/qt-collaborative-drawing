@@ -85,6 +85,8 @@ void UserManager::receiveHandshake(QString srcUserName, QString srcIp)
         m_connectedUsers.insert(srcUserName, srcIp);
         m_pendingUsers.removeOne(srcUserName);
         qWarning() << "Handshake has been confirmed by" << srcUserName;
+        //User has successfully connected
+        emit peerConnected(srcUserName, srcIp);
     }
     else
     {
@@ -143,4 +145,23 @@ void UserManager::peerDisconnected(QString peerUserName)
 {
     //TODO Tell messageDispatcher to broadcast all the protocolhandlers
     //- that a user with the username peerUserName has been disconnected
+}
+
+
+MessageTransceiver * UserManager::getMessageTransceiver()
+{
+    return m_messageTransceiver;
+}
+
+void UserManager::setMessageTransceiver(MessageTransceiver * messageTransceiver)
+{
+    //Disconnect all the signals if there was already a message transceiver
+    if (m_messageTransceiver)
+    {
+        m_messageTransceiver->disconnect();
+    }
+
+    m_messageTransceiver = messageTransceiver;
+
+    connect(this, SIGNAL(sendMessage(QString,QByteArray)), m_messageTransceiver, SLOT(sendMessage(QString,QByteArray)));
 }
