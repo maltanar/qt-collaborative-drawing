@@ -144,8 +144,22 @@ void UserManager::receiveData(QString srcIp, QByteArray data)
 
 void UserManager::peerDisconnected(QString peerUserName)
 {
-    //TODO Tell messageDispatcher to broadcast all the protocolhandlers
+    //Tell messageDispatcher to broadcast all the protocolhandlers
     //- that a user with the username peerUserName has been disconnected
+    m_connectedUsers.remove(peerUserName);
+
+    QByteArray data;
+    QBuffer buffer;
+    QDataStream stream;
+    buffer.setBuffer(&data);
+    stream.setDevice(&buffer);
+    buffer.open(QIODevice::ReadWrite);
+
+    stream << QString(USER_DISCONNECT_SIGNATURE) << peerUserName;
+
+    buffer.close();
+
+    emit sendMessage(PROTOCOLHANDLER_BROADCAST, data);
 }
 
 
@@ -165,4 +179,5 @@ void UserManager::setMessageTransceiver(MessageTransceiver * messageTransceiver)
     m_messageTransceiver = messageTransceiver;
 
     connect(this, SIGNAL(sendMessage(QString,QByteArray)), m_messageTransceiver, SLOT(sendMessage(QString,QByteArray)));
+    connect(m_messageTransceiver, SIGNAL(clientDisconnected(QString)), this, SLOT(peerDisconnected(QString)));
 }

@@ -6,9 +6,12 @@
 #include <QStringList>
 #include <QBuffer>
 #include <QDebug>
+
 #include "messagetransceiver.h"
+#include "protocolhandler.h"
 
 #define USER_HANDSHAKE_SIGNATURE "EKTHS"
+#define USER_DISCONNECT_SIGNATURE "EKTPD"
 
 class UserManager : public QObject
 {

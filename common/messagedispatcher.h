@@ -10,6 +10,8 @@
 
 class ProtocolHandler;
 
+class UserManager;
+
 class MessageDispatcher : public QObject
 {
     Q_OBJECT
