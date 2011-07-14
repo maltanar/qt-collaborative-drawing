@@ -221,10 +221,10 @@ void UserManager::discoveryBroadcastReceived()
     QHostAddress peerAddress;
     QStringList peerAddressList;
 
-    while(m_discoveryBroadcastSocket.hasPendingDatagrams())
+    while(m_discoveryListenerSocket.hasPendingDatagrams())
     {
-        discoveryPackage.resize(m_discoveryBroadcastSocket.pendingDatagramSize());
-        m_discoveryBroadcastSocket.readDatagram(discoveryPackage.data(), discoveryPackage.size(), &peerAddress);
+        discoveryPackage.resize(m_discoveryListenerSocket.pendingDatagramSize());
+        m_discoveryListenerSocket.readDatagram(discoveryPackage.data(), discoveryPackage.size(), &peerAddress);
         QDataStream packageStream(&discoveryPackage, QIODevice::ReadWrite);
         packageStream >> packageHeader;
 
