@@ -1,0 +1,1 @@
+This project aims to build a small-scale collaborative drawing system with a centralized architecture using Qt.
